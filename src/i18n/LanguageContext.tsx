@@ -1,12 +1,12 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { dictionary, locales, type Locale } from './dictionary'
+import { dictionary, locales, type Locale, type Dictionary } from './dictionary'
 
 type LanguageContextValue = {
   locale: Locale
   setLocale: (locale: Locale) => void
-  t: (typeof dictionary)['ru']
+  t: Dictionary
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null)

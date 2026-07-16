@@ -8,7 +8,49 @@ export const localeLabels: Record<Locale, string> = {
   es: 'ES',
 }
 
-export const dictionary = {
+export type Dictionary = {
+  brand: string
+  nav: {
+    catalog: string
+    ratings: string
+    articles: string
+    addReview: string
+    addCompany: string
+  }
+  hero: {
+    title: string
+    subtitle: string
+  }
+  home: {
+    bestCompanies: string
+    allCompanies: string
+    latestReviews: string
+    allReviews: string
+    claimCtaTitle: string
+    claimCtaText: string
+    addCompanyBtn: string
+    articlesTitle: string
+    aboutTitle: string
+    aboutText: string
+  }
+  footer: {
+    tagline: string
+    forCompanies: string
+    community: string
+    catalog: string
+    writeReview: string
+    testVersion: string
+  }
+  company: {
+    readReviews: string
+    leaveReview: string
+    visitSite: string
+    verified: string
+    reviewsCount: string
+  }
+}
+
+export const dictionary: Record<Locale, Dictionary> = {
   ru: {
     brand: 'Trusty',
     nav: {
