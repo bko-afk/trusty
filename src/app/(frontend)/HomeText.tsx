@@ -23,17 +23,19 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
           <h1 className="text-3xl md:text-4xl font-bold max-w-2xl">{t.hero.title}</h1>
           <p className="text-gray-600 max-w-xl">{t.hero.subtitle}</p>
           <SearchBox />
-          <div className="flex flex-wrap justify-center gap-2 mt-2">
-            {insuranceTypes.map((type: any) => (
-              <Link
-                key={type.id}
-                href={`/companies?type=${type.slug}`}
-                className="rounded-full bg-white border border-gray-200 px-4 py-1.5 text-sm hover:border-brand hover:text-brand"
-              >
-                {type.title}
-              </Link>
-            ))}
-          </div>
+          {insuranceTypes.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 mt-2">
+              {insuranceTypes.map((type: any) => (
+                <Link
+                  key={type.id}
+                  href={`/companies?type=${type.slug}`}
+                  className="rounded-full bg-white border border-gray-200 px-4 py-1.5 text-sm hover:border-brand hover:text-brand"
+                >
+                  {type.title}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -54,7 +56,8 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
               rating={company.overallRating || 0}
               reviewCount={company.reviewCount || 0}
               verified={company.verified}
-              insuranceTypeLabel={company.insuranceTypes?.[0]?.title}
+              country={company.country}
+              insuranceTypeLabels={(company.insuranceTypes || []).map((t: any) => t.title)}
             />
           ))}
         </div>

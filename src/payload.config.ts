@@ -13,6 +13,7 @@ import { Companies } from './collections/Companies'
 import { Reviews } from './collections/Reviews'
 import { ReviewReplies } from './collections/ReviewReplies'
 import { Articles } from './collections/Articles'
+import { Customers } from './collections/Customers'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -37,7 +38,7 @@ export default buildConfig({
     },
   },
   editor: lexicalEditor({}),
-  collections: [Users, Media, InsuranceTypes, Companies, Reviews, ReviewReplies, Articles],
+  collections: [Users, Media, InsuranceTypes, Companies, Reviews, ReviewReplies, Articles, Customers],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
@@ -46,6 +47,12 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI,
     },
+    // Отключаем автоматический "push" схемы в дев-режиме: при сложных
+    // изменениях (новые relationship-таблицы, auth-коллекции и т.п.)
+    // он иногда генерирует некорректный SQL и падает с ошибками вроде
+    // "column is in a primary key". Вместо этого всегда используем
+    // явные миграции (migrate:create / migrate) — надёжнее и предсказуемее.
+    push: false,
   }),
   sharp,
   cors: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'].filter(Boolean),

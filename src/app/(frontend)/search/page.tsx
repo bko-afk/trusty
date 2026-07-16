@@ -1,7 +1,5 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
-import { Breadcrumbs } from '@/components/Breadcrumbs'
-import { CompanyCard } from '@/components/CompanyCard'
-import { SearchBox } from '@/components/SearchBox'
+import { SearchText } from './SearchText'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,28 +23,19 @@ export default async function SearchPage({
     : { docs: [] as any[] }
 
   return (
-    <div className="container-page py-8">
-      <Breadcrumbs items={[{ label: 'Главная', href: '/' }, { label: 'Поиск' }]} />
-      <h1 className="text-2xl font-bold mb-6">Поиск страховых компаний</h1>
-      <SearchBox initialQuery={q} />
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-8">
-        {companies.docs.map((company: any) => (
-          <CompanyCard
-            key={company.id}
-            slug={company.slug}
-            name={company.name}
-            logoUrl={company.logo?.url}
-            rating={company.overallRating || 0}
-            reviewCount={company.reviewCount || 0}
-            verified={company.verified}
-            insuranceTypeLabel={company.insuranceTypes?.[0]?.title}
-          />
-        ))}
-        {q && companies.docs.length === 0 && (
-          <p className="text-gray-500">Ничего не найдено по запросу «{q}».</p>
-        )}
-      </div>
-    </div>
+    <SearchText
+      query={q}
+      companies={companies.docs.map((c: any) => ({
+        id: c.id,
+        slug: c.slug,
+        name: c.name,
+        logoUrl: c.logo?.url,
+        rating: c.overallRating || 0,
+        reviewCount: c.reviewCount || 0,
+        verified: c.verified,
+        country: c.country,
+        insuranceTypeLabels: (c.insuranceTypes || []).map((it: any) => it.title),
+      }))}
+    />
   )
 }

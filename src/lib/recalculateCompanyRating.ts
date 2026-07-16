@@ -1,13 +1,20 @@
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 
 /**
  * Пересчитывает средний рейтинг и количество отзывов компании
  * на основе опубликованных отзывов. Вызывается хуком после
  * создания/изменения/удаления отзыва.
+ *
+ * Важно: принимает `req` и передаёт его дальше в find/update, чтобы
+ * эти запросы выполнялись в той же транзакции, что и вызвавшая их
+ * операция над отзывом. Без этого на Postgres возможна взаимная
+ * блокировка/зависание (запрос ждёт снятия блокировки, которую держит
+ * ещё не завершённая внешняя транзакция) — именно так и было раньше.
  */
 export async function recalculateCompanyRating(
   payload: Payload,
   company: string | number | { id: string | number },
+  req?: Partial<PayloadRequest>,
 ) {
   const companyId = typeof company === 'object' ? company.id : company
   if (!companyId) return
@@ -19,6 +26,7 @@ export async function recalculateCompanyRating(
     },
     limit: 0,
     depth: 0,
+    req,
   })
 
   const average =
@@ -31,5 +39,6 @@ export async function recalculateCompanyRating(
       overallRating: Math.round(average * 10) / 10,
       reviewCount: totalDocs,
     },
+    req,
   })
 }

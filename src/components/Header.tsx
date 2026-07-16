@@ -4,9 +4,11 @@ import Link from 'next/link'
 import { SearchBox } from './SearchBox'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { useCustomer } from '@/lib/useCustomer'
 
 export function Header() {
   const { t } = useLanguage()
+  const { customer, loading } = useCustomer()
 
   const navItems = [
     { label: t.nav.catalog, href: '/companies' },
@@ -34,6 +36,12 @@ export function Header() {
         </div>
 
         <LanguageSwitcher />
+
+        {!loading && (
+          <Link href={customer ? '/account' : '/login'} className="text-sm font-medium text-gray-600 hover:text-brand shrink-0">
+            {customer ? customer.name || t.auth.myAccount : t.auth.login}
+          </Link>
+        )}
 
         <Link href="/add-review" className="btn-primary shrink-0">
           {t.nav.addReview}

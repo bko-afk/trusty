@@ -1,4 +1,7 @@
+'use client'
+
 import { RatingStars } from './RatingStars'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 type Reply = {
   id: string
@@ -22,6 +25,8 @@ type ReviewCardProps = {
   replies?: Reply[]
 }
 
+const localeToIntl: Record<string, string> = { ru: 'ru-RU', en: 'en-US', es: 'es-ES' }
+
 export function ReviewCard({
   authorName,
   title,
@@ -35,7 +40,8 @@ export function ReviewCard({
   helpfulDown = 0,
   replies = [],
 }: ReviewCardProps) {
-  const date = new Date(createdAt).toLocaleDateString('ru-RU', {
+  const { t, locale } = useLanguage()
+  const date = new Date(createdAt).toLocaleDateString(localeToIntl[locale] || 'en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -58,7 +64,7 @@ export function ReviewCard({
         <div className="grid gap-3 sm:grid-cols-2">
           {pros.length > 0 && (
             <div>
-              <div className="text-sm font-medium text-emerald-700 mb-1">Плюсы</div>
+              <div className="text-sm font-medium text-emerald-700 mb-1">{t.reviewCard.pros}</div>
               <ul className="text-sm text-gray-700 list-disc list-inside space-y-0.5">
                 {pros.map((p, i) => (
                   <li key={i}>{p}</li>
@@ -68,7 +74,7 @@ export function ReviewCard({
           )}
           {cons.length > 0 && (
             <div>
-              <div className="text-sm font-medium text-rose-700 mb-1">Минусы</div>
+              <div className="text-sm font-medium text-rose-700 mb-1">{t.reviewCard.cons}</div>
               <ul className="text-sm text-gray-700 list-disc list-inside space-y-0.5">
                 {cons.map((c, i) => (
                   <li key={i}>{c}</li>
@@ -81,12 +87,12 @@ export function ReviewCard({
 
       <div className="flex items-center justify-between border-t border-gray-100 pt-3 text-sm text-gray-500">
         <div className="flex items-center gap-3">
-          {recommend && <span className="text-emerald-700 font-medium">Рекомендует</span>}
+          {recommend && <span className="text-emerald-700 font-medium">{t.reviewCard.recommends}</span>}
           <span>👍 {helpfulUp}</span>
           <span>👎 {helpfulDown}</span>
         </div>
         <button type="button" className="text-brand hover:underline">
-          Ответить на отзыв
+          {t.reviewCard.reply}
         </button>
       </div>
 
@@ -97,7 +103,7 @@ export function ReviewCard({
               <div className="text-sm font-medium">
                 {reply.authorName}
                 {reply.authorType === 'company' && (
-                  <span className="ml-2 text-[11px] text-brand-dark">представитель компании</span>
+                  <span className="ml-2 text-[11px] text-brand-dark">{t.reviewCard.companyRep}</span>
                 )}
               </div>
               <p className="text-sm text-gray-700 mt-1">{reply.body}</p>

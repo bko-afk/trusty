@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { countries } from '../lib/countries'
 
 export const Companies: CollectionConfig = {
   slug: 'companies',
@@ -60,10 +61,15 @@ export const Companies: CollectionConfig = {
       type: 'relationship',
       relationTo: 'insurance-types',
       hasMany: true,
-      required: true,
     },
     { name: 'website', type: 'text' },
     { name: 'foundedYear', type: 'number' },
+    {
+      name: 'country',
+      label: 'Страна',
+      type: 'select',
+      options: countries.map((c) => ({ label: `${c.ru} (${c.code})`, value: c.code })),
+    },
     { name: 'city', type: 'text' },
     { name: 'shortDescription', type: 'textarea' },
     { name: 'description', type: 'richText' },

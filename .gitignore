@@ -9,3 +9,4 @@ public/media
 src/payload-types.ts
 *.log
 .DS_Store
+*.tsbuildinfo

@@ -12,7 +12,7 @@ export const Users: CollectionConfig = {
     create: ({ req }) => Boolean(req.user),
     read: ({ req }) => Boolean(req.user),
     update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => req.user?.role === 'admin',
+    delete: ({ req }) => (req.user as any)?.role === 'admin',
   },
   fields: [
     {

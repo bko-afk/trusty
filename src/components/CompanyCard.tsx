@@ -1,6 +1,10 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
 import { RatingStars } from './RatingStars'
+import { useLanguage } from '@/i18n/LanguageContext'
+import { countryFlag, countryName } from '@/lib/countries'
 
 type CompanyCardProps = {
   slug: string
@@ -8,8 +12,9 @@ type CompanyCardProps = {
   logoUrl?: string
   rating: number
   reviewCount: number
-  insuranceTypeLabel?: string
   verified?: boolean
+  country?: string
+  insuranceTypeLabels?: string[]
 }
 
 export function CompanyCard({
@@ -18,9 +23,12 @@ export function CompanyCard({
   logoUrl,
   rating,
   reviewCount,
-  insuranceTypeLabel,
   verified,
+  country,
+  insuranceTypeLabels,
 }: CompanyCardProps) {
+  const { t, locale } = useLanguage()
+
   return (
     <Link
       href={`/companies/${slug}`}
@@ -36,20 +44,25 @@ export function CompanyCard({
           />
         </div>
         <div>
-          <div className="font-semibold leading-tight">{name}</div>
-          {insuranceTypeLabel && (
-            <div className="text-xs text-gray-500">{insuranceTypeLabel}</div>
+          <div className="font-semibold leading-tight flex items-center gap-1.5">
+            {name}
+            {country && <span title={countryName(country, locale)}>{countryFlag(country)}</span>}
+          </div>
+          {insuranceTypeLabels && insuranceTypeLabels.length > 0 && (
+            <div className="text-xs text-gray-500">{insuranceTypeLabels.join(', ')}</div>
           )}
         </div>
         {verified && (
           <span className="ml-auto rounded-full bg-brand-light px-2 py-0.5 text-[11px] font-medium text-brand-dark">
-            Подтверждено
+            {t.company.verified}
           </span>
         )}
       </div>
       <div className="flex items-center justify-between text-sm">
         <RatingStars value={rating} size="sm" />
-        <span className="text-gray-500">Отзывы: {reviewCount}</span>
+        <span className="text-gray-500">
+          {t.company.reviewsCount}: {reviewCount}
+        </span>
       </div>
     </Link>
   )

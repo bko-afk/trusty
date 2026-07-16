@@ -1,10 +1,15 @@
+'use client'
+
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 type Crumb = { label: string; href?: string }
 
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
+  const { t } = useLanguage()
+
   return (
-    <nav className="text-sm text-gray-500 mb-4" aria-label="Хлебные крошки">
+    <nav className="text-sm text-gray-500 mb-4" aria-label={t.common.breadcrumbsAria}>
       {items.map((item, i) => (
         <span key={i}>
           {item.href ? (

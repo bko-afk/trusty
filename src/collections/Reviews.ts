@@ -22,14 +22,28 @@ export const Reviews: CollectionConfig = {
     delete: ({ req }) => Boolean(req.user),
   },
   hooks: {
+    beforeChange: [
+      async ({ data, req, operation }) => {
+        // Если отзыв отправляет залогиненный посетитель (коллекция
+        // `customers`, а не админ `users`) — привязываем отзыв к его
+        // аккаунту и подставляем имя/email по умолчанию, если не заданы.
+        const user = req.user as any
+        if (operation === 'create' && user?.collection === 'customers') {
+          data.customer = user.id
+          if (!data.authorName) data.authorName = user.name || user.email
+          if (!data.authorEmail) data.authorEmail = user.email
+        }
+        return data
+      },
+    ],
     afterChange: [
       async ({ doc, req }) => {
-        await recalculateCompanyRating(req.payload, doc.company)
+        await recalculateCompanyRating(req.payload, doc.company, req)
       },
     ],
     afterDelete: [
       async ({ doc, req }) => {
-        await recalculateCompanyRating(req.payload, doc.company)
+        await recalculateCompanyRating(req.payload, doc.company, req)
       },
     ],
   },
@@ -39,6 +53,13 @@ export const Reviews: CollectionConfig = {
       type: 'relationship',
       relationTo: 'companies',
       required: true,
+    },
+    {
+      name: 'customer',
+      label: 'Аккаунт пользователя',
+      type: 'relationship',
+      relationTo: 'customers',
+      admin: { description: 'Заполняется автоматически, если отзыв оставил залогиненный пользователь' },
     },
     { name: 'authorName', type: 'text', required: true },
     {
