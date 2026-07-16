@@ -1,58 +1,61 @@
+'use client'
+
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageContext'
 
 export function Footer() {
+  const { t } = useLanguage()
+
   return (
     <footer className="mt-16 border-t border-gray-200 bg-white">
       <div className="container-page grid gap-8 py-10 sm:grid-cols-2 md:grid-cols-4 text-sm">
         <div>
-          <div className="font-semibold mb-3">Страхование.Отзывы</div>
-          <p className="text-gray-500">
-            Каталог страховых компаний, рейтинги и реальные отзывы клиентов.
-          </p>
+          <div className="font-semibold mb-3">{t.brand}</div>
+          <p className="text-gray-500">{t.footer.tagline}</p>
         </div>
         <div>
-          <div className="font-semibold mb-3">Компаниям</div>
+          <div className="font-semibold mb-3">{t.footer.forCompanies}</div>
           <ul className="space-y-2 text-gray-600">
             <li>
               <Link href="/add-company" className="hover:text-brand">
-                Добавить компанию
+                {t.nav.addCompany}
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <div className="font-semibold mb-3">Сообщество</div>
+          <div className="font-semibold mb-3">{t.footer.community}</div>
           <ul className="space-y-2 text-gray-600">
             <li>
               <Link href="/add-review" className="hover:text-brand">
-                Написать отзыв
+                {t.footer.writeReview}
               </Link>
             </li>
             <li>
               <Link href="/articles" className="hover:text-brand">
-                Статьи и обзоры
+                {t.nav.articles}
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <div className="font-semibold mb-3">Каталог</div>
+          <div className="font-semibold mb-3">{t.footer.catalog}</div>
           <ul className="space-y-2 text-gray-600">
             <li>
               <Link href="/companies" className="hover:text-brand">
-                Все страховые компании
+                {t.nav.catalog}
               </Link>
             </li>
             <li>
               <Link href="/ratings" className="hover:text-brand">
-                Рейтинги
+                {t.nav.ratings}
               </Link>
             </li>
           </ul>
         </div>
       </div>
       <div className="border-t border-gray-100 py-4 text-center text-xs text-gray-400">
-        © {new Date().getFullYear()} Страхование.Отзывы. Тестовая версия.
+        © {new Date().getFullYear()} {t.brand}. {t.footer.testVersion}
       </div>
     </footer>
   )

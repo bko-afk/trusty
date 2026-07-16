@@ -33,7 +33,7 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     meta: {
-      titleSuffix: '— Админка «Страхование.Отзывы»',
+      titleSuffix: '— Админка Trusty',
     },
   },
   editor: lexicalEditor({}),
