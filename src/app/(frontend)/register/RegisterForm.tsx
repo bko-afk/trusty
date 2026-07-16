@@ -16,18 +16,35 @@ export function RegisterForm() {
     setStatus('loading')
     const form = new FormData(e.currentTarget)
 
+    const email = form.get('email')
+    const password = form.get('password')
+
     try {
       const res = await fetch('/api/customers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.get('name'),
-          email: form.get('email'),
-          password: form.get('password'),
+          email,
+          password,
         }),
       })
       if (res.ok) {
         setStatus('success')
+        try {
+          const loginRes = await fetch('/api/customers/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ email, password }),
+          })
+          if (loginRes.ok) {
+            window.location.href = '/account'
+            return
+          }
+        } catch {
+          // fall through to login page if auto-login fails
+        }
         setTimeout(() => router.push('/login'), 1200)
       } else {
         setStatus('error')

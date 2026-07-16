@@ -1,31 +1,125 @@
 'use client'
 
+import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { companyLogoUrl } from '@/lib/companyLogo'
+
+type Result = { id: string; slug: string; name: string; logoUrl?: string; overallRating?: number }
 
 export function SearchBox({ initialQuery = '' }: { initialQuery?: string }) {
   const [query, setQuery] = useState(initialQuery)
+  const [results, setResults] = useState<Result[]>([])
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { t } = useLanguage()
+  const wrapperRef = useRef<HTMLDivElement>(null)
 
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
+  useEffect(() => {
+    if (query.trim().length < 2) {
+      setResults([])
+      setOpen(false)
+      return
+    }
+    setLoading(true)
+    const timer = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams()
+        params.set('where[and][0][status][equals]', 'published')
+        params.set('where[and][1][name][like]', query.trim())
+        params.set('limit', '6')
+        params.set('depth', '0')
+        const res = await fetch(`/api/companies?${params.toString()}`)
+        if (res.ok) {
+          const data = await res.json()
+          setResults(
+            (data.docs || []).map((c: any) => ({
+              id: c.id,
+              slug: c.slug,
+              name: c.name,
+              logoUrl: companyLogoUrl(c.logoFile),
+              overallRating: c.overallRating,
+            })),
+          )
+          setOpen(true)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [query])
+
+  function goToFullSearch() {
+    setOpen(false)
     router.push(`/search?q=${encodeURIComponent(query)}`)
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full max-w-xl gap-2">
+    <div ref={wrapperRef} className="relative w-full max-w-xl">
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') goToFullSearch()
+        }}
+        onFocus={() => {
+          if (results.length > 0) setOpen(true)
+        }}
         placeholder={t.search.placeholder}
         className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-brand"
       />
-      <button type="submit" className="btn-primary shrink-0">
-        {t.search.button}
-      </button>
-    </form>
+
+      {open && (
+        <div className="absolute left-0 right-0 z-30 mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+          {loading && <div className="px-4 py-3 text-sm text-gray-400">{t.common.loading}</div>}
+          {!loading && results.length === 0 && (
+            <div className="px-4 py-3 text-sm text-gray-500">
+              {t.search.noResults} «{query}»
+            </div>
+          )}
+          {!loading &&
+            results.map((r) => (
+              <Link
+                key={r.id}
+                href={`/companies/${r.slug}`}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/40 border-b border-gray-50 last:border-0"
+              >
+                <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
+                  <Image
+                    src={r.logoUrl || '/placeholders/logo-placeholder.svg'}
+                    alt={r.name}
+                    fill
+                    className="object-contain p-0.5"
+                  />
+                </div>
+                <span className="truncate">{r.name}</span>
+              </Link>
+            ))}
+          {!loading && results.length > 0 && (
+            <button
+              type="button"
+              onClick={goToFullSearch}
+              className="w-full px-4 py-2 text-left text-xs text-brand hover:underline border-t border-gray-100"
+            >
+              {t.search.pageTitle} →
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   )
 }

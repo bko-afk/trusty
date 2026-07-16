@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { useCustomer } from '@/lib/useCustomer'
@@ -11,12 +10,10 @@ export const dynamic = 'force-dynamic'
 export default function AccountPage() {
   const { t } = useLanguage()
   const { customer, loading, logout } = useCustomer()
-  const router = useRouter()
 
   async function onLogout() {
     await logout()
-    router.push('/')
-    router.refresh()
+    window.location.href = '/'
   }
 
   return (

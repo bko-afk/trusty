@@ -5,6 +5,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { CompanyCard } from '@/components/CompanyCard'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { countries, countryFlag, countryName } from '@/lib/countries'
+import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 
 type InsuranceType = { id: string; slug: string; title: string }
 type Company = {
@@ -16,7 +17,7 @@ type Company = {
   reviewCount: number
   verified?: boolean
   country?: string
-  insuranceTypeLabels?: string[]
+  insuranceTypes?: { slug: string; title: string }[]
 }
 
 export function CompaniesCatalogText({
@@ -70,7 +71,7 @@ export function CompaniesCatalogText({
                 : 'border-gray-200 hover:border-brand'
             }`}
           >
-            {type.title}
+            {insuranceTypeLabel(t, type)}
           </Link>
         ))}
       </div>
@@ -113,7 +114,7 @@ export function CompaniesCatalogText({
             reviewCount={company.reviewCount}
             verified={company.verified}
             country={company.country}
-            insuranceTypeLabels={company.insuranceTypeLabels}
+            insuranceTypeLabels={(company.insuranceTypes || []).map((it) => insuranceTypeLabel(t, it))}
           />
         ))}
         {companies.length === 0 && <p className="text-gray-500">{t.catalog.noResultsForType}</p>}

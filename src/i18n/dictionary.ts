@@ -41,9 +41,17 @@ export type Dictionary = {
     claimCtaTitle: string
     claimCtaText: string
     addCompanyBtn: string
+    writeReviewBtn: string
     articlesTitle: string
     aboutTitle: string
     aboutText: string
+    aboutTextExtra: string
+  }
+  insuranceTypeNames: {
+    medical: string
+    travel: string
+    osago: string
+    kasko: string
   }
   footer: {
     tagline: string
@@ -58,6 +66,7 @@ export type Dictionary = {
     leaveReview: string
     visitSite: string
     verified: string
+    verifiedShort: string
     reviewsCount: string
   }
   common: {
@@ -205,10 +214,19 @@ export const dictionary: Record<Locale, Dictionary> = {
       claimCtaTitle: 'Ваша компания есть на сайте?',
       claimCtaText: 'Добавьте туристическую страховую компанию в каталог или предложите правки к существующей карточке.',
       addCompanyBtn: 'Добавить компанию',
+      writeReviewBtn: 'Написать отзыв',
       articlesTitle: 'Статьи и обзоры',
       aboutTitle: 'О Trusty',
       aboutText:
         'Trusty — независимый каталог отзывов и рейтингов туристических страховых компаний. Мы помогаем путешественникам сравнивать условия полисов, читать реальные отзывы клиентов и выбирать страховку осознанно, до поездки, а не после проблем в ней.',
+      aboutTextExtra:
+        'Мы не продаём страховки и не работаем с продавцами за комиссию — рейтинг компаний считается только по оценкам реальных пользователей. Каждый отзыв проходит модерацию, а карточки компаний можно дополнять и уточнять — как самим компаниям, так и клиентам, которые пользовались их услугами.',
+    },
+    insuranceTypeNames: {
+      medical: 'Медицинская страховка',
+      travel: 'Туристическая страховка',
+      osago: 'ОСАГО',
+      kasko: 'КАСКО',
     },
     footer: {
       tagline: 'Каталог туристических страховых компаний, рейтинги и реальные отзывы клиентов.',
@@ -223,6 +241,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       leaveReview: 'Оставить отзыв',
       visitSite: 'Перейти на сайт',
       verified: 'Подтверждённая компания',
+      verifiedShort: 'Проверено',
       reviewsCount: 'отзывов',
     },
     common: {
@@ -368,10 +387,19 @@ export const dictionary: Record<Locale, Dictionary> = {
       claimCtaTitle: 'Is your company listed on Trusty?',
       claimCtaText: 'Add your travel insurance company to the catalog or suggest edits to an existing listing.',
       addCompanyBtn: 'Add a company',
+      writeReviewBtn: 'Write a review',
       articlesTitle: 'Articles & Guides',
       aboutTitle: 'About Trusty',
       aboutText:
         'Trusty is an independent catalog of reviews and ratings for travel insurance companies. We help travelers compare policy terms, read real customer reviews, and choose coverage with confidence — before the trip, not after something goes wrong.',
+      aboutTextExtra:
+        "We don't sell insurance and don't take commissions from sellers — company ratings are based only on scores from real users. Every review goes through moderation, and company listings can be expanded and corrected by both the companies themselves and customers who've used their services.",
+    },
+    insuranceTypeNames: {
+      medical: 'Medical insurance',
+      travel: 'Travel insurance',
+      osago: 'OSAGO (auto liability)',
+      kasko: 'KASKO (auto comprehensive)',
     },
     footer: {
       tagline: 'A catalog of travel insurance companies, ratings, and real customer reviews.',
@@ -386,6 +414,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       leaveReview: 'Leave a review',
       visitSite: 'Visit website',
       verified: 'Verified company',
+      verifiedShort: 'Verified',
       reviewsCount: 'reviews',
     },
     common: {
@@ -531,10 +560,19 @@ export const dictionary: Record<Locale, Dictionary> = {
       claimCtaTitle: '¿Tu empresa está en Trusty?',
       claimCtaText: 'Añade tu empresa de seguros de viaje al catálogo o sugiere cambios a una ficha existente.',
       addCompanyBtn: 'Añadir empresa',
+      writeReviewBtn: 'Escribir una reseña',
       articlesTitle: 'Artículos y guías',
       aboutTitle: 'Sobre Trusty',
       aboutText:
         'Trusty es un catálogo independiente de reseñas y clasificaciones de empresas de seguros de viaje. Ayudamos a los viajeros a comparar condiciones de las pólizas, leer reseñas reales de clientes y elegir su cobertura con confianza, antes del viaje.',
+      aboutTextExtra:
+        'No vendemos seguros ni cobramos comisión a las aseguradoras — la clasificación se basa solo en las valoraciones de usuarios reales. Cada reseña pasa por moderación, y las fichas de empresas pueden ser completadas tanto por las propias empresas como por los clientes que usaron sus servicios.',
+    },
+    insuranceTypeNames: {
+      medical: 'Seguro médico',
+      travel: 'Seguro de viaje',
+      osago: 'OSAGO (responsabilidad civil auto)',
+      kasko: 'KASKO (seguro auto a todo riesgo)',
     },
     footer: {
       tagline: 'Catálogo de empresas de seguros de viaje, clasificaciones y reseñas reales de clientes.',
@@ -549,6 +587,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       leaveReview: 'Dejar una reseña',
       visitSite: 'Visitar sitio web',
       verified: 'Empresa verificada',
+      verifiedShort: 'Verificado',
       reviewsCount: 'reseñas',
     },
     common: {

@@ -4,6 +4,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { CompanyCard } from '@/components/CompanyCard'
 import { SearchBox } from '@/components/SearchBox'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 
 type Company = {
   id: string
@@ -14,7 +15,7 @@ type Company = {
   reviewCount: number
   verified?: boolean
   country?: string
-  insuranceTypeLabels?: string[]
+  insuranceTypes?: { slug: string; title: string }[]
 }
 
 export function SearchText({ query, companies }: { query: string; companies: Company[] }) {
@@ -37,7 +38,7 @@ export function SearchText({ query, companies }: { query: string; companies: Com
             reviewCount={company.reviewCount}
             verified={company.verified}
             country={company.country}
-            insuranceTypeLabels={company.insuranceTypeLabels}
+            insuranceTypeLabels={(company.insuranceTypes || []).map((it) => insuranceTypeLabel(t, it))}
           />
         ))}
         {query && companies.length === 0 && (

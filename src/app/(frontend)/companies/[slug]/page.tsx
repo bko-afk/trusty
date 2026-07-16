@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
+import { companyLogoUrl } from '@/lib/companyLogo'
 import { CompanyDetailText } from './CompanyDetailText'
 
 export const dynamic = 'force-dynamic'
@@ -35,7 +36,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     <CompanyDetailText
       slug={slug}
       name={company.name}
-      logoUrl={company.logo?.url}
+      logoUrl={companyLogoUrl(company.logoFile)}
       overallRating={company.overallRating || 0}
       reviewCount={company.reviewCount || 0}
       verified={company.verified}
@@ -46,7 +47,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       phone={company.contacts?.phone}
       email={company.contacts?.email}
       address={company.contacts?.address}
-      insuranceTypeNames={(company.insuranceTypes || []).map((t: any) => t.title)}
+      insuranceTypes={(company.insuranceTypes || []).map((it: any) => ({ slug: it.slug, title: it.title }))}
       shortDescription={company.shortDescription}
       description={company.description ? extractText(company.description) : ''}
       pros={(company.pros || []).map((p: any) => p.text)}

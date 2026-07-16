@@ -1,4 +1,5 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
+import { companyLogoUrl } from '@/lib/companyLogo'
 import { RatingsText } from './RatingsText'
 
 export const dynamic = 'force-dynamic'
@@ -20,12 +21,12 @@ export default async function RatingsPage() {
         id: c.id,
         slug: c.slug,
         name: c.name,
-        logoUrl: c.logo?.url,
+        logoUrl: companyLogoUrl(c.logoFile),
         rating: c.overallRating || 0,
         reviewCount: c.reviewCount || 0,
         verified: c.verified,
         country: c.country,
-        insuranceTypeLabels: (c.insuranceTypes || []).map((it: any) => it.title),
+        insuranceTypes: (c.insuranceTypes || []).map((it: any) => ({ slug: it.slug, title: it.title })),
       }))}
     />
   )

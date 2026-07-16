@@ -93,7 +93,7 @@ export function AddReviewForm({
               {t.addReviewPage.loggedInAs} <strong>{customer.name || customer.email}</strong>
             </p>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">{t.addReviewPage.nameLabel}</label>
                 <input name="authorName" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
@@ -122,7 +122,7 @@ export function AddReviewForm({
             <label className="block text-sm font-medium mb-1">{t.addReviewPage.bodyLabel}</label>
             <textarea name="body" required rows={5} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">{t.addReviewPage.prosLabel}</label>
               <textarea name="pros" rows={3} className="w-full rounded-lg border border-gray-300 px-3 py-2" />

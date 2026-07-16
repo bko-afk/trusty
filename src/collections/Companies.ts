@@ -51,9 +51,14 @@ export const Companies: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     {
-      name: 'logo',
-      type: 'upload',
-      relationTo: 'media',
+      name: 'logoFile',
+      label: 'Файл логотипа',
+      type: 'text',
+      admin: {
+        description:
+          'Имя файла логотипа из папки public/images/companies/ (например: auras.svg). ' +
+          'Загрузки через админку нет — файл нужно заранее положить в проект (например, через разработчика).',
+      },
     },
     {
       name: 'insuranceTypes',

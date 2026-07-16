@@ -6,6 +6,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RatingStars } from '@/components/RatingStars'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { countryFlag, countryName } from '@/lib/countries'
+import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 
 export function CompanyDetailText({
   slug,
@@ -21,7 +22,7 @@ export function CompanyDetailText({
   phone,
   email,
   address,
-  insuranceTypeNames,
+  insuranceTypes,
   shortDescription,
   description,
   pros,
@@ -40,7 +41,7 @@ export function CompanyDetailText({
   phone?: string
   email?: string
   address?: string
-  insuranceTypeNames: string[]
+  insuranceTypes: { slug: string; title: string }[]
   shortDescription?: string
   description?: string
   pros: string[]
@@ -56,7 +57,10 @@ export function CompanyDetailText({
     [t.companyDetail.phone, phone || '—'],
     [t.companyDetail.email, email || '—'],
     [t.companyDetail.address, address || '—'],
-    [t.companyDetail.insuranceTypesLabel, insuranceTypeNames.join(', ') || '—'],
+    [
+      t.companyDetail.insuranceTypesLabel,
+      insuranceTypes.map((it) => insuranceTypeLabel(t, it)).join(', ') || '—',
+    ],
   ]
 
   return (

@@ -9,7 +9,7 @@ export default async function AddCompanyPage() {
 
   return (
     <AddCompanyForm
-      insuranceTypes={insuranceTypes.docs.map((t: any) => ({ id: t.id, title: t.title }))}
+      insuranceTypes={insuranceTypes.docs.map((t: any) => ({ id: t.id, slug: t.slug, title: t.title }))}
     />
   )
 }

@@ -1,10 +1,13 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { CompanyCard } from '@/components/CompanyCard'
 import { SearchBox } from '@/components/SearchBox'
 import { RatingStars } from '@/components/RatingStars'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
+import { companyLogoUrl } from '@/lib/companyLogo'
 
 type Props = {
   companies: any[]
@@ -15,6 +18,10 @@ type Props = {
 
 export function HomeText({ companies, insuranceTypes, articles, latestReviews }: Props) {
   const { t } = useLanguage()
+
+  function typeLabel(type: any): string {
+    return insuranceTypeLabel(t, type)
+  }
 
   return (
     <div>
@@ -31,7 +38,7 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
                   href={`/companies?type=${type.slug}`}
                   className="rounded-full bg-white border border-gray-200 px-4 py-1.5 text-sm hover:border-brand hover:text-brand"
                 >
-                  {type.title}
+                  {typeLabel(type)}
                 </Link>
               ))}
             </div>
@@ -52,14 +59,31 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
               key={company.id}
               slug={company.slug}
               name={company.name}
-              logoUrl={company.logo?.url}
+              logoUrl={companyLogoUrl(company.logoFile)}
               rating={company.overallRating || 0}
               reviewCount={company.reviewCount || 0}
               verified={company.verified}
               country={company.country}
-              insuranceTypeLabels={(company.insuranceTypes || []).map((t: any) => t.title)}
+              insuranceTypeLabels={(company.insuranceTypes || []).map((it: any) => typeLabel(it))}
             />
           ))}
+        </div>
+      </section>
+
+      <section className="container-page pb-12">
+        <div className="card flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
+          <div>
+            <h3 className="font-semibold text-lg">{t.home.claimCtaTitle}</h3>
+            <p className="text-gray-500 text-sm mt-1">{t.home.claimCtaText}</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3 shrink-0">
+            <Link href="/add-company" className="btn-primary whitespace-nowrap">
+              {t.home.addCompanyBtn}
+            </Link>
+            <Link href="/add-review" className="btn-secondary whitespace-nowrap">
+              {t.home.writeReviewBtn}
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -77,13 +101,13 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
                 <Link
                   key={review.id}
                   href={companySlug ? `/companies/${companySlug}/reviews` : '#'}
-                  className="card p-4 flex flex-col gap-2"
+                  className="card p-4 flex flex-col gap-2 min-w-0"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium text-sm">{review.authorName}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-medium text-sm truncate">{review.authorName}</span>
                     <RatingStars value={review.rating} size="sm" />
                   </div>
-                  <div className="text-xs text-brand">{companyName}</div>
+                  <div className="text-xs text-brand truncate">{companyName}</div>
                   <div className="font-semibold text-sm">{review.title}</div>
                   <p className="text-sm text-gray-600 line-clamp-3">{review.body}</p>
                 </Link>
@@ -93,24 +117,12 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
         </section>
       )}
 
-      <section className="container-page pb-12">
-        <div className="card flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
-          <div>
-            <h3 className="font-semibold text-lg">{t.home.claimCtaTitle}</h3>
-            <p className="text-gray-500 text-sm mt-1">{t.home.claimCtaText}</p>
-          </div>
-          <Link href="/add-company" className="btn-primary shrink-0">
-            {t.home.addCompanyBtn}
-          </Link>
-        </div>
-      </section>
-
       {articles.length > 0 && (
         <section className="container-page pb-12">
           <h2 className="text-xl font-semibold mb-5">{t.home.articlesTitle}</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {articles.map((article: any) => (
-              <Link key={article.id} href={`/articles/${article.slug}`} className="card p-4">
+              <Link key={article.id} href={`/articles/${article.slug}`} className="card p-4 min-w-0">
                 <div className="font-semibold mb-1">{article.title}</div>
                 <p className="text-sm text-gray-500 line-clamp-3">{article.excerpt}</p>
               </Link>
@@ -120,9 +132,15 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
       )}
 
       <section className="container-page pb-16">
-        <div className="card p-8">
-          <h2 className="text-xl font-semibold mb-3">{t.home.aboutTitle}</h2>
-          <p className="text-gray-600 leading-relaxed">{t.home.aboutText}</p>
+        <div className="card p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 md:gap-8">
+          <div className="relative h-40 w-40 sm:h-48 sm:w-48 shrink-0">
+            <Image src="/images/about-trusty.svg" alt="" fill className="object-contain" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-xl font-semibold mb-3">{t.home.aboutTitle}</h2>
+            <p className="text-gray-600 leading-relaxed">{t.home.aboutText}</p>
+            <p className="text-gray-600 leading-relaxed mt-3">{t.home.aboutTextExtra}</p>
+          </div>
         </div>
       </section>
     </div>

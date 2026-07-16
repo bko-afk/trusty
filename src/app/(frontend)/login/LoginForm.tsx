@@ -2,13 +2,11 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { useLanguage } from '@/i18n/LanguageContext'
 
 export function LoginForm() {
   const { t } = useLanguage()
-  const router = useRouter()
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -27,8 +25,7 @@ export function LoginForm() {
         }),
       })
       if (res.ok) {
-        router.push('/account')
-        router.refresh()
+        window.location.href = '/account'
       } else {
         setStatus('error')
       }

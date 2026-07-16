@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { countries, countryFlag } from '@/lib/countries'
+import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 
 function slugify(value: string) {
   return value
@@ -16,7 +17,7 @@ function slugify(value: string) {
 export function AddCompanyForm({
   insuranceTypes,
 }: {
-  insuranceTypes: { id: string; title: string }[]
+  insuranceTypes: { id: string; slug: string; title: string }[]
 }) {
   const { t, locale } = useLanguage()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
@@ -69,7 +70,7 @@ export function AddCompanyForm({
             <label className="block text-sm font-medium mb-1">{t.addCompanyPage.websiteLabel}</label>
             <input name="website" type="url" className="w-full rounded-lg border border-gray-300 px-3 py-2" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">{t.addCompanyPage.countryLabel}</label>
               <select name="country" defaultValue="" className="w-full rounded-lg border border-gray-300 px-3 py-2">
@@ -92,7 +93,7 @@ export function AddCompanyForm({
               {insuranceTypes.map((type) => (
                 <label key={type.id} className="flex items-center gap-1.5 text-sm">
                   <input type="checkbox" name="insuranceTypes" value={type.id} />
-                  {type.title}
+                  {insuranceTypeLabel(t, type)}
                 </label>
               ))}
             </div>
