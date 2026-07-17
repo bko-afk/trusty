@@ -24,7 +24,11 @@ export default async function CompaniesCatalogPage() {
 
   return (
     <CompaniesCatalogText
-      insuranceTypes={insuranceTypes.docs.map((type) => ({ id: type.id, slug: type.slug, title: type.title }))}
+      insuranceTypes={insuranceTypes.docs.map((type) => ({
+        id: Number(type.id),
+        slug: type.slug,
+        title: type.title,
+      }))}
       companies={companies.docs.map(toCatalogCompany)}
       availableCountries={availableCountries}
     />
