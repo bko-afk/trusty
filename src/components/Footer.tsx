@@ -22,12 +22,12 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/companies?type=travel" className="hover:text-white">
+              <Link href="/companies#company-filter-panel" className="hover:text-white">
                 {t.insuranceTypeNames.travel}
               </Link>
             </li>
             <li>
-              <Link href="/companies?type=medical" className="hover:text-white">
+              <Link href="/companies#company-filter-panel" className="hover:text-white">
                 {t.insuranceTypeNames.medical}
               </Link>
             </li>

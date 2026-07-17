@@ -95,8 +95,8 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
             <h2 className="section-title mt-2">{t.portal.home.selectInsuranceType}</h2>
           </div>
           <div className="flex flex-wrap gap-x-7 gap-y-3 text-lg">
-            <Link href="/companies?type=travel" className="dotted-link">{t.insuranceTypeNames.travel}</Link>
-            <Link href="/companies?type=medical" className="dotted-link">{t.insuranceTypeNames.medical}</Link>
+            <Link href="/companies#company-filter-panel" className="dotted-link">{t.insuranceTypeNames.travel}</Link>
+            <Link href="/companies#company-filter-panel" className="dotted-link">{t.insuranceTypeNames.medical}</Link>
             <Link href="/companies" className="dotted-link">{t.portal.home.allCompanies}</Link>
           </div>
         </div>

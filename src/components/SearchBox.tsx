@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '@/i18n/LanguageContext'
-import { companyLogoUrl } from '@/lib/companyLogo'
 
 type Result = { id: string; slug: string; name: string; logoUrl?: string; overallRating?: number }
 type PopularCompany = { id: string; slug: string; name: string; logoUrl?: string }
@@ -50,21 +49,21 @@ export function SearchBox({
     setLoading(true)
     const timer = setTimeout(async () => {
       try {
-        const params = new URLSearchParams()
-        params.set('where[and][0][status][equals]', 'published')
-        params.set('where[and][1][name][like]', query.trim())
-        params.set('limit', '6')
-        params.set('depth', '1')
-        const res = await fetch(`/api/companies?${params.toString()}`, { signal: controller.signal })
+        const res = await fetch('/api/company-search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: query.trim() }),
+          signal: controller.signal,
+        })
         if (res.ok) {
           const data = await res.json()
           setResults(
-            (data.docs || []).map((c: any) => ({
+            (data.companies || []).slice(0, 6).map((c: any) => ({
               id: c.id,
               slug: c.slug,
               name: c.name,
-              logoUrl: companyLogoUrl(c.logo, c.logoFile),
-              overallRating: c.overallRating,
+              logoUrl: c.logoUrl,
+              overallRating: c.rating,
             })),
           )
           setOpen(true)

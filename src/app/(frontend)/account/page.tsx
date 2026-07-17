@@ -32,24 +32,22 @@ export default function AccountPage() {
 
     const controller = new AbortController()
     setActivityLoading(true)
-    const query = new URLSearchParams({
-      'where[customer][equals]': customer.id,
-      sort: '-createdAt',
-      limit: '20',
-      depth: '1',
+    fetch('/api/account-activity', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+      signal: controller.signal,
     })
-
-    Promise.all([
-      fetch(`/api/reviews?${query}`, { credentials: 'include', signal: controller.signal }),
-      fetch(`/api/complaints?${query}`, { credentials: 'include', signal: controller.signal }),
-    ])
-      .then(async ([reviewsResponse, complaintsResponse]) => {
-        const [reviewsData, complaintsData] = await Promise.all([
-          reviewsResponse.ok ? reviewsResponse.json() : { docs: [] },
-          complaintsResponse.ok ? complaintsResponse.json() : { docs: [] },
-        ])
-        setReviews(reviewsData.docs || [])
-        setComplaints(complaintsData.docs || [])
+      .then(async (response) => {
+        const data = response.ok ? await response.json() : { reviews: [], complaints: [] }
+        setReviews(data.reviews || [])
+        setComplaints(data.complaints || [])
+      })
+      .catch((requestError) => {
+        if (requestError instanceof DOMException && requestError.name === 'AbortError') return
+        setReviews([])
+        setComplaints([])
       })
       .finally(() => {
         if (!controller.signal.aborted) setActivityLoading(false)

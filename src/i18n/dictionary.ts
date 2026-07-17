@@ -142,11 +142,25 @@ export type Dictionary = {
       title: string
       intro: string
       companiesInRating: string
+      companyInRating: string
+      companiesInRatingFew: string
       showFilter: string
       hideFilter: string
       companyName: string
       companyNamePlaceholder: string
       verifiedOnly: string
+      popularOnly: string
+      minimumRating: string
+      countriesLabel: string
+      insuranceTypesLabel: string
+      foundedRange: string
+      reviewsRange: string
+      from: string
+      to: string
+      resetFilter: string
+      applyFilter: string
+      filtering: string
+      filterError: string
       place: string
       company: string
       reviews: string
@@ -489,11 +503,25 @@ export const dictionary: Record<Locale, Dictionary> = {
         title: 'Рейтинг сервисов страхования онлайн',
         intro: 'В рейтинге собраны страховые компании и онлайн-сервисы. Сравнивайте отзывы, итоговую оценку и доступные виды полисов.',
         companiesInRating: 'компаний в рейтинге',
+        companyInRating: 'компания в рейтинге',
+        companiesInRatingFew: 'компании в рейтинге',
         showFilter: 'Показать фильтр',
         hideFilter: 'Скрыть фильтр',
         companyName: 'Название компании',
         companyNamePlaceholder: 'Начните вводить название',
         verifiedOnly: 'Только проверенные',
+        popularOnly: 'Рекомендуемые на главной',
+        minimumRating: 'Рейтинг не ниже',
+        countriesLabel: 'Страны регистрации',
+        insuranceTypesLabel: 'Виды страхования',
+        foundedRange: 'Год основания',
+        reviewsRange: 'Количество отзывов',
+        from: 'От',
+        to: 'До',
+        resetFilter: 'Сбросить фильтр',
+        applyFilter: 'Фильтровать',
+        filtering: 'Фильтруем...',
+        filterError: 'Не удалось загрузить компании. Попробуйте ещё раз.',
         place: 'Место',
         company: 'Компания',
         reviews: 'Отзывы',
@@ -841,11 +869,25 @@ export const dictionary: Record<Locale, Dictionary> = {
         title: 'Online insurance service ratings',
         intro: 'This ranking includes insurance companies and online services. Compare customer reviews, overall scores, and available policy types.',
         companiesInRating: 'companies in the ranking',
+        companyInRating: 'company in the ranking',
+        companiesInRatingFew: 'companies in the ranking',
         showFilter: 'Show filters',
         hideFilter: 'Hide filters',
         companyName: 'Company name',
         companyNamePlaceholder: 'Start typing a company name',
         verifiedOnly: 'Verified companies only',
+        popularOnly: 'Featured on the homepage',
+        minimumRating: 'Minimum rating',
+        countriesLabel: 'Countries of registration',
+        insuranceTypesLabel: 'Insurance types',
+        foundedRange: 'Year founded',
+        reviewsRange: 'Number of reviews',
+        from: 'From',
+        to: 'To',
+        resetFilter: 'Reset filters',
+        applyFilter: 'Filter',
+        filtering: 'Filtering...',
+        filterError: 'Unable to load companies. Please try again.',
         place: 'Rank',
         company: 'Company',
         reviews: 'Reviews',
@@ -1194,11 +1236,25 @@ export const dictionary: Record<Locale, Dictionary> = {
         title: 'Clasificación de servicios de seguros online',
         intro: 'Esta clasificación incluye aseguradoras y servicios online. Compara reseñas, puntuaciones generales y tipos de póliza disponibles.',
         companiesInRating: 'empresas en la clasificación',
+        companyInRating: 'empresa en la clasificación',
+        companiesInRatingFew: 'empresas en la clasificación',
         showFilter: 'Mostrar filtros',
         hideFilter: 'Ocultar filtros',
         companyName: 'Nombre de la empresa',
         companyNamePlaceholder: 'Empieza a escribir el nombre',
         verifiedOnly: 'Solo empresas verificadas',
+        popularOnly: 'Destacadas en la página principal',
+        minimumRating: 'Puntuación mínima',
+        countriesLabel: 'Países de registro',
+        insuranceTypesLabel: 'Tipos de seguro',
+        foundedRange: 'Año de fundación',
+        reviewsRange: 'Número de reseñas',
+        from: 'Desde',
+        to: 'Hasta',
+        resetFilter: 'Restablecer filtros',
+        applyFilter: 'Filtrar',
+        filtering: 'Filtrando...',
+        filterError: 'No se pudieron cargar las empresas. Inténtalo de nuevo.',
         place: 'Puesto',
         company: 'Empresa',
         reviews: 'Reseñas',

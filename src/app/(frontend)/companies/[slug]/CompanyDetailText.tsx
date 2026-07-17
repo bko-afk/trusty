@@ -68,7 +68,7 @@ export function CompanyDetailText({
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3"><h1 className="text-4xl font-extrabold tracking-[-0.04em] md:text-5xl">{name}</h1>{verified && <span className="bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{t.portal.detail.verifiedProfile}</span>}</div>
                 <p className="mt-4 max-w-2xl text-lg leading-7 text-gray-600">{shortDescription || t.companyDetail.noDescription}</p>
-                <div className="mt-5 flex flex-wrap gap-2">{insuranceTypes.map((type) => <Link key={type.slug} href={`/companies?type=${type.slug}`} className="border-b border-dotted border-[#579c9e] text-sm text-[#579c9e]">{insuranceTypeLabel(t, type)}</Link>)}</div>
+                <div className="mt-5 flex flex-wrap gap-2">{insuranceTypes.map((type) => <Link key={type.slug} href="/companies#company-filter-panel" className="border-b border-dotted border-[#579c9e] text-sm text-[#579c9e]">{insuranceTypeLabel(t, type)}</Link>)}</div>
               </div>
             </div>
             <div className="border border-gray-200 p-5">
