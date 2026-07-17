@@ -42,13 +42,15 @@ export function editorialPosition(
   return typeof globalPosition === 'number' && globalPosition > 0 ? globalPosition : undefined
 }
 
-export function sortCompaniesByRanking<T extends RankedCompany>(
+export function sortCompaniesByRanking<T>(
   companies: T[],
   insuranceTypeIds: Array<string | number> = [],
 ) {
   return [...companies].sort((left, right) => {
-    const leftPosition = editorialPosition(left, insuranceTypeIds)
-    const rightPosition = editorialPosition(right, insuranceTypeIds)
+    const leftCompany = left as unknown as RankedCompany
+    const rightCompany = right as unknown as RankedCompany
+    const leftPosition = editorialPosition(leftCompany, insuranceTypeIds)
+    const rightPosition = editorialPosition(rightCompany, insuranceTypeIds)
 
     if (leftPosition !== undefined && rightPosition !== undefined && leftPosition !== rightPosition) {
       return leftPosition - rightPosition
@@ -56,8 +58,9 @@ export function sortCompaniesByRanking<T extends RankedCompany>(
     if (leftPosition !== undefined) return -1
     if (rightPosition !== undefined) return 1
 
-    const ratingDifference = Number(right.overallRating || 0) - Number(left.overallRating || 0)
+    const ratingDifference =
+      Number(rightCompany.overallRating || 0) - Number(leftCompany.overallRating || 0)
     if (ratingDifference !== 0) return ratingDifference
-    return String(left.name || '').localeCompare(String(right.name || ''))
+    return String(leftCompany.name || '').localeCompare(String(rightCompany.name || ''))
   })
 }
