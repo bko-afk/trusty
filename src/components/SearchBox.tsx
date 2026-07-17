@@ -85,8 +85,105 @@ export function SearchBox({
     router.push(`/search?q=${encodeURIComponent(query)}`)
   }
 
+  const clearBtn = (
+    <button
+      type="button"
+      onClick={() => {
+        setQuery('')
+        setResults([])
+        setOpen(false)
+      }}
+      aria-label={t.search.clear}
+      className={
+        isLarge
+          ? 'absolute right-16 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+          : 'absolute right-2.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+      }
+    >
+      ×
+    </button>
+  )
+
+  const dropdown = open && (
+    <div className="absolute left-0 right-0 z-30 mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+      {loading && <div className="px-4 py-3 text-sm text-gray-400">{t.common.loading}</div>}
+      {!loading && results.length === 0 && (
+        <div className="px-4 py-3 text-sm text-gray-500">
+          {t.search.noResults} «{query}»
+        </div>
+      )}
+      {!loading &&
+        results.map((r) => (
+          <Link
+            key={r.id}
+            href={`/companies/${r.slug}`}
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/40 border-b border-gray-50 last:border-0"
+          >
+            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
+              <Image
+                src={r.logoUrl || '/placeholders/logo-placeholder.svg'}
+                alt={r.name}
+                fill
+                className="object-contain p-0.5"
+              />
+            </div>
+            <span className="truncate">{r.name}</span>
+          </Link>
+        ))}
+      {!loading && results.length > 0 && (
+        <button
+          type="button"
+          onClick={goToFullSearch}
+          className="w-full px-4 py-2 text-left text-xs text-brand hover:underline border-t border-gray-100"
+        >
+          {t.search.pageTitle} →
+        </button>
+      )}
+    </div>
+  )
+
+  if (isLarge) {
+    return (
+      <div ref={wrapperRef} className="relative w-full max-w-2xl">
+        <div className="relative flex h-16 items-stretch">
+          <div className="flex flex-1 items-center rounded-l-full bg-brand pl-2 pr-7">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') goToFullSearch()
+              }}
+              onFocus={() => {
+                if (results.length > 0) setOpen(true)
+              }}
+              placeholder={t.search.placeholder}
+              className="h-12 w-full rounded-full bg-white pl-5 pr-4 text-base focus:outline-none"
+            />
+          </div>
+          {/* Треугольный "хвостик" справа от фиолетовой плашки */}
+          <div className="h-0 w-0 shrink-0 border-y-[32px] border-l-[26px] border-y-transparent border-l-brand" />
+          {clearBtn}
+          <button
+            type="button"
+            onClick={goToFullSearch}
+            aria-label={t.search.button}
+            className="absolute right-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-gray-900 text-white hover:bg-black"
+          >
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="6.5" stroke="currentColor" strokeWidth="2" />
+              <path d="M18 18l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+        {dropdown}
+      </div>
+    )
+  }
+
   return (
-    <div ref={wrapperRef} className={`relative w-full ${isLarge ? 'max-w-2xl' : 'max-w-xl'}`}>
+    <div ref={wrapperRef} className="relative w-full max-w-xl">
       <input
         type="text"
         value={query}
@@ -98,82 +195,12 @@ export function SearchBox({
           if (results.length > 0) setOpen(true)
         }}
         placeholder={t.search.placeholder}
-        className={
-          isLarge
-            ? 'w-full rounded-full border-2 border-brand bg-white pl-5 pr-14 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-brand/40'
-            : 'w-full rounded-lg border border-gray-300 px-4 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-brand'
-        }
+        className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-brand"
       />
 
-      {query.length > 0 && (
-        <button
-          type="button"
-          onClick={() => {
-            setQuery('')
-            setResults([])
-            setOpen(false)
-          }}
-          aria-label={t.search.clear}
-          className={`absolute top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 ${
-            isLarge ? 'right-14' : 'right-2.5'
-          }`}
-        >
-          ×
-        </button>
-      )}
+      {query.length > 0 && clearBtn}
 
-      {isLarge && (
-        <button
-          type="button"
-          onClick={goToFullSearch}
-          aria-label={t.search.button}
-          className="absolute right-1.5 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white hover:bg-brand-dark"
-        >
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-            <circle cx="9" cy="9" r="6.5" stroke="currentColor" strokeWidth="2" />
-            <path d="M18 18l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </button>
-      )}
-
-      {open && (
-        <div className="absolute left-0 right-0 z-30 mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
-          {loading && <div className="px-4 py-3 text-sm text-gray-400">{t.common.loading}</div>}
-          {!loading && results.length === 0 && (
-            <div className="px-4 py-3 text-sm text-gray-500">
-              {t.search.noResults} «{query}»
-            </div>
-          )}
-          {!loading &&
-            results.map((r) => (
-              <Link
-                key={r.id}
-                href={`/companies/${r.slug}`}
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/40 border-b border-gray-50 last:border-0"
-              >
-                <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
-                  <Image
-                    src={r.logoUrl || '/placeholders/logo-placeholder.svg'}
-                    alt={r.name}
-                    fill
-                    className="object-contain p-0.5"
-                  />
-                </div>
-                <span className="truncate">{r.name}</span>
-              </Link>
-            ))}
-          {!loading && results.length > 0 && (
-            <button
-              type="button"
-              onClick={goToFullSearch}
-              className="w-full px-4 py-2 text-left text-xs text-brand hover:underline border-t border-gray-100"
-            >
-              {t.search.pageTitle} →
-            </button>
-          )}
-        </div>
-      )}
+      {dropdown}
     </div>
   )
 }

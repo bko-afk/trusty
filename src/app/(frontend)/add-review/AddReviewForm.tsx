@@ -21,9 +21,12 @@ export function AddReviewForm({
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    // Сохраняем ссылку на форму заранее: после await браузер уже
+    // сбрасывает e.currentTarget, и обращение к нему кидало бы ошибку.
+    const formEl = e.currentTarget
     setStatus('loading')
 
-    const form = new FormData(e.currentTarget)
+    const form = new FormData(formEl)
     const prosText = String(form.get('pros') || '')
     const consText = String(form.get('cons') || '')
 
@@ -54,7 +57,7 @@ export function AddReviewForm({
         }),
       })
       setStatus(res.ok ? 'success' : 'error')
-      if (res.ok) e.currentTarget.reset()
+      if (res.ok) formEl.reset()
     } catch {
       setStatus('error')
     }

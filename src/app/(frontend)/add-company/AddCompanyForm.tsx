@@ -24,9 +24,12 @@ export function AddCompanyForm({
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    // Сохраняем ссылку на форму заранее: после await браузер уже
+    // сбрасывает e.currentTarget, и обращение к нему кидало бы ошибку.
+    const formEl = e.currentTarget
     setStatus('loading')
 
-    const form = new FormData(e.currentTarget)
+    const form = new FormData(formEl)
     const name = String(form.get('name') || '')
     const selectedTypes = form.getAll('insuranceTypes').map((id) => Number(id))
 
@@ -46,7 +49,7 @@ export function AddCompanyForm({
         }),
       })
       setStatus(res.ok ? 'success' : 'error')
-      if (res.ok) e.currentTarget.reset()
+      if (res.ok) formEl.reset()
     } catch {
       setStatus('error')
     }

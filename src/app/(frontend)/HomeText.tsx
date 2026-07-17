@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { CompanyCard } from '@/components/CompanyCard'
 import { SearchBox } from '@/components/SearchBox'
 import { RatingStars } from '@/components/RatingStars'
+import { SectionHeading } from '@/components/SectionHeading'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 import { companyLogoUrl } from '@/lib/companyLogo'
@@ -33,8 +34,20 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
 
   return (
     <div>
-      <section className="bg-brand-light/60 py-14">
-        <div className="container-page flex flex-col items-center gap-6 text-center">
+      <section className="relative overflow-hidden bg-gradient-to-b from-brand-light via-brand-light/60 to-transparent py-14">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-16 -left-16 h-56 w-56 rounded-full bg-brand/20 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-20 -right-10 h-64 w-64 rounded-full bg-brand/15 blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-8 right-1/4 h-16 w-16 rounded-full bg-amber-300/30 blur-2xl"
+        />
+        <div className="container-page relative flex flex-col items-center gap-6 text-center">
           <h1 className="text-3xl md:text-4xl font-bold max-w-2xl">{t.hero.title}</h1>
           <SearchBox size="large" />
 
@@ -45,8 +58,9 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
                 <Link
                   key={company.id}
                   href={`/companies/${company.slug}`}
-                  className="rounded-full bg-white border border-gray-200 px-4 py-1.5 hover:border-brand hover:text-brand"
+                  className="flex items-center gap-1 rounded-full bg-white border border-gray-200 px-4 py-1.5 hover:border-brand hover:text-brand transition-colors"
                 >
+                  <span className="text-amber-500">★</span>
                   {company.name}
                 </Link>
               ))}
@@ -57,7 +71,10 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
 
       <section className="container-page py-10">
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="card p-5">
+          <div className="card p-5 hover:-translate-y-0.5 hover:shadow-md transition-all">
+            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-lg">
+              ✍️
+            </div>
             <h3 className="font-semibold">{t.home.ctaReviewTitle}</h3>
             <Link
               href="/add-review"
@@ -66,7 +83,10 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
               {t.home.ctaMoreLink}
             </Link>
           </div>
-          <div className="card p-5">
+          <div className="card p-5 hover:-translate-y-0.5 hover:shadow-md transition-all">
+            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-lg">
+              ⚠️
+            </div>
             <h3 className="font-semibold">{t.home.ctaComplaintTitle}</h3>
             <Link
               href="/add-complaint"
@@ -75,7 +95,10 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
               {t.home.ctaMoreLink}
             </Link>
           </div>
-          <div className="card p-5">
+          <div className="card p-5 hover:-translate-y-0.5 hover:shadow-md transition-all">
+            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-lg">
+              🏢
+            </div>
             <h3 className="font-semibold">{t.home.ctaCompanyTitle}</h3>
             <Link
               href="/add-company"
@@ -89,7 +112,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
 
       <section className="container-page pb-12">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-xl font-semibold">{t.home.bestCompanies}</h2>
+          <SectionHeading>{t.home.bestCompanies}</SectionHeading>
           <Link href="/companies" className="text-sm text-brand hover:underline">
             {t.home.allCompanies}
           </Link>
@@ -121,7 +144,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
       {latestReviews.length > 0 && (
         <section className="container-page pb-12">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-xl font-semibold">{t.home.latestReviews}</h2>
+            <SectionHeading>{t.home.latestReviews}</SectionHeading>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {latestReviews.map((review: any) => {
@@ -132,7 +155,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
                 <Link
                   key={review.id}
                   href={companySlug ? `/companies/${companySlug}/reviews` : '#'}
-                  className="card p-4 flex flex-col gap-2 min-w-0"
+                  className="card p-4 flex flex-col gap-2 min-w-0 hover:-translate-y-0.5 hover:shadow-md transition-all"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-medium text-sm truncate">{review.authorName}</span>
@@ -150,10 +173,14 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
 
       {articles.length > 0 && (
         <section className="container-page pb-12">
-          <h2 className="text-xl font-semibold mb-5">{t.home.articlesTitle}</h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <SectionHeading>{t.home.articlesTitle}</SectionHeading>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-5">
             {articles.map((article: any) => (
-              <Link key={article.id} href={`/articles/${article.slug}`} className="card p-4 min-w-0">
+              <Link
+                key={article.id}
+                href={`/articles/${article.slug}`}
+                className="card p-4 min-w-0 hover:-translate-y-0.5 hover:shadow-md transition-all"
+              >
                 <div className="font-semibold mb-1">{article.title}</div>
                 <p className="text-sm text-gray-500 line-clamp-3">{article.excerpt}</p>
               </Link>
@@ -164,13 +191,14 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
 
       {newestCompanies.length > 0 && (
         <section className="container-page pb-12">
-          <h2 className="text-xl font-semibold mb-5">{t.home.newestCompaniesTitle}</h2>
+          <SectionHeading>{t.home.newestCompaniesTitle}</SectionHeading>
+          <div className="h-5" />
           <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
             {newestCompanies.map((company: any) => (
               <Link
                 key={company.id}
                 href={`/companies/${company.slug}`}
-                className="card p-4 flex items-center gap-3 min-w-[220px] max-w-[220px] shrink-0 snap-start hover:shadow-md transition-shadow"
+                className="card p-4 flex items-center gap-3 min-w-[220px] max-w-[220px] shrink-0 snap-start hover:-translate-y-0.5 hover:shadow-md transition-all"
               >
                 <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
                   <Image
@@ -196,7 +224,9 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
             <Image src="/images/about-trusty.svg" alt="" fill className="object-contain" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-xl font-semibold mb-3">{t.home.aboutTitle}</h2>
+            <div className="mb-3">
+              <SectionHeading>{t.home.aboutTitle}</SectionHeading>
+            </div>
             <p className="text-gray-600 leading-relaxed">{t.home.aboutText}</p>
             <p className="text-gray-600 leading-relaxed mt-3">{t.home.aboutTextExtra}</p>
           </div>

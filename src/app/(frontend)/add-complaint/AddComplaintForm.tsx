@@ -21,9 +21,15 @@ export function AddComplaintForm({
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    // Сохраняем ссылку на форму заранее: после await браузер уже
+    // сбрасывает e.currentTarget (это стандартное поведение DOM после
+    // завершения обработки события), и обращение к нему кидало бы
+    // ошибку — из-за которой форма показывала "не удалось отправить",
+    // даже когда запрос на сервере прошёл успешно.
+    const formEl = e.currentTarget
     setStatus('loading')
 
-    const form = new FormData(e.currentTarget)
+    const form = new FormData(formEl)
 
     try {
       const res = await fetch('/api/complaints', {
@@ -40,7 +46,7 @@ export function AddComplaintForm({
         }),
       })
       setStatus(res.ok ? 'success' : 'error')
-      if (res.ok) e.currentTarget.reset()
+      if (res.ok) formEl.reset()
     } catch {
       setStatus('error')
     }

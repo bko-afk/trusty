@@ -31,7 +31,7 @@ export function CompanyCard({
   return (
     <Link
       href={`/companies/${slug}`}
-      className="card flex flex-col gap-3 p-4 hover:shadow-md transition-shadow min-w-0"
+      className="card flex flex-col gap-3 p-4 hover:-translate-y-0.5 hover:shadow-md transition-all min-w-0"
     >
       <div className="flex items-start gap-3 min-w-0">
         <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
