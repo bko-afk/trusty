@@ -97,24 +97,24 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
       </section>}
 
       {visibility.complaintCTA && <section className="container-page py-10 md:py-14">
-        <div className="relative overflow-hidden bg-[#071b45] px-6 py-9 text-white sm:px-10 md:py-12 lg:px-14">
-          <div aria-hidden="true" className="absolute -right-20 -top-28 h-72 w-72 rounded-full border-[48px] border-white/5" />
-          <div aria-hidden="true" className="absolute bottom-0 right-24 h-24 w-24 translate-y-1/2 rounded-full bg-[#5c24b8] opacity-70" />
-          <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div className="max-w-3xl">
-              <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl font-black text-[#80c5c7]">!</span>
-                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#80c5c7]">{t.home.ctaComplaintTitle}</p>
-              </div>
-              <h2 className="mt-5 text-3xl font-extrabold leading-tight tracking-[-0.035em] sm:text-4xl">{t.addComplaintPage.whyTitle}</h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-white/70">{t.addComplaintPage.introText}</p>
-              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/55">
-                <span>{t.addComplaintPage.stepsSubtitle}</span>
-                <span aria-hidden="true" className="h-1 w-1 rounded-full bg-white/30" />
-                <span>{t.addComplaintPage.step3Title}</span>
-              </div>
+        <div className="grid overflow-hidden border border-[#d8ddea] shadow-[0_18px_55px_rgba(7,27,69,0.08)] lg:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.65fr)]">
+          <div className="bg-[#0a2352] px-6 py-9 text-white sm:px-10 md:py-11 lg:px-12">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-lg font-black text-[#82c8ca]">!</span>
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#82c8ca]">{t.home.ctaComplaintTitle}</p>
             </div>
-            <Link href="/add-complaint" className="inline-flex min-h-14 items-center justify-center gap-3 bg-brand px-7 py-4 text-base font-extrabold text-white transition-colors hover:bg-[#7132d8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            <h2 className="mt-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-[-0.035em] sm:text-4xl">{t.addComplaintPage.whyTitle}</h2>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-white/70">{t.addComplaintPage.introText}</p>
+          </div>
+
+          <div className="relative flex min-h-64 flex-col justify-between overflow-hidden bg-brand p-7 text-white sm:p-9 lg:min-h-0">
+            <div aria-hidden="true" className="absolute -right-14 -top-14 h-40 w-40 rounded-full border-[30px] border-white/10" />
+            <div className="relative">
+              <span className="text-6xl font-black leading-none text-white/20">03</span>
+              <p className="mt-2 max-w-xs text-sm font-bold leading-6 text-white/75">{t.addComplaintPage.stepsSubtitle}</p>
+              <p className="mt-1 max-w-xs text-sm leading-6 text-white/60">{t.addComplaintPage.step3Title}</p>
+            </div>
+            <Link href="/add-complaint" className="relative mt-8 inline-flex min-h-14 items-center justify-between gap-4 bg-white px-6 py-4 text-base font-extrabold text-brand transition-colors hover:bg-[#f3edff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
               {t.addComplaintPage.submitBtn}
               <span aria-hidden="true" className="text-xl">→</span>
             </Link>

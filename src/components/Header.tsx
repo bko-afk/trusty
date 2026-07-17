@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 import { SearchBox } from './SearchBox'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { NavMenu } from './NavMenu'
@@ -19,8 +18,6 @@ type PopularCompany = { id: string; slug: string; name: string; logoUrl?: string
 export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCompany[] }) {
   const { t } = useLanguage()
   const { customer, loading } = useCustomer()
-  const pathname = usePathname()
-  const isHome = pathname === '/'
 
   const navItems = [
     { label: t.common.home, href: '/' },
@@ -28,11 +25,16 @@ export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCo
   ]
 
   return (
-    <header className={`relative z-40 border-b ${isHome ? 'border-white/15 bg-brand text-white md:border-gray-200 md:bg-white md:text-brand-dark' : 'border-gray-200 bg-white text-brand-dark'}`}>
+    <header className="relative z-40 border-b border-gray-200 bg-white text-brand-dark">
       <div className="container-page flex h-[76px] items-center gap-3 md:gap-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label={t.brand}>
-          <Image src="/placeholders/logo-placeholder.svg" alt="" width={44} height={44} className="h-10 w-10 rounded-lg bg-white" />
-          <span className="hidden text-xl font-extrabold tracking-[0.04em] sm:inline">{t.brand.toUpperCase()}</span>
+        <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label={t.brand}>
+          <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#eadfff] bg-[#f3e8ff] transition-transform group-hover:-translate-y-0.5">
+            <Image src="/placeholders/logo-placeholder.svg" alt="" width={40} height={40} className="h-full w-full" />
+            <span aria-hidden="true" className="absolute bottom-0 left-0 h-1 w-full bg-[#579c9e]" />
+          </span>
+          <span className="text-base font-black tracking-[0.035em] sm:text-xl">
+            <span className="text-brand-dark">TRUST</span><span className="text-brand">Y</span>
+          </span>
         </Link>
 
         <NavMenu items={navItems} />
@@ -45,12 +47,12 @@ export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCo
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
-          <div className={isHome ? 'hidden md:block' : 'hidden sm:block'}><LanguageSwitcher /></div>
+          <div className="hidden sm:block"><LanguageSwitcher /></div>
 
           {!loading && (
             <Link
               href={customer ? '/account' : '/login'}
-              className="shrink-0 bg-emerald-500 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-600"
+              className="shrink-0 bg-brand px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#5720b5] sm:px-5"
               aria-label={customer ? t.auth.myAccount : t.auth.login}
             >
               {customer ? (

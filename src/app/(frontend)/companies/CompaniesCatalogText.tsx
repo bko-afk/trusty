@@ -64,6 +64,7 @@ export function CompaniesCatalogText({
   const [error, setError] = useState('')
   const [comparisonIds, setComparisonIds] = useState<string[]>([])
   const abortRef = useRef<AbortController | null>(null)
+  const resultsRef = useRef<HTMLElement | null>(null)
   const countryList = countries.filter((country) => availableCountries.includes(country.code))
   const comparisonText = comparisonCopy[locale]
   const updatedText = locale === 'ru' ? 'Рейтинг актуален на' : locale === 'es' ? 'Ranking actualizado el' : 'Ranking updated on'
@@ -95,9 +96,15 @@ export function CompaniesCatalogText({
         signal: controller.signal,
       })
 
-      if (!response.ok) throw new Error('Filter request failed')
+      if (!response.ok) {
+        setError(t.portal.ranking.filterError)
+        return
+      }
       const data = (await response.json()) as { companies: CatalogCompany[] }
       startTransition(() => setResults(data.companies))
+      window.requestAnimationFrame(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
     } catch (requestError) {
       if (requestError instanceof DOMException && requestError.name === 'AbortError') return
       setError(t.portal.ranking.filterError)
@@ -233,7 +240,7 @@ export function CompaniesCatalogText({
         </div>
       </section>
 
-      <section className="container-page py-8 md:py-12">
+      <section id="company-results" ref={resultsRef} className="container-page scroll-mt-6 py-8 md:py-12">
         <div className="border-y border-gray-200" aria-busy={isLoading} aria-live="polite">
           <div className="hidden grid-cols-[80px_1.55fr_0.7fr_0.7fr_1fr] gap-5 border-b border-gray-200 bg-[#fafafa] px-5 py-4 text-xs font-extrabold uppercase tracking-wider text-gray-500 lg:grid">
             <span>{t.portal.ranking.place}</span><span>{t.portal.ranking.company}</span><span>{t.portal.ranking.reviews}</span><span>{t.portal.ranking.rating}</span><span>{t.portal.ranking.programs}</span>
