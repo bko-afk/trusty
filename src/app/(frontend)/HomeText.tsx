@@ -86,12 +86,12 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
               <p className="mt-3 max-w-xs leading-6 text-gray-500">{t.portal.home.compareDescription}</p>
               <span className="dotted-link mt-6 inline-block text-sm font-semibold">{t.portal.home.catalogLink}</span>
             </Link>
-            <a href="#methodology" className="group relative min-h-64 overflow-hidden border border-[#dce5f3] bg-[#f6f9fd] p-7 transition-all hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(7,27,69,0.09)]">
+            <Link href={{ pathname: '/', hash: 'methodology' }} className="group relative min-h-64 overflow-hidden border border-[#dce5f3] bg-[#f6f9fd] p-7 transition-all hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(7,27,69,0.09)]">
               <div className="flex items-start justify-between gap-4"><ServiceIcon kind="rating" className="bg-[#e6edf8] text-[#0a2352]" /><span className="text-xs font-extrabold text-[#0a2352]/50">03</span></div>
               <h3 className="mt-9 text-2xl font-bold">{t.portal.home.understandTitle}</h3>
               <p className="mt-3 max-w-xs leading-6 text-gray-500">{t.portal.home.understandDescription}</p>
               <span className="dotted-link mt-6 inline-block text-sm font-semibold">{t.portal.home.methodologyLink}</span>
-            </a>
+            </Link>
           </div>
         </div>
       </section>}
@@ -130,8 +130,8 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
             <h2 className="section-title mt-2">{t.portal.home.selectInsuranceType}</h2>
           </div>
           <div className="flex flex-wrap gap-x-7 gap-y-3 text-lg">
-            <Link href="/companies#company-filter-panel" className="dotted-link">{t.insuranceTypeNames.travel}</Link>
-            <Link href="/companies#company-filter-panel" className="dotted-link">{t.insuranceTypeNames.medical}</Link>
+            <Link href={{ pathname: '/companies', hash: 'company-filter-panel' }} className="dotted-link">{t.insuranceTypeNames.travel}</Link>
+            <Link href={{ pathname: '/companies', hash: 'company-filter-panel' }} className="dotted-link">{t.insuranceTypeNames.medical}</Link>
             <Link href="/companies" className="dotted-link">{t.portal.home.allCompanies}</Link>
           </div>
         </div>

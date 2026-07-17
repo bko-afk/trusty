@@ -166,7 +166,7 @@ export function CompanyDetailText({
                 <div className="flex flex-wrap items-center gap-3"><h1 className="text-4xl font-extrabold tracking-[-0.04em] md:text-5xl">{name}</h1><span className={`px-3 py-1 text-xs font-bold ${verified ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>{verified ? text.verified : text.unverified}</span></div>
                 <p className="mt-4 max-w-2xl text-lg leading-7 text-gray-600">{shortDescription || t.companyDetail.noDescription}</p>
                 {uniqueFeature && <p className="mt-3 border-l-4 border-brand pl-4 text-sm font-bold text-brand-dark">{uniqueFeature}</p>}
-                <div className="mt-5 flex flex-wrap gap-2">{insuranceTypes.map((type) => <Link key={type.slug} href="/companies#company-filter-panel" className="border-b border-dotted border-[#579c9e] text-sm text-[#579c9e]">{insuranceTypeLabel(t, type)}</Link>)}</div>
+                <div className="mt-5 flex flex-wrap gap-2">{insuranceTypes.map((type) => <Link key={type.slug} href={{ pathname: '/companies', hash: 'company-filter-panel' }} className="border-b border-dotted border-[#579c9e] text-sm text-[#579c9e]">{insuranceTypeLabel(t, type)}</Link>)}</div>
               </div>
             </div>
             <div className="border border-gray-200 p-5">
@@ -178,10 +178,10 @@ export function CompanyDetailText({
           </div>
 
           <div className="mt-9 flex flex-wrap gap-px bg-gray-200">
-            <a href="#overview" className="bg-brand px-5 py-3 text-sm font-bold text-white">{t.portal.detail.overview}</a>
+            <Link href={{ pathname: `/companies/${slug}`, hash: 'overview' }} className="bg-brand px-5 py-3 text-sm font-bold text-white">{t.portal.detail.overview}</Link>
             <Link href={`/companies/${slug}/reviews`} className="bg-[#f6f7f9] px-5 py-3 text-sm font-bold hover:bg-white">{t.portal.detail.reviews}</Link>
             <Link href={`/companies/${slug}/complaints`} className="bg-[#f6f7f9] px-5 py-3 text-sm font-bold hover:bg-white">{text.complaintsTab}</Link>
-            <a href="#details" className="bg-[#f6f7f9] px-5 py-3 text-sm font-bold hover:bg-white">{t.portal.detail.specifications}</a>
+            <Link href={{ pathname: `/companies/${slug}`, hash: 'details' }} className="bg-[#f6f7f9] px-5 py-3 text-sm font-bold hover:bg-white">{t.portal.detail.specifications}</Link>
           </div>
         </div>
       </section>
@@ -218,7 +218,7 @@ export function CompanyDetailText({
               {coverageFeatures.length > 0 && <div className="mt-5"><h3 className="text-sm font-extrabold">{text.extraCoverage}</h3><div className="mt-3 flex flex-wrap gap-2">{coverageFeatures.map((feature) => <span key={feature} className="bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800">{text[feature]}</span>)}</div></div>}
             </section>
 
-            {categoryPositions.length > 0 && <section className="border border-gray-200 bg-white p-6 md:p-8"><h2 className="text-2xl font-extrabold">{text.rankings}</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{categoryPositions.map((item) => <Link key={item.slug} href="/companies#company-filter-panel" className="flex items-center justify-between border border-gray-200 p-4 hover:border-brand"><span className="font-bold">{insuranceTypeLabel(t, item)}</span><strong className="text-brand">{item.position} {text.place} {item.total}</strong></Link>)}</div></section>}
+            {categoryPositions.length > 0 && <section className="border border-gray-200 bg-white p-6 md:p-8"><h2 className="text-2xl font-extrabold">{text.rankings}</h2><div className="mt-5 grid gap-3 sm:grid-cols-2">{categoryPositions.map((item) => <Link key={item.slug} href={{ pathname: '/companies', hash: 'company-filter-panel' }} className="flex items-center justify-between border border-gray-200 p-4 hover:border-brand"><span className="font-bold">{insuranceTypeLabel(t, item)}</span><strong className="text-brand">{item.position} {text.place} {item.total}</strong></Link>)}</div></section>}
 
             <section className="surface-section border border-gray-200 p-6 md:p-8"><h2 className="text-2xl font-extrabold">{text.methodology}</h2><p className="mt-3 leading-7 text-gray-600">{text.methodologyText}</p></section>
 
@@ -237,7 +237,7 @@ export function CompanyDetailText({
             <div className="bg-brand p-5 text-white"><div className="text-xs font-bold uppercase tracking-wider text-white/60">{t.portal.detail.companyCard}</div><h2 className="mt-2 text-xl font-extrabold">{t.portal.detail.keyDetails}</h2></div>
             <dl className="divide-y divide-gray-100 px-5 text-sm">{spec.map(([label, value]) => <div key={label} className="py-4"><dt className="text-xs font-bold uppercase tracking-wider text-gray-400">{label}</dt><dd className="mt-1 break-words font-semibold">{value}</dd></div>)}</dl>
             <div className="border-t border-gray-200 p-5"><h3 className="font-extrabold">{text.trustTitle}</h3><dl className="mt-4 space-y-3 text-sm">{verification?.legalName && <div><dt className="text-gray-400">{text.legalName}</dt><dd className="font-semibold">{verification.legalName}</dd></div>}{verification?.regulator && <div><dt className="text-gray-400">{text.regulator}</dt><dd className="font-semibold">{verification.regulator}</dd></div>}{verification?.licenseNumber && <div><dt className="text-gray-400">{text.license}</dt><dd className="font-semibold">{verification.licenseNumber}</dd></div>}<div><dt className="text-gray-400">{text.checkedAt}</dt><dd className="font-semibold">{updatedLabel}</dd></div></dl>{verification?.licenseUrl && <a href={verification.licenseUrl} target="_blank" rel="noopener noreferrer nofollow" className="dotted-link mt-4 inline-block text-sm">{text.registry}</a>}</div>
-            <div className="space-y-3 border-t border-gray-200 p-5">{website && <a href={website} target="_blank" rel="noopener noreferrer nofollow" className="btn-primary w-full">{t.company.visitSite}</a>}<Link href={`/companies/${slug}/reviews`} className="btn-secondary w-full">{t.company.readReviews}</Link><Link href={`/companies/${slug}/complaints`} className="btn-secondary w-full">{text.complaints}: {complaintCount} ({resolvedComplaintCount} {text.resolved})</Link><button type="button" onClick={toggleSubscription} disabled={subscriptionLoading} className="btn-secondary w-full disabled:opacity-60">{customer ? isSubscribed ? text.unsubscribe : text.subscribe : text.loginToSubscribe}</button><Link href="/companies#comparison" className="btn-secondary w-full">{text.compare}</Link></div>
+            <div className="space-y-3 border-t border-gray-200 p-5">{website && <a href={website} target="_blank" rel="noopener noreferrer nofollow" className="btn-primary w-full">{t.company.visitSite}</a>}<Link href={`/companies/${slug}/reviews`} className="btn-secondary w-full">{t.company.readReviews}</Link><Link href={`/companies/${slug}/complaints`} className="btn-secondary w-full">{text.complaints}: {complaintCount} ({resolvedComplaintCount} {text.resolved})</Link><button type="button" onClick={toggleSubscription} disabled={subscriptionLoading} className="btn-secondary w-full disabled:opacity-60">{customer ? isSubscribed ? text.unsubscribe : text.subscribe : text.loginToSubscribe}</button><Link href={{ pathname: '/companies', hash: 'comparison' }} className="btn-secondary w-full">{text.compare}</Link></div>
           </aside>
         </div>
       </section>
