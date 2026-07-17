@@ -8,9 +8,9 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run generate:types && next build",
     "start": "next start",
-    "lint": "tsc --noEmit",
+    "lint": "npm run generate:types && tsc --noEmit --incremental false",
     "payload": "payload",
     "generate:types": "payload generate:types",
     "migrate:create": "payload migrate:create",
