@@ -99,7 +99,7 @@ export function SearchBox({
       aria-label={t.search.clear}
       className={
         isLarge
-          ? 'absolute right-16 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+          ? 'absolute right-20 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600'
           : 'absolute right-2.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600'
       }
     >
@@ -179,33 +179,35 @@ export function SearchBox({
 
   if (isLarge) {
     return (
-      <div ref={wrapperRef} className="relative w-full max-w-2xl">
-        <div className="relative flex h-16 items-center rounded-full border-2 border-brand bg-white shadow-sm">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') goToFullSearch()
-            }}
-            onFocus={() => {
-              if (results.length > 0 || showPopular) setOpen(true)
-            }}
-            placeholder={t.search.placeholder}
-            className="h-full w-full rounded-full bg-transparent pl-6 pr-24 text-base focus:outline-none"
-          />
-          {clearBtn}
-          <button
-            type="button"
-            onClick={goToFullSearch}
-            aria-label={t.search.button}
-            className="absolute right-1.5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white hover:bg-brand-dark transition-colors"
-          >
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-              <circle cx="9" cy="9" r="6.5" stroke="currentColor" strokeWidth="2" />
-              <path d="M18 18l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
+      <div ref={wrapperRef} className="relative w-full">
+        <div className="grid gap-2 bg-brand p-3 sm:grid-cols-[240px_1fr] sm:gap-0 sm:p-5">
+          <div className="flex min-h-16 items-center bg-white px-6 text-left font-bold text-brand-dark sm:border-r sm:border-gray-200">
+            Страховые компании
+          </div>
+          <div className="relative min-h-16 bg-white">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') goToFullSearch()
+              }}
+              onFocus={() => {
+                if (results.length > 0 || showPopular) setOpen(true)
+              }}
+              placeholder={t.search.placeholder}
+              className="h-16 w-full bg-transparent pl-6 pr-24 text-base text-gray-900 focus:outline-none sm:text-lg"
+            />
+            {query.length > 0 && clearBtn}
+            <button
+              type="button"
+              onClick={goToFullSearch}
+              aria-label={t.search.button}
+              className="absolute right-0 top-0 flex h-16 w-20 items-center justify-center bg-white text-sm font-extrabold text-brand-dark transition-colors hover:bg-gray-50 hover:text-brand"
+            >
+              {t.search.button}
+            </button>
+          </div>
         </div>
         {dropdown}
       </div>
@@ -225,7 +227,7 @@ export function SearchBox({
           if (results.length > 0) setOpen(true)
         }}
         placeholder={t.search.placeholder}
-        className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-brand"
+        className="w-full border-0 border-b border-gray-300 bg-transparent px-2 py-2 pr-9 text-sm focus:border-brand focus:outline-none"
       />
 
       {query.length > 0 && clearBtn}

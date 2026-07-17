@@ -2,22 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ink: #071b45;
+  --muted: #697186;
+  --purple: #5c24b8;
+  --purple-dark: #43178f;
+  --teal: #579c9e;
+  --surface: #f3f6f9;
+  --line: #e2e6eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  @apply bg-gray-50 text-gray-900;
+  margin: 0;
+  background: #fff;
+  color: var(--ink);
+  font-family: "Avenir Next", "Trebuchet MS", sans-serif;
+  text-rendering: optimizeLegibility;
 }
 
 .container-page {
-  @apply container mx-auto px-4;
+  width: min(1180px, calc(100% - 32px));
+  margin-inline: auto;
 }
 
 .card {
-  @apply bg-white rounded-xl border border-gray-200 shadow-sm;
+  @apply bg-white border border-gray-200;
+  border-radius: 2px;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-lg bg-brand px-4 py-2 text-white font-medium hover:bg-brand-dark transition-colors;
+  @apply inline-flex items-center justify-center bg-brand px-5 py-3 text-white font-semibold transition-colors hover:bg-brand-dark;
+  border-radius: 2px;
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 font-medium hover:bg-gray-50 transition-colors;
+  @apply inline-flex items-center justify-center border border-gray-300 bg-white px-5 py-3 font-semibold transition-colors hover:border-brand hover:text-brand;
+  border-radius: 2px;
+}
+
+.section-kicker {
+  color: var(--teal);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  color: var(--ink);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+.dotted-link {
+  border-bottom: 1px dotted currentColor;
+  color: var(--teal);
+  text-decoration: none;
+}
+
+.surface-section {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(92, 36, 184, 0.06), transparent 26rem),
+    var(--surface);
+}
+
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-block-size: 420px;
+}
+
+::selection {
+  background: #d9c7f7;
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .container-page {
+    width: min(100% - 24px, 1180px);
+  }
 }

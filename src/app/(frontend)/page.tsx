@@ -10,7 +10,7 @@ export const revalidate = 60
 export default async function HomePage() {
   const payload = await getPayloadClient()
 
-  const [companies, popularCompanies, newestCompanies, articles, latestReviews] = await Promise.all([
+  const [companies, popularCompanies, newestCompanies, latestReviews] = await Promise.all([
     payload.find({
       collection: 'companies',
       where: { status: { equals: 'published' } },
@@ -33,12 +33,6 @@ export default async function HomePage() {
       depth: 0,
     }),
     payload.find({
-      collection: 'articles',
-      where: { status: { equals: 'published' } },
-      sort: '-publishedAt',
-      limit: 3,
-    }),
-    payload.find({
       collection: 'reviews',
       where: { status: { equals: 'published' } },
       sort: '-createdAt',
@@ -52,7 +46,6 @@ export default async function HomePage() {
       companies={companies.docs}
       popularCompanies={popularCompanies.docs}
       newestCompanies={newestCompanies.docs}
-      articles={articles.docs}
       latestReviews={latestReviews.docs}
     />
   )

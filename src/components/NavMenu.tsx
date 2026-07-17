@@ -27,7 +27,7 @@ export function NavMenu({ items }: { items: NavMenuItem[] }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-700 hover:text-brand"
+        className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-bold text-current transition-opacity hover:opacity-70"
       >
         {active.label}
         <svg
