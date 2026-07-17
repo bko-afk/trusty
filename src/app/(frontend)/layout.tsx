@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { LanguageProvider } from '@/i18n/LanguageContext'
@@ -7,6 +8,8 @@ import { companyLogoUrl } from '@/lib/companyLogo'
 import { getSiteSettings } from '@/lib/getSiteSettings'
 import { absoluteUrl, mediaUrl, siteUrl } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
+import { CustomerProvider } from '@/lib/useCustomer'
+import { toCustomerSession } from '@/lib/customerSession'
 import './globals.css'
 
 export const revalidate = 60
@@ -85,7 +88,15 @@ async function getPopularCompanies() {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [popularCompanies, settings] = await Promise.all([getPopularCompanies(), getSiteSettings()])
+  const requestHeaders = new Headers(await headers())
+  const [popularCompanies, settings, currentCustomer] = await Promise.all([
+    getPopularCompanies(),
+    getSiteSettings(),
+    getPayloadClient()
+      .then((payload) => payload.auth({ headers: requestHeaders }))
+      .then(({ user }) => toCustomerSession(user))
+      .catch(() => null),
+  ])
   const siteName = settings.seo?.siteName || 'Trusty'
   const rootUrl = absoluteUrl('/')
 
@@ -119,9 +130,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }}
         />
         <LanguageProvider>
-          <Header popularCompanies={popularCompanies} />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <CustomerProvider initialCustomer={currentCustomer}>
+            <Header popularCompanies={popularCompanies} />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </CustomerProvider>
         </LanguageProvider>
       </body>
     </html>

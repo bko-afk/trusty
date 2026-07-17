@@ -17,7 +17,7 @@ type PopularCompany = { id: string; slug: string; name: string; logoUrl?: string
 
 export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCompany[] }) {
   const { t } = useLanguage()
-  const { customer, loading } = useCustomer()
+  const { customer } = useCustomer()
 
   const navItems = [
     { label: t.common.home, href: '/' },
@@ -48,19 +48,13 @@ export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCo
         <div className="ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
           <div className="hidden sm:block"><LanguageSwitcher /></div>
 
-          {!loading && (
-            <Link
-              href={customer ? '/account' : '/login'}
-              className="shrink-0 bg-brand px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#5720b5] sm:px-5"
-              aria-label={customer ? t.auth.myAccount : t.auth.login}
-            >
-              {customer ? (
-                initials(customer.name, customer.email)
-              ) : (
-                t.auth.login
-              )}
-            </Link>
-          )}
+          <Link
+            href={customer ? '/account' : '/login'}
+            className="inline-flex min-w-[76px] shrink-0 items-center justify-center bg-brand px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-[#5720b5] sm:min-w-[92px] sm:px-5"
+            aria-label={customer ? t.auth.myAccount : t.auth.login}
+          >
+            {customer ? initials(customer.name, customer.email) : t.auth.login}
+          </Link>
         </div>
       </div>
     </header>
