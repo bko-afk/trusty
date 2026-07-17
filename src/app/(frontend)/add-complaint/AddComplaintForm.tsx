@@ -31,7 +31,7 @@ export function AddComplaintForm({
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
-          company: form.get('company'),
+          company: Number(form.get('company')),
           authorName: form.get('authorName'),
           authorEmail: form.get('authorEmail'),
           title: form.get('title'),

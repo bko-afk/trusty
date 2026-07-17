@@ -28,7 +28,7 @@ export function AddCompanyForm({
 
     const form = new FormData(e.currentTarget)
     const name = String(form.get('name') || '')
-    const selectedTypes = form.getAll('insuranceTypes')
+    const selectedTypes = form.getAll('insuranceTypes').map((id) => Number(id))
 
     try {
       const res = await fetch('/api/companies', {
