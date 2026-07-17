@@ -170,6 +170,9 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
                   <div className="text-xs text-brand truncate">{companyName}</div>
                   <div className="font-semibold text-sm">{review.title}</div>
                   <p className="text-sm text-gray-600 line-clamp-3">{review.body}</p>
+                  <span className="text-xs text-brand underline decoration-dotted underline-offset-2 mt-auto pt-1">
+                    {t.home.ctaMoreLink} →
+                  </span>
                 </Link>
               )
             })}
@@ -189,6 +192,9 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
               >
                 <div className="font-semibold mb-1">{article.title}</div>
                 <p className="text-sm text-gray-500 line-clamp-3">{article.excerpt}</p>
+                <span className="text-xs text-brand underline decoration-dotted underline-offset-2 mt-2 inline-block">
+                  {t.home.ctaMoreLink} →
+                </span>
               </Link>
             ))}
           </div>

@@ -8,13 +8,16 @@ import { useLanguage } from '@/i18n/LanguageContext'
 import { companyLogoUrl } from '@/lib/companyLogo'
 
 type Result = { id: string; slug: string; name: string; logoUrl?: string; overallRating?: number }
+type PopularCompany = { id: string; slug: string; name: string; logoUrl?: string }
 
 export function SearchBox({
   initialQuery = '',
   size = 'default',
+  popularCompanies = [],
 }: {
   initialQuery?: string
   size?: 'default' | 'large'
+  popularCompanies?: PopularCompany[]
 }) {
   const isLarge = size === 'large'
   const [query, setQuery] = useState(initialQuery)
@@ -104,41 +107,72 @@ export function SearchBox({
     </button>
   )
 
+  const showPopular = query.trim().length === 0 && popularCompanies.length > 0
+
   const dropdown = open && (
     <div className="absolute left-0 right-0 z-30 mt-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
-      {loading && <div className="px-4 py-3 text-sm text-gray-400">{t.common.loading}</div>}
-      {!loading && results.length === 0 && (
-        <div className="px-4 py-3 text-sm text-gray-500">
-          {t.search.noResults} «{query}»
-        </div>
-      )}
-      {!loading &&
-        results.map((r) => (
-          <Link
-            key={r.id}
-            href={`/companies/${r.slug}`}
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/40 border-b border-gray-50 last:border-0"
-          >
-            <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
-              <Image
-                src={r.logoUrl || '/placeholders/logo-placeholder.svg'}
-                alt={r.name}
-                fill
-                className="object-contain p-0.5"
-              />
+      {showPopular ? (
+        <>
+          <div className="px-4 pt-2.5 pb-1 text-xs font-medium uppercase tracking-wide text-gray-400">
+            {t.home.popularCompaniesLabel}
+          </div>
+          {popularCompanies.map((c) => (
+            <Link
+              key={c.id}
+              href={`/companies/${c.slug}`}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/40 border-b border-gray-50 last:border-0"
+            >
+              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
+                <Image
+                  src={c.logoUrl || '/placeholders/logo-placeholder.svg'}
+                  alt={c.name}
+                  fill
+                  className="object-contain p-0.5"
+                />
+              </div>
+              <span className="truncate">{c.name}</span>
+              <span className="ml-auto text-amber-500">★</span>
+            </Link>
+          ))}
+        </>
+      ) : (
+        <>
+          {loading && <div className="px-4 py-3 text-sm text-gray-400">{t.common.loading}</div>}
+          {!loading && results.length === 0 && (
+            <div className="px-4 py-3 text-sm text-gray-500">
+              {t.search.noResults} «{query}»
             </div>
-            <span className="truncate">{r.name}</span>
-          </Link>
-        ))}
-      {!loading && results.length > 0 && (
-        <button
-          type="button"
-          onClick={goToFullSearch}
-          className="w-full px-4 py-2 text-left text-xs text-brand hover:underline border-t border-gray-100"
-        >
-          {t.search.pageTitle} →
-        </button>
+          )}
+          {!loading &&
+            results.map((r) => (
+              <Link
+                key={r.id}
+                href={`/companies/${r.slug}`}
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/40 border-b border-gray-50 last:border-0"
+              >
+                <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
+                  <Image
+                    src={r.logoUrl || '/placeholders/logo-placeholder.svg'}
+                    alt={r.name}
+                    fill
+                    className="object-contain p-0.5"
+                  />
+                </div>
+                <span className="truncate">{r.name}</span>
+              </Link>
+            ))}
+          {!loading && results.length > 0 && (
+            <button
+              type="button"
+              onClick={goToFullSearch}
+              className="w-full px-4 py-2 text-left text-xs text-brand hover:underline border-t border-gray-100"
+            >
+              {t.search.pageTitle} →
+            </button>
+          )}
+        </>
       )}
     </div>
   )
@@ -155,7 +189,7 @@ export function SearchBox({
               if (e.key === 'Enter') goToFullSearch()
             }}
             onFocus={() => {
-              if (results.length > 0) setOpen(true)
+              if (results.length > 0 || showPopular) setOpen(true)
             }}
             placeholder={t.search.placeholder}
             className="h-full w-full rounded-full bg-transparent pl-6 pr-24 text-base focus:outline-none"

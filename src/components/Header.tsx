@@ -12,7 +12,9 @@ function initials(name?: string, email?: string) {
   return source.slice(0, 1).toUpperCase()
 }
 
-export function Header() {
+type PopularCompany = { id: string; slug: string; name: string; logoUrl?: string }
+
+export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCompany[] }) {
   const { t } = useLanguage()
   const { customer, loading } = useCustomer()
 
@@ -33,7 +35,7 @@ export function Header() {
         <NavMenu items={navItems} />
 
         <div className="hidden lg:flex ml-auto min-w-0 flex-1 max-w-xl items-center gap-2">
-          <SearchBox />
+          <SearchBox popularCompanies={popularCompanies} />
           <Link href="/add-review" className="btn-secondary whitespace-nowrap shrink-0">
             {t.nav.addReview}
           </Link>
@@ -61,7 +63,7 @@ export function Header() {
       </div>
 
       <div className="lg:hidden border-t border-gray-100 px-4 py-2 flex items-center gap-2">
-        <SearchBox />
+        <SearchBox popularCompanies={popularCompanies} />
         <Link
           href="/add-review"
           className="btn-secondary whitespace-nowrap shrink-0 px-3 py-2 text-xs sm:text-sm"
