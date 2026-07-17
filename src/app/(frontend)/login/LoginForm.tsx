@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -35,30 +36,51 @@ export function LoginForm() {
   }
 
   return (
-    <div className="container-page py-8 max-w-md">
+    <div className="container-page py-8 max-w-3xl">
       <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.auth.login }]} />
-      <h1 className="text-2xl font-bold mb-6">{t.auth.login}</h1>
 
-      <form onSubmit={onSubmit} className="card p-6 space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">{t.auth.email}</label>
-          <input name="email" type="email" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+      <div className="card overflow-hidden grid sm:grid-cols-2">
+        <div className="bg-brand-light/40 p-6 sm:p-8 flex flex-col justify-center gap-4">
+          <div className="relative h-24 w-24 mx-auto sm:mx-0">
+            <Image src="/images/pages/login.svg" alt="" fill className="object-contain" />
+          </div>
+          <h1 className="text-xl font-bold text-brand-dark">{t.auth.login}</h1>
+          <p className="text-sm text-gray-600">{t.auth.loginIntro}</p>
         </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">{t.auth.password}</label>
-          <input name="password" type="password" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+
+        <div className="p-6 sm:p-8">
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">{t.auth.email}</label>
+              <input
+                name="email"
+                type="email"
+                required
+                className="w-full rounded-lg border border-gray-300 px-3 py-2"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">{t.auth.password}</label>
+              <input
+                name="password"
+                type="password"
+                required
+                className="w-full rounded-lg border border-gray-300 px-3 py-2"
+              />
+            </div>
+            <button type="submit" disabled={status === 'loading'} className="btn-primary w-full">
+              {t.auth.loginBtn}
+            </button>
+            {status === 'error' && <p className="text-rose-600 text-sm">{t.auth.loginError}</p>}
+            <p className="text-xs text-center text-gray-400">{t.auth.passwordResetHint}</p>
+            <p className="text-sm text-center text-gray-500">
+              <Link href="/register" className="text-brand hover:underline">
+                {t.auth.noAccountYet}
+              </Link>
+            </p>
+          </form>
         </div>
-        <button type="submit" disabled={status === 'loading'} className="btn-primary w-full">
-          {t.auth.loginBtn}
-        </button>
-        {status === 'error' && <p className="text-rose-600 text-sm">{t.auth.loginError}</p>}
-        <p className="text-xs text-center text-gray-400">{t.auth.passwordResetHint}</p>
-        <p className="text-sm text-center text-gray-500">
-          <Link href="/register" className="text-brand hover:underline">
-            {t.auth.noAccountYet}
-          </Link>
-        </p>
-      </form>
+      </div>
     </div>
   )
 }

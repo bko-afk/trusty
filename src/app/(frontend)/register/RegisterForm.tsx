@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
@@ -55,43 +56,73 @@ export function RegisterForm() {
   }
 
   return (
-    <div className="container-page py-8 max-w-md">
+    <div className="container-page py-8 max-w-3xl">
       <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.auth.register }]} />
-      <h1 className="text-2xl font-bold mb-6">{t.auth.register}</h1>
 
-      {status === 'success' ? (
-        <div className="card p-6">{t.auth.registerSuccess}</div>
-      ) : (
-        <form onSubmit={onSubmit} className="card p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">{t.auth.name}</label>
-            <input name="name" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+      <div className="card overflow-hidden grid sm:grid-cols-2">
+        <div className="bg-brand-light/40 p-6 sm:p-8 flex flex-col justify-center gap-4">
+          <div className="relative h-24 w-24 mx-auto sm:mx-0">
+            <Image src="/images/pages/register.svg" alt="" fill className="object-contain" />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{t.auth.email}</label>
-            <input name="email" type="email" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{t.auth.password}</label>
-            <input
-              name="password"
-              type="password"
-              required
-              minLength={8}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2"
-            />
-          </div>
-          <button type="submit" disabled={status === 'loading'} className="btn-primary w-full">
-            {t.auth.registerBtn}
-          </button>
-          {status === 'error' && <p className="text-rose-600 text-sm">{t.auth.registerError}</p>}
-          <p className="text-sm text-center text-gray-500">
-            <Link href="/login" className="text-brand hover:underline">
-              {t.auth.alreadyHaveAccount}
-            </Link>
-          </p>
-        </form>
-      )}
+          <h1 className="text-xl font-bold text-brand-dark">{t.auth.register}</h1>
+          <p className="text-sm text-gray-600">{t.auth.registerIntro}</p>
+          <ul className="space-y-2 text-sm text-gray-600">
+            <li className="flex gap-2">
+              <span className="text-brand">✓</span>
+              {t.auth.registerBenefit1}
+            </li>
+            <li className="flex gap-2">
+              <span className="text-brand">✓</span>
+              {t.auth.registerBenefit2}
+            </li>
+            <li className="flex gap-2">
+              <span className="text-brand">✓</span>
+              {t.auth.registerBenefit3}
+            </li>
+          </ul>
+        </div>
+
+        <div className="p-6 sm:p-8">
+          {status === 'success' ? (
+            <p>{t.auth.registerSuccess}</p>
+          ) : (
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">{t.auth.name}</label>
+                <input name="name" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">{t.auth.email}</label>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">{t.auth.password}</label>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  minLength={8}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2"
+                />
+              </div>
+              <button type="submit" disabled={status === 'loading'} className="btn-primary w-full">
+                {t.auth.registerBtn}
+              </button>
+              {status === 'error' && <p className="text-rose-600 text-sm">{t.auth.registerError}</p>}
+              <p className="text-sm text-center text-gray-500">
+                <Link href="/login" className="text-brand hover:underline">
+                  {t.auth.alreadyHaveAccount}
+                </Link>
+              </p>
+            </form>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

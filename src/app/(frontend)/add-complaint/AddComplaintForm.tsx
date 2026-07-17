@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { HowToSteps } from '@/components/HowToSteps'
+import { WhyBlock } from '@/components/WhyBlock'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { useCustomer } from '@/lib/useCustomer'
 
@@ -53,10 +56,32 @@ export function AddComplaintForm({
   }
 
   return (
-    <div className="container-page py-8 max-w-2xl">
+    <div className="container-page py-8 max-w-3xl">
       <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.addComplaintPage.title }]} />
-      <h1 className="text-2xl font-bold mb-2">{t.addComplaintPage.title}</h1>
-      <p className="text-gray-500 mb-6">{t.addComplaintPage.subtitle}</p>
+
+      <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold mb-2">{t.addComplaintPage.title}</h1>
+          <p className="text-gray-500">{t.addComplaintPage.introText}</p>
+        </div>
+        <div className="relative h-28 w-28 shrink-0">
+          <Image src="/images/pages/complaint.svg" alt="" fill className="object-contain" />
+        </div>
+      </div>
+
+      <HowToSteps
+        title={t.addComplaintPage.stepsTitle}
+        subtitle={t.addComplaintPage.stepsSubtitle}
+        steps={[
+          { title: t.addComplaintPage.step1Title, text: t.addComplaintPage.step1Text },
+          { title: t.addComplaintPage.step2Title, text: t.addComplaintPage.step2Text },
+          { title: t.addComplaintPage.step3Title, text: t.addComplaintPage.step3Text },
+        ]}
+      />
+
+      <WhyBlock title={t.addComplaintPage.whyTitle} text={t.addComplaintPage.whyText} />
+
+      <h2 className="text-lg font-semibold mb-3">{t.addComplaintPage.formTitle}</h2>
 
       {status === 'success' ? (
         <div className="card p-6">{t.addComplaintPage.successMsg}</div>

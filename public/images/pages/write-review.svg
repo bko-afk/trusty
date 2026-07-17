@@ -1,0 +1,16 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="120" cy="120" r="118" fill="#F5F0FF"/>
+  <rect x="46" y="64" width="148" height="96" rx="18" fill="#E9D5FF" stroke="#6D28D9" stroke-width="4"/>
+  <path d="M78 160 L78 188 L106 160 Z" fill="#E9D5FF" stroke="#6D28D9" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M70 92 L170 92" stroke="#6D28D9" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+  <path d="M70 112 L150 112" stroke="#6D28D9" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+  <path d="M70 132 L130 132" stroke="#6D28D9" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+  <g transform="translate(146,26)">
+    <path d="M20 0 L24.7 12.9 L38 13.5 L27.5 21.8 L31 34.5 L20 27 L9 34.5 L12.5 21.8 L2 13.5 L15.3 12.9 Z" fill="#6D28D9"/>
+  </g>
+  <g transform="translate(178,58)">
+    <path d="M12 0 L14.8 7.7 L23 8.1 L16.5 13.1 L18.6 20.7 L12 16.2 L5.4 20.7 L7.5 13.1 L1 8.1 L9.2 7.7 Z" fill="#4C1D95" opacity="0.8"/>
+  </g>
+  <circle cx="58" cy="52" r="5" fill="#6D28D9" opacity="0.4"/>
+  <circle cx="196" cy="140" r="6" fill="#6D28D9" opacity="0.35"/>
+</svg>

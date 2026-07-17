@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { HowToSteps } from '@/components/HowToSteps'
+import { WhyBlock } from '@/components/WhyBlock'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { countries, countryFlag } from '@/lib/countries'
 import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
@@ -56,10 +59,32 @@ export function AddCompanyForm({
   }
 
   return (
-    <div className="container-page py-8 max-w-2xl">
+    <div className="container-page py-8 max-w-3xl">
       <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.nav.addCompany }]} />
-      <h1 className="text-2xl font-bold mb-2">{t.addCompanyPage.title}</h1>
-      <p className="text-gray-500 mb-6">{t.addCompanyPage.subtitle}</p>
+
+      <div className="flex flex-col sm:flex-row items-center gap-6 mb-8">
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold mb-2">{t.addCompanyPage.title}</h1>
+          <p className="text-gray-500">{t.addCompanyPage.introText}</p>
+        </div>
+        <div className="relative h-28 w-28 shrink-0">
+          <Image src="/images/pages/add-company.svg" alt="" fill className="object-contain" />
+        </div>
+      </div>
+
+      <HowToSteps
+        title={t.addCompanyPage.stepsTitle}
+        subtitle={t.addCompanyPage.stepsSubtitle}
+        steps={[
+          { title: t.addCompanyPage.step1Title, text: t.addCompanyPage.step1Text },
+          { title: t.addCompanyPage.step2Title, text: t.addCompanyPage.step2Text },
+          { title: t.addCompanyPage.step3Title, text: t.addCompanyPage.step3Text },
+        ]}
+      />
+
+      <WhyBlock title={t.addCompanyPage.whyTitle} text={t.addCompanyPage.whyText} />
+
+      <h2 className="text-lg font-semibold mb-3">{t.addCompanyPage.formTitle}</h2>
 
       {status === 'success' ? (
         <div className="card p-6">{t.addCompanyPage.successMsg}</div>

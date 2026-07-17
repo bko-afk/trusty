@@ -144,6 +144,18 @@ export type Dictionary = {
     submittingBtn: string
     successMsg: string
     errorMsg: string
+    introText: string
+    stepsTitle: string
+    stepsSubtitle: string
+    step1Title: string
+    step1Text: string
+    step2Title: string
+    step2Text: string
+    step3Title: string
+    step3Text: string
+    whyTitle: string
+    whyText: string
+    formTitle: string
   }
   addReviewPage: {
     title: string
@@ -163,6 +175,18 @@ export type Dictionary = {
     successMsg: string
     errorMsg: string
     loggedInAs: string
+    introText: string
+    stepsTitle: string
+    stepsSubtitle: string
+    step1Title: string
+    step1Text: string
+    step2Title: string
+    step2Text: string
+    step3Title: string
+    step3Text: string
+    whyTitle: string
+    whyText: string
+    formTitle: string
   }
   addComplaintPage: {
     title: string
@@ -178,6 +202,18 @@ export type Dictionary = {
     successMsg: string
     errorMsg: string
     loggedInAs: string
+    introText: string
+    stepsTitle: string
+    stepsSubtitle: string
+    step1Title: string
+    step1Text: string
+    step2Title: string
+    step2Text: string
+    step3Title: string
+    step3Text: string
+    whyTitle: string
+    whyText: string
+    formTitle: string
   }
   reviewCard: {
     pros: string
@@ -212,6 +248,11 @@ export type Dictionary = {
     writingAsAccount: string
     passwordResetHint: string
     notLoggedIn: string
+    registerIntro: string
+    registerBenefit1: string
+    registerBenefit2: string
+    registerBenefit3: string
+    loginIntro: string
   }
 }
 
@@ -343,6 +384,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       submittingBtn: 'Отправка...',
       successMsg: 'Спасибо! Заявка отправлена и появится на сайте после проверки модератором.',
       errorMsg: 'Не удалось отправить форму. Попробуйте ещё раз.',
+      introText:
+        'Trusty — независимый каталог, и мы добавляем компании бесплатно. Заполните анкету — карточка появится в каталоге сразу после проверки модератором.',
+      stepsTitle: 'Как добавить компанию?',
+      stepsSubtitle: 'Всего 3 простых шага',
+      step1Title: 'Заполните анкету',
+      step1Text: 'Укажите название, сайт, страну и виды страхования, которые предлагает компания.',
+      step2Title: 'Модерация',
+      step2Text: 'Мы проверим данные — обычно это занимает не больше одного рабочего дня.',
+      step3Title: 'Карточка в каталоге',
+      step3Text: 'Компания появится в общем рейтинге, а клиенты смогут оставлять о ней отзывы.',
+      whyTitle: 'Зачем добавлять компанию в Trusty?',
+      whyText:
+        'Чем больше компаний в каталоге — тем проще путешественникам сравнивать условия и находить надёжного страховщика. Карточку можно будет дополнять и уточнять позже, а подтверждённые компании получают отметку доверия рядом с названием.',
+      formTitle: 'Анкета компании',
     },
     addReviewPage: {
       title: 'Оставить отзыв',
@@ -362,6 +417,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       successMsg: 'Спасибо за отзыв! Он появится на сайте после модерации.',
       errorMsg: 'Не удалось отправить отзыв. Попробуйте ещё раз.',
       loggedInAs: 'Вы пишете отзыв от имени аккаунта',
+      introText:
+        'Ваш отзыв помогает другим путешественникам выбрать надёжную страховую компанию — и попадает в общий рейтинг после проверки модератором.',
+      stepsTitle: 'Как оставить отзыв?',
+      stepsSubtitle: 'Всего 3 простых шага',
+      step1Title: 'Найдите компанию',
+      step1Text: 'Выберите страховую компанию из каталога, с которой у вас был опыт.',
+      step2Title: 'Опишите опыт',
+      step2Text: 'Поставьте оценку, расскажите о плюсах и минусах — это займёт пару минут.',
+      step3Title: 'Модерация и публикация',
+      step3Text: 'После проверки отзыв появится на странице компании и повлияет на её рейтинг.',
+      whyTitle: 'Зачем оставлять отзывы?',
+      whyText:
+        'Реальные отзывы клиентов — основа рейтинга Trusty. Именно они помогают другим путешественникам понять, как компания ведёт себя при страховых случаях, а не только на словах в рекламе.',
+      formTitle: 'Форма отзыва',
     },
     addComplaintPage: {
       title: 'Оставить жалобу',
@@ -378,6 +447,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       successMsg: 'Жалоба принята! Она появится на сайте после модерации.',
       errorMsg: 'Не удалось отправить жалобу. Попробуйте ещё раз.',
       loggedInAs: 'Вы отправляете жалобу от имени аккаунта',
+      introText:
+        'Если страховая компания нарушила условия полиса, затянула с выплатой или отказала без оснований — расскажите об этом. Жалоба видна другим пользователям и влияет на репутацию компании.',
+      stepsTitle: 'Как оставить жалобу?',
+      stepsSubtitle: 'Всего 3 простых шага',
+      step1Title: 'Выберите компанию',
+      step1Text: 'Укажите страховую компанию, к которой относится жалоба.',
+      step2Title: 'Опишите ситуацию',
+      step2Text: 'Кратко изложите суть проблемы: что произошло и чего вы ожидали.',
+      step3Title: 'Ответ компании',
+      step3Text: 'После модерации жалоба публикуется, а представитель компании может ответить на неё.',
+      whyTitle: 'Почему важно оставлять жалобы?',
+      whyText:
+        'Жалобы — это сигнал для других путешественников и для самой компании. Открытая публикация проблем стимулирует страховщиков быстрее реагировать на страховые случаи и держать обещания из полиса.',
+      formTitle: 'Форма жалобы',
     },
     reviewCard: {
       pros: 'Плюсы',
@@ -412,6 +495,11 @@ export const dictionary: Record<Locale, Dictionary> = {
       writingAsAccount: 'Вы вошли как',
       passwordResetHint: 'Забыли пароль? Напишите нам, чтобы восстановить доступ вручную.',
       notLoggedIn: 'Вы не авторизованы.',
+      registerIntro: 'Аккаунт нужен, чтобы отвечать на свои отзывы, следить за жалобами и быстрее оставлять новые.',
+      registerBenefit1: 'Отзывы и жалобы публикуются от вашего имени, без повторного ввода данных',
+      registerBenefit2: 'История ваших отзывов и жалоб — в личном кабинете',
+      registerBenefit3: 'Уведомления об ответах от компаний',
+      loginIntro: 'Войдите, чтобы оставлять отзывы и жалобы от своего аккаунта и видеть их статус.',
     },
   },
   en: {
@@ -541,6 +629,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       submittingBtn: 'Submitting...',
       successMsg: 'Thank you! Your submission will appear on the site after moderator review.',
       errorMsg: 'Could not submit the form. Please try again.',
+      introText:
+        "Trusty is an independent catalog, and adding a company is free. Fill in the form — the listing goes live right after moderator review.",
+      stepsTitle: 'How to add a company?',
+      stepsSubtitle: 'Just 3 simple steps',
+      step1Title: 'Fill in the form',
+      step1Text: 'Provide the name, website, country, and the insurance types the company offers.',
+      step2Title: 'Moderation',
+      step2Text: "We'll review the details — usually within one business day.",
+      step3Title: 'Listed in the catalog',
+      step3Text: 'The company appears in the overall rating, and customers can start leaving reviews.',
+      whyTitle: 'Why add a company to Trusty?',
+      whyText:
+        'The more companies in the catalog, the easier it is for travelers to compare terms and find a reliable insurer. Listings can be expanded later, and verified companies get a trust badge next to their name.',
+      formTitle: 'Company form',
     },
     addReviewPage: {
       title: 'Leave a review',
@@ -560,6 +662,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       successMsg: 'Thanks for your review! It will appear after moderation.',
       errorMsg: 'Could not submit the review. Please try again.',
       loggedInAs: 'You are writing this review as',
+      introText:
+        'Your review helps other travelers pick a reliable insurance company — and feeds into the overall rating once a moderator approves it.',
+      stepsTitle: 'How to leave a review?',
+      stepsSubtitle: 'Just 3 simple steps',
+      step1Title: 'Find the company',
+      step1Text: "Pick the insurance company you've had experience with from the catalog.",
+      step2Title: 'Describe your experience',
+      step2Text: 'Rate it, note the pros and cons — it only takes a couple of minutes.',
+      step3Title: 'Moderation and publishing',
+      step3Text: "After review, your review appears on the company's page and affects its rating.",
+      whyTitle: 'Why leave a review?',
+      whyText:
+        "Real customer reviews are the foundation of Trusty's rating. They help other travelers see how a company actually behaves when a claim comes in — not just what its ads say.",
+      formTitle: 'Review form',
     },
     addComplaintPage: {
       title: 'File a complaint',
@@ -576,6 +692,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       successMsg: 'Complaint received! It will appear on the site after moderation.',
       errorMsg: 'Could not submit the complaint. Please try again.',
       loggedInAs: 'You are filing this complaint as',
+      introText:
+        "If an insurance company breached policy terms, delayed a payout, or refused a claim without grounds — tell us about it. Complaints are visible to other users and affect the company's reputation.",
+      stepsTitle: 'How to file a complaint?',
+      stepsSubtitle: 'Just 3 simple steps',
+      step1Title: 'Choose the company',
+      step1Text: 'Select the insurance company the complaint is about.',
+      step2Title: 'Describe the situation',
+      step2Text: 'Briefly explain what happened and what you expected instead.',
+      step3Title: "Company's response",
+      step3Text: "After moderation the complaint is published, and the company's representative can respond.",
+      whyTitle: 'Why file a complaint?',
+      whyText:
+        'Complaints are a signal to other travelers and to the company itself. Publishing issues openly pushes insurers to respond faster to claims and keep the promises made in the policy.',
+      formTitle: 'Complaint form',
     },
     reviewCard: {
       pros: 'Pros',
@@ -610,6 +740,12 @@ export const dictionary: Record<Locale, Dictionary> = {
       writingAsAccount: 'Logged in as',
       passwordResetHint: 'Forgot your password? Contact us to reset it manually.',
       notLoggedIn: 'You are not logged in.',
+      registerIntro:
+        'An account lets you reply to your own reviews, track your complaints, and post new ones faster.',
+      registerBenefit1: 'Reviews and complaints are posted under your name, no need to re-enter details',
+      registerBenefit2: 'Your review and complaint history in one account page',
+      registerBenefit3: 'Notifications when companies respond',
+      loginIntro: 'Log in to post reviews and complaints under your account and track their status.',
     },
   },
   es: {
@@ -739,6 +875,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       submittingBtn: 'Enviando...',
       successMsg: '¡Gracias! Tu solicitud aparecerá en el sitio tras la revisión del moderador.',
       errorMsg: 'No se pudo enviar el formulario. Inténtalo de nuevo.',
+      introText:
+        'Trusty es un catálogo independiente y añadir una empresa es gratis. Completa el formulario — la ficha se publica justo después de la revisión del moderador.',
+      stepsTitle: '¿Cómo añadir una empresa?',
+      stepsSubtitle: 'Solo 3 pasos simples',
+      step1Title: 'Completa el formulario',
+      step1Text: 'Indica el nombre, sitio web, país y los tipos de seguro que ofrece la empresa.',
+      step2Title: 'Moderación',
+      step2Text: 'Revisaremos los datos — normalmente en menos de un día hábil.',
+      step3Title: 'Ficha en el catálogo',
+      step3Text: 'La empresa aparece en la clasificación general y los clientes pueden dejar reseñas.',
+      whyTitle: '¿Por qué añadir una empresa a Trusty?',
+      whyText:
+        'Cuantas más empresas haya en el catálogo, más fácil será para los viajeros comparar condiciones y encontrar una aseguradora confiable. La ficha se puede ampliar más adelante, y las empresas verificadas reciben un distintivo de confianza junto al nombre.',
+      formTitle: 'Formulario de la empresa',
     },
     addReviewPage: {
       title: 'Dejar una reseña',
@@ -758,6 +908,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       successMsg: '¡Gracias por tu reseña! Aparecerá tras la moderación.',
       errorMsg: 'No se pudo enviar la reseña. Inténtalo de nuevo.',
       loggedInAs: 'Estás escribiendo esta reseña como',
+      introText:
+        'Tu reseña ayuda a otros viajeros a elegir una aseguradora confiable — y se suma a la clasificación general tras la aprobación del moderador.',
+      stepsTitle: '¿Cómo dejar una reseña?',
+      stepsSubtitle: 'Solo 3 pasos simples',
+      step1Title: 'Encuentra la empresa',
+      step1Text: 'Elige en el catálogo la aseguradora con la que tuviste experiencia.',
+      step2Title: 'Describe tu experiencia',
+      step2Text: 'Puntúala y cuenta las ventajas y desventajas — toma solo un par de minutos.',
+      step3Title: 'Moderación y publicación',
+      step3Text: 'Tras la revisión, tu reseña aparece en la página de la empresa y afecta su clasificación.',
+      whyTitle: '¿Por qué dejar reseñas?',
+      whyText:
+        'Las reseñas reales de clientes son la base de la clasificación de Trusty. Ayudan a otros viajeros a ver cómo se comporta realmente una empresa ante un siniestro, no solo lo que dice su publicidad.',
+      formTitle: 'Formulario de reseña',
     },
     addComplaintPage: {
       title: 'Presentar una queja',
@@ -774,6 +938,20 @@ export const dictionary: Record<Locale, Dictionary> = {
       successMsg: '¡Queja recibida! Aparecerá en el sitio tras la moderación.',
       errorMsg: 'No se pudo enviar la queja. Inténtalo de nuevo.',
       loggedInAs: 'Estás presentando esta queja como',
+      introText:
+        'Si una aseguradora incumplió las condiciones de la póliza, retrasó un pago o rechazó un siniestro sin motivo, cuéntanoslo. Las quejas son visibles para otros usuarios y afectan la reputación de la empresa.',
+      stepsTitle: '¿Cómo presentar una queja?',
+      stepsSubtitle: 'Solo 3 pasos simples',
+      step1Title: 'Elige la empresa',
+      step1Text: 'Indica la aseguradora a la que se refiere la queja.',
+      step2Title: 'Describe la situación',
+      step2Text: 'Explica brevemente qué pasó y qué esperabas en su lugar.',
+      step3Title: 'Respuesta de la empresa',
+      step3Text: 'Tras la moderación, la queja se publica y el representante de la empresa puede responder.',
+      whyTitle: '¿Por qué presentar una queja?',
+      whyText:
+        'Las quejas son una señal para otros viajeros y para la propia empresa. Publicar los problemas abiertamente impulsa a las aseguradoras a responder más rápido a los siniestros y cumplir lo prometido en la póliza.',
+      formTitle: 'Formulario de queja',
     },
     reviewCard: {
       pros: 'Ventajas',
@@ -808,6 +986,12 @@ export const dictionary: Record<Locale, Dictionary> = {
       writingAsAccount: 'Sesión iniciada como',
       passwordResetHint: '¿Olvidaste tu contraseña? Contáctanos para restablecerla manualmente.',
       notLoggedIn: 'No has iniciado sesión.',
+      registerIntro:
+        'Una cuenta te permite responder a tus propias reseñas, seguir tus quejas y publicar nuevas más rápido.',
+      registerBenefit1: 'Las reseñas y quejas se publican con tu nombre, sin volver a ingresar tus datos',
+      registerBenefit2: 'Historial de tus reseñas y quejas en tu cuenta',
+      registerBenefit3: 'Notificaciones cuando las empresas respondan',
+      loginIntro: 'Inicia sesión para publicar reseñas y quejas con tu cuenta y seguir su estado.',
     },
   },
 } as const
