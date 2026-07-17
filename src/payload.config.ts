@@ -2,6 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import { resendAdapter } from '@payloadcms/email-resend'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import sharp from 'sharp'
@@ -15,6 +16,7 @@ import { ReviewReplies } from './collections/ReviewReplies'
 import { Complaints } from './collections/Complaints'
 import { Articles } from './collections/Articles'
 import { Customers } from './collections/Customers'
+import { SiteSettings } from './globals/SiteSettings'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -29,16 +31,31 @@ const dirname = path.dirname(filename)
 const hasS3Config = Boolean(
   process.env.S3_BUCKET && process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY,
 )
+const trustedOrigin = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+const hasEmailConfig = Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM_ADDRESS)
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
   admin: {
     user: Users.slug,
+    importMap: {
+      baseDir: dirname,
+    },
     meta: {
       titleSuffix: '— Админка Trusty',
     },
+    components: {
+      beforeDashboard: ['/components/admin/AdminDashboard#AdminDashboard'],
+    },
   },
   editor: lexicalEditor({}),
+  email: hasEmailConfig
+    ? resendAdapter({
+        apiKey: process.env.RESEND_API_KEY as string,
+        defaultFromAddress: process.env.EMAIL_FROM_ADDRESS as string,
+        defaultFromName: process.env.EMAIL_FROM_NAME || 'Trusty',
+      })
+    : undefined,
   collections: [
     Users,
     Media,
@@ -50,6 +67,7 @@ export default buildConfig({
     Articles,
     Customers,
   ],
+  globals: [SiteSettings],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
@@ -66,7 +84,9 @@ export default buildConfig({
     push: false,
   }),
   sharp,
-  cors: [process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'].filter(Boolean),
+  cors: [trustedOrigin],
+  csrf: [trustedOrigin],
+  graphQL: { disable: true },
   plugins: hasS3Config
     ? [
         s3Storage({

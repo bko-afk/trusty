@@ -21,8 +21,11 @@ export const Customers: CollectionConfig = {
     // (админ vs посетитель) это не критично, но стоит иметь в виду.
     verify: false,
     maxLoginAttempts: 10,
+    lockTime: 10 * 60 * 1000,
+    removeTokenFromResponses: true,
   },
   admin: {
+    group: 'Пользователи',
     useAsTitle: 'email',
     defaultColumns: ['email', 'name', 'createdAt'],
   },

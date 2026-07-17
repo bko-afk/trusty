@@ -76,6 +76,22 @@ body {
     var(--surface);
 }
 
+.form-label {
+  @apply block text-sm font-bold text-brand-dark;
+}
+
+.form-control {
+  @apply mt-2 min-h-12 w-full rounded-sm border border-gray-300 bg-white px-4 py-3 text-base text-brand-dark outline-none transition-colors placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-brand/10;
+}
+
+textarea.form-control {
+  @apply resize-y leading-6;
+}
+
+.form-help {
+  @apply mt-2 block text-xs leading-5 text-gray-500;
+}
+
 .content-auto {
   content-visibility: auto;
   contain-intrinsic-block-size: 420px;

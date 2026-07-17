@@ -75,7 +75,6 @@ export function LoginForm() {
               {t.auth.loginBtn}
             </button>
             {status === 'error' && <p role="alert" className="text-rose-600 text-sm">{t.auth.loginError}</p>}
-            <p className="text-xs text-center text-gray-400">{t.auth.passwordResetHint}</p>
             <p className="text-sm text-center text-gray-500">
               <Link href="/register" className="text-brand hover:underline">
                 {t.auth.noAccountYet}

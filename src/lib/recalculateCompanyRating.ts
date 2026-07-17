@@ -22,9 +22,13 @@ export async function recalculateCompanyRating(
   const { docs, totalDocs } = await payload.find({
     collection: 'reviews',
     where: {
-      and: [{ company: { equals: companyId } }, { status: { equals: 'published' } }],
+      and: [
+        { company: { equals: companyId } },
+        { status: { equals: 'published' } },
+        { includeInRating: { equals: true } },
+      ],
     },
-    limit: 0,
+    limit: 10000,
     depth: 0,
     req,
   })

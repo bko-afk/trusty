@@ -158,7 +158,7 @@ export function CompanyDetailText({
     <div>
       <section className="border-b border-gray-200 bg-white py-8 md:py-12">
         <div className="container-page">
-          <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.portal.detail.ratingsBreadcrumb, href: '/companies' }, { label: name }]} />
+          <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.nav.catalog, href: '/companies' }, { label: name }]} />
           <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_280px] lg:items-start">
             <div className="flex flex-col gap-6 sm:flex-row">
               <div className="relative h-24 w-40 shrink-0 overflow-hidden border border-gray-200 bg-white"><Image src={logoUrl || '/placeholders/logo-placeholder.svg'} alt={name} fill className="object-contain p-3" /></div>

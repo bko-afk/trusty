@@ -10,8 +10,9 @@ export const Reviews: CollectionConfig = {
     plural: 'Отзывы',
   },
   admin: {
+    group: 'Модерация',
     useAsTitle: 'title',
-    defaultColumns: ['title', 'company', 'rating', 'status', 'createdAt'],
+    defaultColumns: ['title', 'company', 'rating', 'status', 'includeInRating', 'createdAt'],
   },
   access: {
     read: ({ req }) => {
@@ -40,6 +41,7 @@ export const Reviews: CollectionConfig = {
           data.helpfulUp = 0
           data.helpfulDown = 0
           data.verifiedExperience = false
+          data.includeInRating = false
           delete data.customer
         }
         if (operation === 'create' && isCustomer(req)) {
@@ -51,8 +53,13 @@ export const Reviews: CollectionConfig = {
       },
     ],
     afterChange: [
-      async ({ doc, req }) => {
+      async ({ doc, previousDoc, req }) => {
         await recalculateCompanyRating(req.payload, doc.company, req)
+        const currentCompanyId = typeof doc.company === 'object' ? doc.company.id : doc.company
+        const previousCompanyId = typeof previousDoc?.company === 'object' ? previousDoc.company.id : previousDoc?.company
+        if (previousCompanyId && String(previousCompanyId) !== String(currentCompanyId)) {
+          await recalculateCompanyRating(req.payload, previousCompanyId, req)
+        }
       },
     ],
     afterDelete: [
@@ -187,7 +194,20 @@ export const Reviews: CollectionConfig = {
         { label: 'Отклонён', value: 'rejected' },
         { label: 'Спам', value: 'spam' },
       ],
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description: 'На сайте видны только отзывы со статусом «Опубликован».',
+      },
+    },
+    {
+      name: 'includeInRating',
+      label: 'Учитывать оценку в рейтинге',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Включите после проверки отзыва. Опубликованный отзыв можно показывать без влияния на средний балл.',
+      },
     },
     {
       name: 'helpfulUp',

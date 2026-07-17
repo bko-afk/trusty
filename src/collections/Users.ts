@@ -3,8 +3,13 @@ import { isAdmin, isStaff } from '../lib/access'
 
 export const Users: CollectionConfig = {
   slug: 'users',
-  auth: true,
+  auth: {
+    maxLoginAttempts: 5,
+    lockTime: 10 * 60 * 1000,
+    removeTokenFromResponses: true,
+  },
   admin: {
+    group: 'Пользователи',
     useAsTitle: 'email',
     defaultColumns: ['email', 'role'],
   },

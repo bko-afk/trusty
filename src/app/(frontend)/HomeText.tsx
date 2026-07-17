@@ -15,11 +15,19 @@ type Props = {
   popularCompanies: any[]
   newestCompanies: any[]
   latestReviews: any[]
+  visibility: {
+    services: boolean
+    complaintCTA: boolean
+    companyRanking: boolean
+    latestReviews: boolean
+    methodology: boolean
+    newCompanies: boolean
+  }
 }
 
 const INITIAL_VISIBLE = 6
 
-export function HomeText({ companies, popularCompanies, newestCompanies, latestReviews }: Props) {
+export function HomeText({ companies, popularCompanies, newestCompanies, latestReviews, visibility }: Props) {
   const { t } = useLanguage()
   const [showAll, setShowAll] = useState(false)
   const visibleCompanies = showAll ? companies : companies.slice(0, INITIAL_VISIBLE)
@@ -55,7 +63,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
         </div>
       </section>
 
-      <section className="surface-section py-12 md:py-16">
+      {visibility.services && <section className="surface-section py-12 md:py-16">
         <div className="container-page">
           <div className="mb-7 flex items-end justify-between gap-4">
             <div>
@@ -86,9 +94,35 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
             </a>
           </div>
         </div>
-      </section>
+      </section>}
 
-      <section className="container-page py-14 md:py-20">
+      {visibility.complaintCTA && <section className="container-page py-10 md:py-14">
+        <div className="relative overflow-hidden bg-[#071b45] px-6 py-9 text-white sm:px-10 md:py-12 lg:px-14">
+          <div aria-hidden="true" className="absolute -right-20 -top-28 h-72 w-72 rounded-full border-[48px] border-white/5" />
+          <div aria-hidden="true" className="absolute bottom-0 right-24 h-24 w-24 translate-y-1/2 rounded-full bg-[#5c24b8] opacity-70" />
+          <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-xl font-black text-[#80c5c7]">!</span>
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#80c5c7]">{t.home.ctaComplaintTitle}</p>
+              </div>
+              <h2 className="mt-5 text-3xl font-extrabold leading-tight tracking-[-0.035em] sm:text-4xl">{t.addComplaintPage.whyTitle}</h2>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-white/70">{t.addComplaintPage.introText}</p>
+              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/55">
+                <span>{t.addComplaintPage.stepsSubtitle}</span>
+                <span aria-hidden="true" className="h-1 w-1 rounded-full bg-white/30" />
+                <span>{t.addComplaintPage.step3Title}</span>
+              </div>
+            </div>
+            <Link href="/add-complaint" className="inline-flex min-h-14 items-center justify-center gap-3 bg-brand px-7 py-4 text-base font-extrabold text-white transition-colors hover:bg-[#7132d8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+              {t.addComplaintPage.submitBtn}
+              <span aria-hidden="true" className="text-xl">→</span>
+            </Link>
+          </div>
+        </div>
+      </section>}
+
+      {visibility.companyRanking && <section className="container-page py-14 md:py-20">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="section-kicker">{t.portal.home.popularCategories}</p>
@@ -114,7 +148,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
               <div className="text-sm font-bold text-brand md:text-lg">№ {index + 1}</div>
               <div className="flex min-w-0 items-center gap-4">
                 <div className="relative h-14 w-24 shrink-0 overflow-hidden border border-gray-100 bg-white">
-                  <Image src={companyLogoUrl(company.logo, company.logoFile) || '/placeholders/logo-placeholder.svg'} alt={company.name} fill className="object-contain p-2" />
+                  <Image src={companyLogoUrl(company.logo, company.logoFile) || '/placeholders/logo-placeholder.svg'} alt={company.name} fill sizes="96px" className="object-contain p-2" />
                 </div>
                 <div className="min-w-0">
                   <div className="truncate text-lg font-bold">{company.name}</div>
@@ -131,9 +165,9 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
         {!showAll && companies.length > INITIAL_VISIBLE && (
           <div className="mt-8 text-center"><button type="button" onClick={() => setShowAll(true)} className="btn-secondary">{t.home.showMoreBtn}</button></div>
         )}
-      </section>
+      </section>}
 
-      {latestReviews.length > 0 && (
+      {visibility.latestReviews && latestReviews.length > 0 && (
         <section className="surface-section py-14 md:py-20">
           <div className="container-page">
             <p className="section-kicker">{t.portal.home.customerExperience}</p>
@@ -156,7 +190,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
         </section>
       )}
 
-      <section id="methodology" className="container-page py-14 md:py-20">
+      {visibility.methodology && <section id="methodology" className="container-page py-14 md:py-20">
         <div className="grid overflow-hidden border border-gray-200 lg:grid-cols-[1fr_1.05fr]">
           <div className="relative min-h-[340px] bg-[#faf7f2] lg:min-h-[520px]">
             <Image src="/images/trusty-insurance-rating.png" alt={t.portal.home.imageAlt} fill priority className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
@@ -172,9 +206,9 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
             <Link href="/companies" className="btn-primary mt-8 self-start">{t.portal.home.viewRating}</Link>
           </div>
         </div>
-      </section>
+      </section>}
 
-      {newestCompanies.length > 0 && (
+      {visibility.newCompanies && newestCompanies.length > 0 && (
         <section className="container-page pb-10 md:pb-14">
           <div className="mb-6 flex items-end justify-between gap-4">
             <div>

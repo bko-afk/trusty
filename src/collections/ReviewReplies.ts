@@ -8,6 +8,7 @@ export const ReviewReplies: CollectionConfig = {
     plural: 'Ответы на отзывы',
   },
   admin: {
+    group: 'Модерация',
     useAsTitle: 'authorName',
     defaultColumns: ['review', 'authorName', 'status', 'createdAt'],
   },

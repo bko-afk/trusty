@@ -136,7 +136,7 @@ export function CompaniesCatalogText({
     <div>
       <section className="border-b border-gray-200 bg-white py-8 md:py-14">
         <div className="container-page">
-          <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.portal.ranking.ratingsBreadcrumb, href: '/companies' }, { label: t.portal.ranking.onlineInsuranceBreadcrumb }]} />
+          <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.nav.catalog }]} />
           <div className="mt-8 grid gap-6 md:grid-cols-[96px_1fr] md:items-start">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand text-2xl font-bold text-white md:h-24 md:w-24">{t.portal.ranking.marker}</div>
             <div>

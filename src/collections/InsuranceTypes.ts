@@ -8,6 +8,7 @@ export const InsuranceTypes: CollectionConfig = {
     plural: 'Виды страхования',
   },
   admin: {
+    group: 'Каталог и рейтинги',
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'order'],
   },

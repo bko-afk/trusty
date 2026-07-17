@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { toCatalogCompany } from '@/lib/catalogCompany'
+import { sortCompaniesByRanking } from '@/lib/companyRanking'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({
-      companies: result.docs.map(toCatalogCompany),
+      companies: sortCompaniesByRanking(result.docs, insuranceTypeIds).map(toCatalogCompany),
       total: result.totalDocs,
     })
   } catch (error) {

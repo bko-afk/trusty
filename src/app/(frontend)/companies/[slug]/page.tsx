@@ -1,35 +1,50 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { companyLogoUrl } from '@/lib/companyLogo'
 import { CompanyDetailText } from './CompanyDetailText'
+import { categoryEditorialPosition, sortCompaniesByRanking } from '@/lib/companyRanking'
+import { getPublishedCompany } from '@/lib/getPublishedContent'
+import { absoluteUrl, mediaUrl, plainDescription } from '@/lib/seo'
+import { richTextToPlainText } from '@/lib/richText'
+import { JsonLd } from '@/components/JsonLd'
 
 export const revalidate = 60
 
-async function getCompany(slug: string) {
-  const payload = await getPayloadClient()
-  const result = await payload.find({
-    collection: 'companies',
-    where: { slug: { equals: slug }, status: { equals: 'published' } },
-    depth: 2,
-    limit: 1,
-  })
-  return result.docs[0]
-}
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const company: any = await getPublishedCompany(slug)
+  if (!company) return { title: 'Компания не найдена', robots: { index: false, follow: false } }
 
-function extractText(node: any): string {
-  if (!node) return ''
-  if (typeof node === 'string') return node
-  if (node.root) return extractText(node.root)
-  if (Array.isArray(node.children)) {
-    return node.children.map(extractText).join(node.type === 'paragraph' ? '\n\n' : '')
+  const description = plainDescription(
+    company.seo?.description || company.shortDescription,
+    `Отзывы клиентов, рейтинг, виды страхования и информация о компании ${company.name}.`,
+  )
+  const image = mediaUrl(company.seo?.ogImage) || companyLogoUrl(company.logo, company.logoFile)
+  const canonical = `/companies/${slug}`
+
+  return {
+    title: company.seo?.title || `${company.name}: отзывы и рейтинг`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: 'website',
+      url: canonical,
+      title: company.seo?.title || `${company.name}: отзывы и рейтинг`,
+      description,
+      images: image ? [{ url: image, alt: company.name }] : undefined,
+    },
+    twitter: { card: 'summary_large_image', description, images: image ? [image] : undefined },
   }
-  if (typeof node.text === 'string') return node.text
-  return ''
 }
 
 export default async function CompanyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const company: any = await getCompany(slug)
+  const company: any = await getPublishedCompany(slug)
   if (!company) notFound()
 
   const payload = await getPayloadClient()
@@ -46,7 +61,13 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     }),
     payload.find({
       collection: 'reviews',
-      where: { company: { equals: company.id }, status: { equals: 'published' } },
+      where: {
+        and: [
+          { company: { equals: company.id } },
+          { status: { equals: 'published' } },
+          { includeInRating: { equals: true } },
+        ],
+      },
       depth: 0,
       limit: 1000,
     }),
@@ -76,30 +97,69 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     )
     return candidateTypeIds.some((id: any) => insuranceTypeIds.includes(id))
   }
-  const relatedCompanies = allCompaniesResult.docs
+  const rankedCompanies = sortCompaniesByRanking(allCompaniesResult.docs)
+  const relatedCompanies = rankedCompanies
     .filter((candidate: any) => candidate.id !== company.id && sharesInsuranceType(candidate))
     .slice(0, 3)
   const categoryPositions = (company.insuranceTypes || []).map((type: any) => {
     const typeId = typeof type === 'object' ? type.id : type
-    const ranked = allCompaniesResult.docs.filter((candidate: any) =>
+    const categoryCompanies = allCompaniesResult.docs.filter((candidate: any) =>
       (candidate.insuranceTypes || []).some((candidateType: any) =>
         (typeof candidateType === 'object' ? candidateType.id : candidateType) === typeId,
       ),
     )
+    const ranked = sortCompaniesByRanking(categoryCompanies, [typeId])
     return {
       slug: typeof type === 'object' ? type.slug : String(typeId),
       title: typeof type === 'object' ? type.title : String(typeId),
-      position: ranked.findIndex((candidate: any) => candidate.id === company.id) + 1,
+      position:
+        categoryEditorialPosition(company, typeId) ||
+        ranked.findIndex((candidate: any) => candidate.id === company.id) + 1,
       total: ranked.length,
     }
   })
 
+  const description = company.description ? richTextToPlainText(company.description) : ''
+  const logoUrl = companyLogoUrl(company.logo, company.logoFile)
+  const structuredData: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'InsuranceAgency',
+    name: company.name,
+    url: absoluteUrl(`/companies/${slug}`),
+    description: plainDescription(company.shortDescription || description, `Страховая компания ${company.name}.`),
+    image: logoUrl ? absoluteUrl(logoUrl) : undefined,
+    telephone: company.contacts?.phone || undefined,
+    email: company.contacts?.email || undefined,
+    foundingDate: company.foundedYear ? String(company.foundedYear) : undefined,
+    sameAs: company.website ? [company.website] : undefined,
+    address: company.contacts?.address
+      ? {
+          '@type': 'PostalAddress',
+          streetAddress: company.contacts.address,
+          addressLocality: company.city || undefined,
+          addressCountry: company.country || undefined,
+        }
+      : undefined,
+    aggregateRating:
+      company.reviewCount > 0
+        ? {
+            '@type': 'AggregateRating',
+            ratingValue: company.overallRating || 0,
+            bestRating: 5,
+            worstRating: 1,
+            ratingCount: company.reviewCount,
+          }
+        : undefined,
+  }
+
   return (
-    <CompanyDetailText
+    <>
+      <JsonLd data={structuredData} />
+      <CompanyDetailText
       companyId={String(company.id)}
       slug={slug}
       name={company.name}
-      logoUrl={companyLogoUrl(company.logo, company.logoFile)}
+      logoUrl={logoUrl}
       overallRating={company.overallRating || 0}
       reviewCount={company.reviewCount || 0}
       verified={company.verified}
@@ -120,7 +180,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       address={company.contacts?.address}
       insuranceTypes={(company.insuranceTypes || []).map((it: any) => ({ slug: it.slug, title: it.title }))}
       shortDescription={company.shortDescription}
-      description={company.description ? extractText(company.description) : ''}
+      description={description}
       pros={(company.pros || []).map((p: any) => p.text)}
       cons={(company.cons || []).map((c: any) => c.text)}
       categoryPositions={categoryPositions}
@@ -135,6 +195,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         title: article.title,
         excerpt: article.excerpt,
       }))}
-    />
+      />
+    </>
   )
 }

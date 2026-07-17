@@ -1,7 +1,16 @@
+import type { Metadata } from 'next'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { AddReviewForm } from './AddReviewForm'
+import { noIndexMetadata } from '@/lib/seo'
 
 export const revalidate = 120
+
+export const metadata: Metadata = {
+  ...noIndexMetadata,
+  title: 'Оставить отзыв о страховой компании',
+  description: 'Поделитесь опытом покупки полиса, обращения в поддержку или получения страховой выплаты.',
+  alternates: { canonical: '/add-review' },
+}
 
 export default async function AddReviewPage({
   searchParams,

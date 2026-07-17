@@ -17,8 +17,9 @@ export const Companies: CollectionConfig = {
     plural: 'Компании',
   },
   admin: {
+    group: 'Каталог и рейтинги',
     useAsTitle: 'name',
-    defaultColumns: ['name', 'status', 'verified', 'overallRating', 'updatedAt'],
+    defaultColumns: ['name', 'status', 'ranking.globalPosition', 'overallRating', 'reviewCount', 'updatedAt'],
   },
   access: {
     // Публично видны только опубликованные компании
@@ -60,6 +61,7 @@ export const Companies: CollectionConfig = {
           delete data.contacts
           delete data.verification
           delete data.insuranceProfile
+          delete data.ranking
           delete data.uniqueFeature
           delete data.dataUpdatedAt
           delete data.seo
@@ -82,6 +84,69 @@ export const Companies: CollectionConfig = {
             throw new Error(
               'Максимум 3 компании с отметкой «Популярная». Снимите отметку у одной из существующих, прежде чем добавить новую.',
             )
+          }
+        }
+
+        const categoryPositions = data.ranking?.categoryPositions
+        if (data.ranking && Array.isArray(categoryPositions)) {
+          const categoryIds = categoryPositions.map((placement: any) => {
+            const category = placement?.insuranceType
+            return String(typeof category === 'object' ? category?.id : category)
+          })
+          if (new Set(categoryIds).size !== categoryIds.length) {
+            throw new Error('Один вид страхования можно указать в редакционных позициях только один раз.')
+          }
+
+          const currentCompanyId = originalDoc?.id
+          const globalPosition = data.ranking.globalPosition
+          if (typeof globalPosition === 'number') {
+            const sameGlobalPosition = await req.payload.find({
+              collection: 'companies',
+              where: { 'ranking.globalPosition': { equals: globalPosition } },
+              limit: 10,
+              depth: 0,
+              req,
+              overrideAccess: true,
+            })
+            const conflict = sameGlobalPosition.docs.find(
+              (company) => String(company.id) !== String(currentCompanyId),
+            )
+            if (conflict) {
+              throw new Error(
+                `Место № ${globalPosition} в общем рейтинге уже занимает «${conflict.name}».`,
+              )
+            }
+          }
+
+          if (categoryIds.length > 0) {
+            const companiesInCategories = await req.payload.find({
+              collection: 'companies',
+              where: { 'ranking.categoryPositions.insuranceType': { in: categoryIds } },
+              limit: 1000,
+              depth: 1,
+              req,
+              overrideAccess: true,
+            })
+
+            for (const placement of categoryPositions) {
+              const category = placement?.insuranceType
+              const categoryId = String(typeof category === 'object' ? category?.id : category)
+              const conflict = companiesInCategories.docs.find((company) => {
+                if (String(company.id) === String(currentCompanyId)) return false
+                return company.ranking?.categoryPositions?.some((existingPlacement) => {
+                  const existingCategory = existingPlacement.insuranceType
+                  const existingCategoryId = String(
+                    typeof existingCategory === 'object' ? existingCategory?.id : existingCategory,
+                  )
+                  return existingCategoryId === categoryId && existingPlacement.position === placement.position
+                })
+              })
+              if (conflict) {
+                throw new Error(
+                  `Место № ${placement.position} в выбранной категории уже занимает «${conflict.name}».`,
+                )
+              }
+            }
           }
         }
         return data
@@ -153,6 +218,48 @@ export const Companies: CollectionConfig = {
       type: 'relationship',
       relationTo: 'insurance-types',
       hasMany: true,
+    },
+    {
+      name: 'ranking',
+      label: 'Редакционные позиции',
+      type: 'group',
+      admin: {
+        description: 'Ручные позиции имеют приоритет над автоматической сортировкой по оценке. Пустые позиции рассчитываются автоматически.',
+      },
+      fields: [
+        {
+          name: 'globalPosition',
+          label: 'Место в общем рейтинге',
+          type: 'number',
+          min: 1,
+          max: 10000,
+          admin: { description: 'Например, 1 — первая компания. Оставьте пустым для сортировки по оценке.' },
+        },
+        {
+          name: 'categoryPositions',
+          label: 'Места по видам страхования',
+          type: 'array',
+          labels: { singular: 'Позиция в категории', plural: 'Позиции в категориях' },
+          maxRows: 50,
+          fields: [
+            {
+              name: 'insuranceType',
+              label: 'Вид страхования',
+              type: 'relationship',
+              relationTo: 'insurance-types',
+              required: true,
+            },
+            {
+              name: 'position',
+              label: 'Место',
+              type: 'number',
+              min: 1,
+              max: 10000,
+              required: true,
+            },
+          ],
+        },
+      ],
     },
     { name: 'website', label: 'Официальный сайт', type: 'text', maxLength: 300 },
     {

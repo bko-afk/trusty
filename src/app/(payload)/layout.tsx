@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import type { ServerFunctionClient } from 'payload'
 import config from '@/payload.config'
 import { RootLayout, handleServerFunctions } from '@payloadcms/next/layouts'
@@ -5,6 +6,13 @@ import React from 'react'
 
 import { importMap } from './admin/importMap'
 import '@payloadcms/next/css'
+import './admin.css'
+import { siteUrl } from '@/lib/seo'
+
+export const metadata: Metadata = {
+  metadataBase: siteUrl(),
+  robots: { index: false, follow: false, nocache: true },
+}
 
 type Args = {
   children: React.ReactNode

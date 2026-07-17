@@ -69,9 +69,9 @@ export function CompanyReviewsText({
       <Breadcrumbs
         items={[
           { label: t.common.home, href: '/' },
-          { label: t.catalog.title, href: '/companies' },
+          { label: t.nav.catalog, href: '/companies' },
           { label: companyName, href: `/companies/${slug}` },
-          { label: t.company.readReviews },
+          { label: t.portal.detail.reviews },
         ]}
       />
 

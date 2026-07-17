@@ -11,6 +11,7 @@ export const Media: CollectionConfig = {
     delete: ({ req }) => isStaff(req),
   },
   admin: {
+    group: 'Контент',
     useAsTitle: 'alt',
   },
   upload: {

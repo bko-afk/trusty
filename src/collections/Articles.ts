@@ -8,6 +8,7 @@ export const Articles: CollectionConfig = {
     plural: 'Статьи и обзоры',
   },
   admin: {
+    group: 'Контент',
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'publishedAt'],
   },

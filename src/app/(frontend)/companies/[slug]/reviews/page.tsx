@@ -1,10 +1,32 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { CompanyReviewsText } from './CompanyReviewsText'
+import { getPublishedCompany } from '@/lib/getPublishedContent'
 
 export const revalidate = 60
 
 const CRITERIA_KEYS = ['coverage', 'price', 'claimsService', 'support'] as const
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const company = await getPublishedCompany(slug)
+  if (!company) return { title: 'Компания не найдена', robots: { index: false, follow: false } }
+
+  const title = `Отзывы о ${company.name}`
+  const description = `Отзывы клиентов о страховой компании ${company.name}, оценки качества полиса, выплат и поддержки.`
+  const canonical = `/companies/${slug}/reviews`
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { url: canonical, title, description },
+  }
+}
 
 export default async function CompanyReviewsPage({
   params,
@@ -13,13 +35,7 @@ export default async function CompanyReviewsPage({
 }) {
   const { slug } = await params
   const payload = await getPayloadClient()
-
-  const companyResult = await payload.find({
-    collection: 'companies',
-    where: { slug: { equals: slug }, status: { equals: 'published' } },
-    limit: 1,
-  })
-  const company: any = companyResult.docs[0]
+  const company: any = await getPublishedCompany(slug)
   if (!company) notFound()
 
   const reviewsResult = await payload.find({
@@ -30,14 +46,16 @@ export default async function CompanyReviewsPage({
     depth: 1,
   })
 
-  const repliesResult = await payload.find({
-    collection: 'review-replies',
-    where: {
-      review: { in: reviewsResult.docs.map((r: any) => r.id) },
-      status: { equals: 'published' },
-    },
-    limit: 200,
-  })
+  const repliesResult = reviewsResult.docs.length
+    ? await payload.find({
+        collection: 'review-replies',
+        where: {
+          review: { in: reviewsResult.docs.map((review) => review.id) },
+          status: { equals: 'published' },
+        },
+        limit: 200,
+      })
+    : { docs: [] }
 
   const repliesByReview = new Map<string, any[]>()
   for (const reply of repliesResult.docs as any[]) {
@@ -47,8 +65,9 @@ export default async function CompanyReviewsPage({
   }
 
   const criteriaAverages: Record<string, number> = {}
+  const ratingReviews = reviewsResult.docs.filter((review: any) => review.includeInRating === true)
   for (const key of CRITERIA_KEYS) {
-    const values = reviewsResult.docs
+    const values = ratingReviews
       .map((r: any) => r.criteria?.[key])
       .filter((v: any) => typeof v === 'number')
     criteriaAverages[key] = values.length

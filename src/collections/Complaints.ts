@@ -9,6 +9,7 @@ export const Complaints: CollectionConfig = {
     plural: 'Жалобы',
   },
   admin: {
+    group: 'Модерация',
     useAsTitle: 'title',
     defaultColumns: ['title', 'company', 'status', 'resolved', 'createdAt'],
   },
@@ -55,8 +56,13 @@ export const Complaints: CollectionConfig = {
       },
     ],
     afterChange: [
-      async ({ doc, req }) => {
+      async ({ doc, previousDoc, req }) => {
         await recalculateCompanyComplaints(req.payload, doc.company, req)
+        const currentCompanyId = typeof doc.company === 'object' ? doc.company.id : doc.company
+        const previousCompanyId = typeof previousDoc?.company === 'object' ? previousDoc.company.id : previousDoc?.company
+        if (previousCompanyId && String(previousCompanyId) !== String(currentCompanyId)) {
+          await recalculateCompanyComplaints(req.payload, previousCompanyId, req)
+        }
       },
     ],
     afterDelete: [
@@ -101,7 +107,10 @@ export const Complaints: CollectionConfig = {
         { label: 'Отклонена', value: 'rejected' },
         { label: 'Спам', value: 'spam' },
       ],
-      admin: { position: 'sidebar' },
+      admin: {
+        position: 'sidebar',
+        description: 'На сайте видны только жалобы со статусом «Опубликована».',
+      },
     },
     {
       name: 'resolved',

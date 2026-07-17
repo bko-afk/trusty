@@ -1,8 +1,16 @@
+import type { Metadata } from 'next'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { companyLogoUrl } from '@/lib/companyLogo'
 import { SearchText } from './SearchText'
+import { noIndexMetadata } from '@/lib/seo'
 
 export const revalidate = 30
+
+export const metadata: Metadata = {
+  ...noIndexMetadata,
+  title: 'Поиск страховых компаний',
+  alternates: { canonical: '/search' },
+}
 
 export default async function SearchPage({
   searchParams,

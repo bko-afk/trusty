@@ -1,0 +1,3 @@
+.login__form > a[href$='/forgot'] {
+  display: none;
+}

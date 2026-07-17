@@ -15,9 +15,9 @@ type Complaint = {
 }
 
 const copy = {
-  ru: { title: 'Жалобы на', add: 'Подать жалобу', empty: 'Опубликованных жалоб пока нет.', response: 'Официальный ответ компании', statuses: { submitted: 'Получена', company_replied: 'Компания ответила', resolved: 'Решена', unresolved: 'Не решена' } },
-  en: { title: 'Complaints about', add: 'Submit a complaint', empty: 'There are no published complaints yet.', response: 'Official company response', statuses: { submitted: 'Submitted', company_replied: 'Company replied', resolved: 'Resolved', unresolved: 'Unresolved' } },
-  es: { title: 'Quejas sobre', add: 'Presentar una queja', empty: 'Aún no hay quejas publicadas.', response: 'Respuesta oficial de la empresa', statuses: { submitted: 'Recibida', company_replied: 'La empresa respondió', resolved: 'Resuelta', unresolved: 'No resuelta' } },
+  ru: { title: 'Жалобы на', breadcrumb: 'Жалобы', add: 'Подать жалобу', empty: 'Опубликованных жалоб пока нет.', response: 'Официальный ответ компании', statuses: { submitted: 'Получена', company_replied: 'Компания ответила', resolved: 'Решена', unresolved: 'Не решена' } },
+  en: { title: 'Complaints about', breadcrumb: 'Complaints', add: 'Submit a complaint', empty: 'There are no published complaints yet.', response: 'Official company response', statuses: { submitted: 'Submitted', company_replied: 'Company replied', resolved: 'Resolved', unresolved: 'Unresolved' } },
+  es: { title: 'Quejas sobre', breadcrumb: 'Quejas', add: 'Presentar una queja', empty: 'Aún no hay quejas publicadas.', response: 'Respuesta oficial de la empresa', statuses: { submitted: 'Recibida', company_replied: 'La empresa respondió', resolved: 'Resuelta', unresolved: 'No resuelta' } },
 } as const
 
 export function CompanyComplaintsText({ slug, companyName, complaints }: { slug: string; companyName: string; complaints: Complaint[] }) {
@@ -26,9 +26,9 @@ export function CompanyComplaintsText({ slug, companyName, complaints }: { slug:
 
   return (
     <div className="container-page py-8">
-      <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.catalog.title, href: '/companies' }, { label: companyName, href: `/companies/${slug}` }, { label: text.title }]} />
+      <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.nav.catalog, href: '/companies' }, { label: companyName, href: `/companies/${slug}` }, { label: text.breadcrumb }]} />
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div><p className="section-kicker">{complaints.length}</p><h1 className="text-3xl font-extrabold">{text.title} «{companyName}»</h1></div>
+        <div><h1 className="text-3xl font-extrabold">{text.title} «{companyName}»</h1></div>
         <Link href={`/add-complaint?company=${slug}`} className="btn-primary">{text.add}</Link>
       </div>
       <div className="space-y-5">

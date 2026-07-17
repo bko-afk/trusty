@@ -1,8 +1,30 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { CompanyComplaintsText } from './CompanyComplaintsText'
+import { getPublishedCompany } from '@/lib/getPublishedContent'
 
 export const revalidate = 60
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const company = await getPublishedCompany(slug)
+  if (!company) return { title: 'Компания не найдена', robots: { index: false, follow: false } }
+
+  const title = `Жалобы на ${company.name}`
+  const description = `Опубликованные жалобы клиентов на страховую компанию ${company.name}, ответы компании и статусы решения проблем.`
+  const canonical = `/companies/${slug}/complaints`
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { url: canonical, title, description },
+  }
+}
 
 export default async function CompanyComplaintsPage({
   params,
@@ -11,12 +33,7 @@ export default async function CompanyComplaintsPage({
 }) {
   const { slug } = await params
   const payload = await getPayloadClient()
-  const companyResult = await payload.find({
-    collection: 'companies',
-    where: { slug: { equals: slug }, status: { equals: 'published' } },
-    limit: 1,
-  })
-  const company = companyResult.docs[0]
+  const company = await getPublishedCompany(slug)
   if (!company) notFound()
 
   const complaints = await payload.find({
