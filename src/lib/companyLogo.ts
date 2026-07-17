@@ -7,7 +7,7 @@ type CompanyLogoMedia = {
 }
 
 export function companyLogoUrl(
-  logo?: number | CompanyLogoMedia | null,
+  logo?: string | number | CompanyLogoMedia | null,
   logoFile?: string | null,
 ): string | undefined {
   if (logo && typeof logo === 'object') {
