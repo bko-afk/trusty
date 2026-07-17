@@ -4,6 +4,12 @@ import { absoluteUrl } from '@/lib/seo'
 
 export const revalidate = 3600
 
+function sitemapDate(value: unknown): string | Date | undefined {
+  if (value instanceof Date) return value
+  if (typeof value === 'string' && !Number.isNaN(Date.parse(value))) return value
+  return undefined
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const payload = await getPayloadClient()
   const [companies, articles] = await Promise.all([
@@ -30,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]
 
   const companyPages: MetadataRoute.Sitemap = companies.docs.flatMap((company) => {
-    const lastModified = company.updatedAt || undefined
+    const lastModified = sitemapDate(company.updatedAt)
     const base = `/companies/${company.slug}`
     return [
       { url: absoluteUrl(base), lastModified, changeFrequency: 'weekly', priority: 0.8 },
@@ -41,7 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const articlePages: MetadataRoute.Sitemap = articles.docs.map((article) => ({
     url: absoluteUrl(`/articles/${article.slug}`),
-    lastModified: article.updatedAt || article.publishedAt || undefined,
+    lastModified: sitemapDate(article.updatedAt) || sitemapDate(article.publishedAt),
     changeFrequency: 'monthly',
     priority: 0.65,
   }))
