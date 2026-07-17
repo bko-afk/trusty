@@ -1,16 +1,27 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { createContext, createElement, useCallback, useContext, useState } from 'react'
+import type { ReactNode } from 'react'
+import type { CustomerSession } from './customerSession'
 
-export type Customer = { id: string; email: string; name?: string; subscriptions: string[] }
+type CustomerContextValue = {
+  customer: CustomerSession | null
+  loading: boolean
+  refresh: () => Promise<void>
+  logout: () => Promise<void>
+}
 
-// Небольшой клиентский хук для проверки текущей сессии посетителя сайта
-// (коллекция `customers`, отдельная от админской `users`). Использует
-// отдельный POST-эндпоинт с cookie-сессией. Он возвращает только безопасные
-// публичные поля клиента и не раскрывает внутренние auth-поля Payload.
-export function useCustomer() {
-  const [customer, setCustomer] = useState<Customer | null>(null)
-  const [loading, setLoading] = useState(true)
+const CustomerContext = createContext<CustomerContextValue | null>(null)
+
+export function CustomerProvider({
+  initialCustomer,
+  children,
+}: {
+  initialCustomer: CustomerSession | null
+  children: ReactNode
+}) {
+  const [customer, setCustomer] = useState<CustomerSession | null>(initialCustomer)
+  const [loading, setLoading] = useState(false)
 
   const refresh = useCallback(async () => {
     setLoading(true)
@@ -34,14 +45,20 @@ export function useCustomer() {
     }
   }, [])
 
-  useEffect(() => {
-    refresh()
-  }, [refresh])
-
   async function logout() {
     await fetch('/api/customers/logout', { method: 'POST', credentials: 'include' })
     setCustomer(null)
   }
 
-  return { customer, loading, refresh, logout }
+  return createElement(
+    CustomerContext.Provider,
+    { value: { customer, loading, refresh, logout } },
+    children,
+  )
+}
+
+export function useCustomer() {
+  const context = useContext(CustomerContext)
+  if (!context) throw new Error('useCustomer must be used inside CustomerProvider')
+  return context
 }
