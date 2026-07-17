@@ -15,18 +15,24 @@ type ActivityItem = {
   createdAt: string
   company?: { name?: string; slug?: string } | number
 }
+type SubscriptionItem = { id: string; name: string; slug: string }
+type SubscriptionUpdate = ActivityItem & { type: 'review' | 'complaint' }
 
 export default function AccountPage() {
   const { t, locale } = useLanguage()
   const { customer, loading, logout } = useCustomer()
   const [reviews, setReviews] = useState<ActivityItem[]>([])
   const [complaints, setComplaints] = useState<ActivityItem[]>([])
+  const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>([])
+  const [updates, setUpdates] = useState<SubscriptionUpdate[]>([])
   const [activityLoading, setActivityLoading] = useState(false)
 
   useEffect(() => {
     if (!customer) {
       setReviews([])
       setComplaints([])
+      setSubscriptions([])
+      setUpdates([])
       return
     }
 
@@ -43,11 +49,15 @@ export default function AccountPage() {
         const data = response.ok ? await response.json() : { reviews: [], complaints: [] }
         setReviews(data.reviews || [])
         setComplaints(data.complaints || [])
+        setSubscriptions(data.subscriptions || [])
+        setUpdates(data.updates || [])
       })
       .catch((requestError) => {
         if (requestError instanceof DOMException && requestError.name === 'AbortError') return
         setReviews([])
         setComplaints([])
+        setSubscriptions([])
+        setUpdates([])
       })
       .finally(() => {
         if (!controller.signal.aborted) setActivityLoading(false)
@@ -92,6 +102,8 @@ export default function AccountPage() {
               </div>
             )}
           </div>
+          <div className="border-t border-gray-200 pt-5"><h2 className="font-bold">{locale === 'ru' ? 'Подписки на компании' : locale === 'es' ? 'Empresas seguidas' : 'Followed companies'}</h2>{subscriptions.length > 0 ? <div className="mt-3 flex flex-wrap gap-2">{subscriptions.map((company) => <Link key={company.id} href={`/companies/${company.slug}`} className="border border-gray-200 px-3 py-2 text-sm font-bold text-brand-dark hover:border-brand">{company.name}</Link>)}</div> : <p className="mt-2 text-sm text-gray-500">{locale === 'ru' ? 'Вы пока не подписаны ни на одну компанию.' : locale === 'es' ? 'Aún no sigues ninguna empresa.' : 'You are not following any companies yet.'}</p>}</div>
+          {updates.length > 0 && <div className="border-t border-gray-200 pt-5"><h2 className="font-bold">{locale === 'ru' ? 'Обновления подписок' : locale === 'es' ? 'Actualizaciones' : 'Subscription updates'}</h2><ul className="mt-3 space-y-2">{updates.map((update) => { const company = update.company && typeof update.company === 'object' ? update.company : null; return <li key={`${update.type}-${update.id}`} className="border border-gray-200 p-3 text-sm"><Link href={company?.slug ? `/companies/${company.slug}/${update.type === 'review' ? 'reviews' : 'complaints'}` : '/companies'}><span className="text-xs font-bold uppercase tracking-wider text-brand">{update.type === 'review' ? (locale === 'ru' ? 'Новый отзыв' : locale === 'es' ? 'Nueva reseña' : 'New review') : (locale === 'ru' ? 'Новая жалоба' : locale === 'es' ? 'Nueva queja' : 'New complaint')}</span><span className="mt-1 block font-bold">{update.title}</span>{company?.name && <span className="text-xs text-gray-500">{company.name}</span>}</Link></li> })}</ul></div>}
         </div>
       ) : (
         <div className="card p-6 space-y-3">

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RatingStars } from '@/components/RatingStars'
 import { ReviewCard } from '@/components/ReviewCard'
@@ -13,6 +14,13 @@ type Review = {
   title: string
   body: string
   rating: number
+  experienceType: 'purchase' | 'claim'
+  policyType?: { slug: string; title: string }
+  tripCountry?: string
+  claimOutcome?: string
+  claimAmount?: string
+  responseTime?: string
+  verifiedExperience?: boolean
   pros: string[]
   cons: string[]
   recommend?: boolean
@@ -23,6 +31,12 @@ type Review = {
 }
 
 const CRITERIA_KEYS = ['coverage', 'price', 'claimsService', 'support'] as const
+
+const reviewFilterCopy = {
+  ru: { all: 'Все отзывы', positive: 'Положительные', negative: 'Отрицательные', claims: 'Со страховым случаем', verified: 'Подтвержденные' },
+  en: { all: 'All reviews', positive: 'Positive', negative: 'Negative', claims: 'Claim experience', verified: 'Verified' },
+  es: { all: 'Todas', positive: 'Positivas', negative: 'Negativas', claims: 'Con siniestro', verified: 'Verificadas' },
+} as const
 
 export function CompanyReviewsText({
   slug,
@@ -39,7 +53,16 @@ export function CompanyReviewsText({
   criteriaAverages: Record<string, number>
   reviews: Review[]
 }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
+  const [filter, setFilter] = useState<'all' | 'positive' | 'negative' | 'claims' | 'verified'>('all')
+  const filterText = reviewFilterCopy[locale]
+  const visibleReviews = reviews.filter((review) => {
+    if (filter === 'positive') return review.rating >= 4
+    if (filter === 'negative') return review.rating <= 2
+    if (filter === 'claims') return review.experienceType === 'claim'
+    if (filter === 'verified') return review.verifiedExperience === true
+    return true
+  })
 
   return (
     <div className="container-page py-8">
@@ -83,14 +106,23 @@ export function CompanyReviewsText({
         ))}
       </div>
 
+      <div className="mb-6 flex flex-wrap gap-2">{(['all', 'positive', 'negative', 'claims', 'verified'] as const).map((value) => <button key={value} type="button" onClick={() => setFilter(value)} className={`border px-4 py-2 text-sm font-bold ${filter === value ? 'border-brand bg-brand text-white' : 'border-gray-200 bg-white text-brand-dark'}`}>{filterText[value]}</button>)}</div>
+
       <div className="space-y-5">
-        {reviews.map((review) => (
+        {visibleReviews.map((review) => (
           <ReviewCard
             key={review.id}
             authorName={review.authorName}
             title={review.title}
             body={review.body}
             rating={review.rating}
+            experienceType={review.experienceType}
+            policyType={review.policyType}
+            tripCountry={review.tripCountry}
+            claimOutcome={review.claimOutcome}
+            claimAmount={review.claimAmount}
+            responseTime={review.responseTime}
+            verifiedExperience={review.verifiedExperience}
             pros={review.pros}
             cons={review.cons}
             recommend={review.recommend}
@@ -100,7 +132,7 @@ export function CompanyReviewsText({
             replies={review.replies}
           />
         ))}
-        {reviews.length === 0 && <p className="text-gray-500">{t.companyReviewsPage.noReviews}</p>}
+        {visibleReviews.length === 0 && <p className="text-gray-500">{t.companyReviewsPage.noReviews}</p>}
       </div>
     </div>
   )

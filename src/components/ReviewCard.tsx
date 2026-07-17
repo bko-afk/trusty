@@ -2,6 +2,8 @@
 
 import { RatingStars } from './RatingStars'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { countryName } from '@/lib/countries'
+import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 
 type Reply = {
   id: string
@@ -16,6 +18,13 @@ type ReviewCardProps = {
   title: string
   body: string
   rating: number
+  experienceType?: 'purchase' | 'claim'
+  policyType?: { slug: string; title: string }
+  tripCountry?: string
+  claimOutcome?: string
+  claimAmount?: string
+  responseTime?: string
+  verifiedExperience?: boolean
   pros?: string[]
   cons?: string[]
   recommend?: boolean
@@ -27,11 +36,24 @@ type ReviewCardProps = {
 
 const localeToIntl: Record<string, string> = { ru: 'ru-RU', en: 'en-US', es: 'es-ES' }
 
+const metadataCopy = {
+  ru: { purchase: 'Покупка полиса', claim: 'Страховой случай', verified: 'Опыт подтвержден', outcome: 'Результат', amount: 'Сумма', response: 'Ответ компании', outcomes: { paid: 'выплачено полностью', partially_paid: 'выплачено частично', denied: 'отказано', pending: 'рассматривается', not_applicable: 'не применимо' }, times: { same_day: 'в тот же день', '1_3_days': '1-3 дня', '4_7_days': '4-7 дней', '8_30_days': '8-30 дней', more_30_days: 'более 30 дней', no_response: 'ответа не было' } },
+  en: { purchase: 'Policy purchase', claim: 'Claim experience', verified: 'Verified experience', outcome: 'Outcome', amount: 'Amount', response: 'Company response', outcomes: { paid: 'paid in full', partially_paid: 'partially paid', denied: 'denied', pending: 'pending', not_applicable: 'not applicable' }, times: { same_day: 'same day', '1_3_days': '1-3 days', '4_7_days': '4-7 days', '8_30_days': '8-30 days', more_30_days: 'more than 30 days', no_response: 'no response' } },
+  es: { purchase: 'Compra de póliza', claim: 'Experiencia de siniestro', verified: 'Experiencia verificada', outcome: 'Resultado', amount: 'Importe', response: 'Respuesta de la empresa', outcomes: { paid: 'pagado por completo', partially_paid: 'pagado parcialmente', denied: 'rechazado', pending: 'en revisión', not_applicable: 'no aplicable' }, times: { same_day: 'el mismo día', '1_3_days': '1-3 días', '4_7_days': '4-7 días', '8_30_days': '8-30 días', more_30_days: 'más de 30 días', no_response: 'sin respuesta' } },
+} as const
+
 export function ReviewCard({
   authorName,
   title,
   body,
   rating,
+  experienceType = 'purchase',
+  policyType,
+  tripCountry,
+  claimOutcome,
+  claimAmount,
+  responseTime,
+  verifiedExperience,
   pros = [],
   cons = [],
   recommend,
@@ -41,6 +63,7 @@ export function ReviewCard({
   replies = [],
 }: ReviewCardProps) {
   const { t, locale } = useLanguage()
+  const meta = metadataCopy[locale]
   const date = new Date(createdAt).toLocaleDateString(localeToIntl[locale] || 'en-US', {
     day: 'numeric',
     month: 'long',
@@ -58,6 +81,8 @@ export function ReviewCard({
       </div>
 
       <h3 className="font-semibold text-lg">{title}</h3>
+      <div className="flex flex-wrap gap-2 text-xs"><span className="bg-gray-100 px-3 py-1 font-bold">{experienceType === 'claim' ? meta.claim : meta.purchase}</span>{verifiedExperience && <span className="bg-emerald-50 px-3 py-1 font-bold text-emerald-700">{meta.verified}</span>}{policyType && <span className="bg-brand-light/40 px-3 py-1 font-bold text-brand-dark">{insuranceTypeLabel(t, policyType)}</span>}{tripCountry && <span className="bg-gray-100 px-3 py-1">{countryName(tripCountry, locale)}</span>}</div>
+      {(experienceType === 'claim' || responseTime) && <dl className="grid gap-2 border-l-4 border-brand bg-brand-light/20 p-3 text-sm sm:grid-cols-3">{claimOutcome && <div><dt className="text-xs text-gray-500">{meta.outcome}</dt><dd className="font-bold">{meta.outcomes[claimOutcome as keyof typeof meta.outcomes] || claimOutcome}</dd></div>}{claimAmount && <div><dt className="text-xs text-gray-500">{meta.amount}</dt><dd className="font-bold">{claimAmount}</dd></div>}{responseTime && <div><dt className="text-xs text-gray-500">{meta.response}</dt><dd className="font-bold">{meta.times[responseTime as keyof typeof meta.times] || responseTime}</dd></div>}</dl>}
       <p className="text-gray-700 whitespace-pre-line">{body}</p>
 
       {(pros.length > 0 || cons.length > 0) && (

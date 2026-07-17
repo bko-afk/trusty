@@ -49,11 +49,19 @@ export const Companies: CollectionConfig = {
           data.popular = false
           data.overallRating = 0
           data.reviewCount = 0
+          data.positiveReviewCount = 0
+          data.negativeReviewCount = 0
+          data.complaintCount = 0
+          data.resolvedComplaintCount = 0
           delete data.logo
           delete data.logoFile
           delete data.pros
           delete data.cons
           delete data.contacts
+          delete data.verification
+          delete data.insuranceProfile
+          delete data.uniqueFeature
+          delete data.dataUpdatedAt
           delete data.seo
           delete data.foundedYear
           delete data.description
@@ -147,6 +155,62 @@ export const Companies: CollectionConfig = {
       hasMany: true,
     },
     { name: 'website', label: 'Официальный сайт', type: 'text', maxLength: 300 },
+    {
+      name: 'verification',
+      label: 'Проверка и лицензия',
+      type: 'group',
+      fields: [
+        { name: 'legalName', label: 'Юридическое название', type: 'text', maxLength: 200 },
+        { name: 'regulator', label: 'Регулятор', type: 'text', maxLength: 200 },
+        { name: 'licenseNumber', label: 'Номер лицензии', type: 'text', maxLength: 120 },
+        { name: 'licenseUrl', label: 'Ссылка на реестр/лицензию', type: 'text', maxLength: 500 },
+        { name: 'verifiedAt', label: 'Дата проверки профиля', type: 'date' },
+      ],
+    },
+    {
+      name: 'dataUpdatedAt',
+      label: 'Данные актуализированы',
+      type: 'date',
+      admin: { position: 'sidebar', description: 'Дата последней редакционной проверки данных компании' },
+    },
+    { name: 'uniqueFeature', label: 'Ключевая особенность', type: 'text', maxLength: 240 },
+    {
+      name: 'insuranceProfile',
+      label: 'Параметры страхования',
+      type: 'group',
+      fields: [
+        { name: 'coverageLimit', label: 'Максимальная сумма покрытия', type: 'text', maxLength: 120 },
+        { name: 'deductible', label: 'Франшиза', type: 'text', maxLength: 120 },
+        { name: 'assistance24h', label: 'Поддержка 24/7', type: 'checkbox', defaultValue: false },
+        { name: 'directBilling', label: 'Прямая оплата клинике', type: 'checkbox', defaultValue: false },
+        { name: 'onlinePurchase', label: 'Покупка полиса онлайн', type: 'checkbox', defaultValue: false },
+        {
+          name: 'mobileApps',
+          label: 'Мобильные приложения',
+          type: 'select',
+          defaultValue: 'none',
+          options: [
+            { label: 'Нет', value: 'none' },
+            { label: 'iOS', value: 'ios' },
+            { label: 'Android', value: 'android' },
+            { label: 'iOS и Android', value: 'both' },
+          ],
+        },
+        { name: 'supportedLanguages', label: 'Языки поддержки', type: 'text', maxLength: 240 },
+        { name: 'claimChannels', label: 'Каналы обращения', type: 'text', maxLength: 240 },
+        {
+          name: 'coverageFeatures',
+          label: 'Дополнительное покрытие',
+          type: 'group',
+          fields: [
+            { name: 'covid', label: 'COVID-19', type: 'checkbox', defaultValue: false },
+            { name: 'sports', label: 'Активный спорт', type: 'checkbox', defaultValue: false },
+            { name: 'baggage', label: 'Багаж', type: 'checkbox', defaultValue: false },
+            { name: 'tripCancellation', label: 'Отмена поездки', type: 'checkbox', defaultValue: false },
+          ],
+        },
+      ],
+    },
     { name: 'foundedYear', label: 'Год основания', type: 'number', min: 1800, max: 2100 },
     {
       name: 'country',
@@ -196,6 +260,34 @@ export const Companies: CollectionConfig = {
       type: 'number',
       admin: { readOnly: true, position: 'sidebar' },
       defaultValue: 0,
+    },
+    {
+      name: 'positiveReviewCount',
+      label: 'Положительных отзывов',
+      type: 'number',
+      defaultValue: 0,
+      admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
+      name: 'negativeReviewCount',
+      label: 'Отрицательных отзывов',
+      type: 'number',
+      defaultValue: 0,
+      admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
+      name: 'complaintCount',
+      label: 'Опубликованных жалоб',
+      type: 'number',
+      defaultValue: 0,
+      admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
+      name: 'resolvedComplaintCount',
+      label: 'Решённых жалоб',
+      type: 'number',
+      defaultValue: 0,
+      admin: { readOnly: true, position: 'sidebar' },
     },
     {
       name: 'seo',

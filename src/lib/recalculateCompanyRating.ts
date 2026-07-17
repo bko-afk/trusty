@@ -31,6 +31,8 @@ export async function recalculateCompanyRating(
 
   const average =
     totalDocs > 0 ? docs.reduce((sum, review) => sum + (review.rating || 0), 0) / totalDocs : 0
+  const positiveReviewCount = docs.filter((review) => (review.rating || 0) >= 4).length
+  const negativeReviewCount = docs.filter((review) => (review.rating || 0) <= 2).length
 
   await payload.update({
     collection: 'companies',
@@ -38,6 +40,8 @@ export async function recalculateCompanyRating(
     data: {
       overallRating: Math.round(average * 10) / 10,
       reviewCount: totalDocs,
+      positiveReviewCount,
+      negativeReviewCount,
     },
     req,
   })

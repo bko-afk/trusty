@@ -7,20 +7,53 @@ import { HowToSteps } from '@/components/HowToSteps'
 import { WhyBlock } from '@/components/WhyBlock'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { useCustomer } from '@/lib/useCustomer'
+import { countries, countryName } from '@/lib/countries'
+import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 
 type Company = { id: string; name: string; slug: string }
+type InsuranceType = { id: string; slug: string; title: string }
+
+const extraCopy = {
+  ru: {
+    experience: 'Какой у вас опыт?', purchase: 'Покупка и использование полиса', claim: 'Страховой случай и выплата',
+    policyType: 'Вид страхования', optional: 'Не указано', country: 'Страна поездки или лечения',
+    claimOutcome: 'Результат страхового случая', claimAmount: 'Сумма требования или выплаты',
+    responseTime: 'Скорость ответа компании', amountPlaceholder: 'Например, 1 200 USD',
+    outcomes: ['Выплачено полностью', 'Выплачено частично', 'Отказано', 'Рассматривается'],
+    times: ['В тот же день', '1-3 дня', '4-7 дней', '8-30 дней', 'Более 30 дней', 'Ответа не было'],
+  },
+  en: {
+    experience: 'What was your experience?', purchase: 'Buying and using a policy', claim: 'Claim and reimbursement',
+    policyType: 'Insurance type', optional: 'Not specified', country: 'Travel or treatment country',
+    claimOutcome: 'Claim outcome', claimAmount: 'Claim or payout amount', responseTime: 'Company response time',
+    amountPlaceholder: 'For example, USD 1,200', outcomes: ['Paid in full', 'Partially paid', 'Denied', 'Pending'],
+    times: ['Same day', '1-3 days', '4-7 days', '8-30 days', 'More than 30 days', 'No response'],
+  },
+  es: {
+    experience: '¿Cuál fue tu experiencia?', purchase: 'Compra y uso de la póliza', claim: 'Siniestro y reembolso',
+    policyType: 'Tipo de seguro', optional: 'No especificado', country: 'País del viaje o tratamiento',
+    claimOutcome: 'Resultado del siniestro', claimAmount: 'Importe reclamado o pagado',
+    responseTime: 'Tiempo de respuesta', amountPlaceholder: 'Por ejemplo, 1.200 USD',
+    outcomes: ['Pagado por completo', 'Pagado parcialmente', 'Rechazado', 'En revisión'],
+    times: ['El mismo día', '1-3 días', '4-7 días', '8-30 días', 'Más de 30 días', 'Sin respuesta'],
+  },
+} as const
 
 export function AddReviewForm({
   companies,
+  insuranceTypes,
   preselectedSlug,
 }: {
   companies: Company[]
+  insuranceTypes: InsuranceType[]
   preselectedSlug?: string
 }) {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const { customer } = useCustomer()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [experienceType, setExperienceType] = useState<'purchase' | 'claim'>('purchase')
   const preselected = companies.find((c) => c.slug === preselectedSlug)
+  const copy = extraCopy[locale]
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -45,6 +78,12 @@ export function AddReviewForm({
           title: form.get('title'),
           body: form.get('body'),
           rating: Number(form.get('rating')),
+          experienceType: form.get('experienceType'),
+          policyType: form.get('policyType') ? Number(form.get('policyType')) : undefined,
+          tripCountry: form.get('tripCountry') || undefined,
+          claimOutcome: experienceType === 'claim' ? form.get('claimOutcome') : 'not_applicable',
+          claimAmount: experienceType === 'claim' ? form.get('claimAmount') : undefined,
+          responseTime: form.get('responseTime') || undefined,
           criteria: {
             coverage: Number(form.get('coverage')),
             price: Number(form.get('price')),
@@ -147,6 +186,24 @@ export function AddReviewForm({
               ))}
             </select>
           </div>
+          <fieldset>
+            <legend className="block text-sm font-medium mb-2">{copy.experience}</legend>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className={`cursor-pointer border p-4 ${experienceType === 'purchase' ? 'border-brand bg-brand-light/30' : 'border-gray-200'}`}><input type="radio" name="experienceType" value="purchase" checked={experienceType === 'purchase'} onChange={() => setExperienceType('purchase')} className="mr-2 accent-brand" />{copy.purchase}</label>
+              <label className={`cursor-pointer border p-4 ${experienceType === 'claim' ? 'border-brand bg-brand-light/30' : 'border-gray-200'}`}><input type="radio" name="experienceType" value="claim" checked={experienceType === 'claim'} onChange={() => setExperienceType('claim')} className="mr-2 accent-brand" />{copy.claim}</label>
+            </div>
+          </fieldset>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="text-sm font-medium">{copy.policyType}<select name="policyType" defaultValue="" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"><option value="">{copy.optional}</option>{insuranceTypes.map((type) => <option key={type.id} value={type.id}>{insuranceTypeLabel(t, type)}</option>)}</select></label>
+            <label className="text-sm font-medium">{copy.country}<select name="tripCountry" defaultValue="" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"><option value="">{copy.optional}</option>{countries.map((country) => <option key={country.code} value={country.code}>{countryName(country.code, locale)}</option>)}</select></label>
+          </div>
+          {experienceType === 'claim' && (
+            <div className="grid gap-4 border-l-4 border-brand bg-brand-light/20 p-4 sm:grid-cols-2">
+              <label className="text-sm font-medium">{copy.claimOutcome}<select name="claimOutcome" defaultValue="pending" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2">{['paid', 'partially_paid', 'denied', 'pending'].map((value, index) => <option key={value} value={value}>{copy.outcomes[index]}</option>)}</select></label>
+              <label className="text-sm font-medium">{copy.claimAmount}<input name="claimAmount" maxLength={120} placeholder={copy.amountPlaceholder} className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" /></label>
+            </div>
+          )}
+          <label className="block text-sm font-medium">{copy.responseTime}<select name="responseTime" defaultValue="" className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"><option value="">{copy.optional}</option>{['same_day', '1_3_days', '4_7_days', '8_30_days', 'more_30_days', 'no_response'].map((value, index) => <option key={value} value={value}>{copy.times[index]}</option>)}</select></label>
           <fieldset>
             <legend className="block text-sm font-medium mb-2">{t.addReviewPage.criteriaLabel}</legend>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

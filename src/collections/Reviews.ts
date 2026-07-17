@@ -1,6 +1,7 @@
 import type { CollectionConfig, Where } from 'payload'
 import { recalculateCompanyRating } from '../lib/recalculateCompanyRating'
 import { isCustomer, isStaff, isTrustedWrite } from '../lib/access'
+import { countries } from '../lib/countries'
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
@@ -38,6 +39,7 @@ export const Reviews: CollectionConfig = {
           data.status = 'pending'
           data.helpfulUp = 0
           data.helpfulDown = 0
+          data.verifiedExperience = false
           delete data.customer
         }
         if (operation === 'create' && isCustomer(req)) {
@@ -90,6 +92,63 @@ export const Reviews: CollectionConfig = {
       required: true,
       min: 1,
       max: 5,
+    },
+    {
+      name: 'experienceType',
+      label: 'Тип опыта',
+      type: 'select',
+      required: true,
+      defaultValue: 'purchase',
+      options: [
+        { label: 'Покупка и использование полиса', value: 'purchase' },
+        { label: 'Страховой случай и выплата', value: 'claim' },
+      ],
+    },
+    {
+      name: 'policyType',
+      label: 'Вид страхования',
+      type: 'relationship',
+      relationTo: 'insurance-types',
+    },
+    {
+      name: 'tripCountry',
+      label: 'Страна поездки/лечения',
+      type: 'select',
+      options: countries.map((country) => ({ label: `${country.ru} (${country.code})`, value: country.code })),
+    },
+    {
+      name: 'claimOutcome',
+      label: 'Результат страхового случая',
+      type: 'select',
+      defaultValue: 'not_applicable',
+      options: [
+        { label: 'Страхового случая не было', value: 'not_applicable' },
+        { label: 'Выплачено полностью', value: 'paid' },
+        { label: 'Выплачено частично', value: 'partially_paid' },
+        { label: 'Отказано', value: 'denied' },
+        { label: 'Рассматривается', value: 'pending' },
+      ],
+    },
+    { name: 'claimAmount', label: 'Сумма требования/выплаты', type: 'text', maxLength: 120 },
+    {
+      name: 'responseTime',
+      label: 'Скорость ответа компании',
+      type: 'select',
+      options: [
+        { label: 'В тот же день', value: 'same_day' },
+        { label: '1-3 дня', value: '1_3_days' },
+        { label: '4-7 дней', value: '4_7_days' },
+        { label: '8-30 дней', value: '8_30_days' },
+        { label: 'Более 30 дней', value: 'more_30_days' },
+        { label: 'Ответа не было', value: 'no_response' },
+      ],
+    },
+    {
+      name: 'verifiedExperience',
+      label: 'Опыт подтверждён документами',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { position: 'sidebar', description: 'Отметьте после проверки полиса или документов по выплате' },
     },
     {
       name: 'criteria',

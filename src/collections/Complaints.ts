@@ -1,5 +1,6 @@
 import type { CollectionConfig, Where } from 'payload'
 import { isCustomer, isStaff, isTrustedWrite } from '../lib/access'
+import { recalculateCompanyComplaints } from '../lib/recalculateCompanyComplaints'
 
 export const Complaints: CollectionConfig = {
   slug: 'complaints',
@@ -36,6 +37,8 @@ export const Complaints: CollectionConfig = {
         if (operation === 'create' && !isTrustedWrite(req)) {
           data.status = 'pending'
           data.resolved = false
+          data.workflowStatus = 'submitted'
+          delete data.companyResponse
           delete data.customer
         }
         if (operation === 'create' && isCustomer(req)) {
@@ -43,7 +46,22 @@ export const Complaints: CollectionConfig = {
           if (!data.authorName) data.authorName = user.name || user.email
           if (!data.authorEmail) data.authorEmail = user.email
         }
+        if (data.workflowStatus === 'resolved') data.resolved = true
+        if (data.workflowStatus === 'unresolved' || data.workflowStatus === 'submitted') data.resolved = false
+        if (data.companyResponse?.body && data.workflowStatus === 'submitted') {
+          data.workflowStatus = 'company_replied'
+        }
         return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, req }) => {
+        await recalculateCompanyComplaints(req.payload, doc.company, req)
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        await recalculateCompanyComplaints(req.payload, doc.company, req)
       },
     ],
   },
@@ -91,6 +109,30 @@ export const Complaints: CollectionConfig = {
       label: 'Проблема решена',
       defaultValue: false,
       admin: { position: 'sidebar', description: 'Отмечается вручную после ответа компании и решения вопроса' },
+    },
+    {
+      name: 'workflowStatus',
+      label: 'Этап решения',
+      type: 'select',
+      required: true,
+      defaultValue: 'submitted',
+      options: [
+        { label: 'Получена', value: 'submitted' },
+        { label: 'Компания ответила', value: 'company_replied' },
+        { label: 'Решена', value: 'resolved' },
+        { label: 'Не решена', value: 'unresolved' },
+      ],
+      admin: { position: 'sidebar' },
+    },
+    {
+      name: 'companyResponse',
+      label: 'Официальный ответ компании',
+      type: 'group',
+      fields: [
+        { name: 'authorName', label: 'Имя представителя', type: 'text', maxLength: 120 },
+        { name: 'body', label: 'Ответ', type: 'textarea', maxLength: 5000 },
+        { name: 'respondedAt', label: 'Дата ответа', type: 'date' },
+      ],
     },
   ],
 }

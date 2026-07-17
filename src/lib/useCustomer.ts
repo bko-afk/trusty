@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-export type Customer = { id: string; email: string; name?: string }
+export type Customer = { id: string; email: string; name?: string; subscriptions: string[] }
 
 // Небольшой клиентский хук для проверки текущей сессии посетителя сайта
 // (коллекция `customers`, отдельная от админской `users`). Использует

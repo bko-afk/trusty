@@ -53,5 +53,13 @@ export const Customers: CollectionConfig = {
       minLength: 2,
       maxLength: 80,
     },
+    {
+      name: 'companySubscriptions',
+      label: 'Подписки на компании',
+      type: 'relationship',
+      relationTo: 'companies',
+      hasMany: true,
+      admin: { description: 'Компании, обновления которых пользователь отслеживает' },
+    },
   ],
 }

@@ -159,7 +159,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
       <section id="methodology" className="container-page py-14 md:py-20">
         <div className="grid overflow-hidden border border-gray-200 lg:grid-cols-[1fr_1.05fr]">
           <div className="relative min-h-[340px] bg-[#faf7f2] lg:min-h-[520px]">
-            <Image src="/images/trusty-insurance-rating.png" alt={t.portal.home.imageAlt} fill className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
+            <Image src="/images/trusty-insurance-rating.png" alt={t.portal.home.imageAlt} fill priority className="object-cover" sizes="(max-width: 1024px) 100vw, 50vw" />
           </div>
           <div className="flex flex-col justify-center p-7 sm:p-10 lg:p-14">
             <p className="section-kicker">{t.portal.home.methodologyKicker}</p>

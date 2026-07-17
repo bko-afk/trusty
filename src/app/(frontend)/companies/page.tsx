@@ -31,6 +31,7 @@ export default async function CompaniesCatalogPage() {
       }))}
       companies={companies.docs.map(toCatalogCompany)}
       availableCountries={availableCountries}
+      updatedAt={new Date().toISOString()}
     />
   )
 }

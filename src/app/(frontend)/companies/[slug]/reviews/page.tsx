@@ -27,6 +27,7 @@ export default async function CompanyReviewsPage({
     where: { company: { equals: company.id }, status: { equals: 'published' } },
     sort: '-createdAt',
     limit: 50,
+    depth: 1,
   })
 
   const repliesResult = await payload.find({
@@ -68,6 +69,13 @@ export default async function CompanyReviewsPage({
         title: review.title,
         body: review.body,
         rating: review.rating,
+        experienceType: review.experienceType || 'purchase',
+        policyType: typeof review.policyType === 'object' ? { slug: review.policyType.slug, title: review.policyType.title } : undefined,
+        tripCountry: review.tripCountry,
+        claimOutcome: review.claimOutcome,
+        claimAmount: review.claimAmount,
+        responseTime: review.responseTime,
+        verifiedExperience: review.verifiedExperience,
         pros: (review.pros || []).map((p: any) => p.text),
         cons: (review.cons || []).map((c: any) => c.text),
         recommend: review.recommend,

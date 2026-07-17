@@ -21,6 +21,11 @@ export async function POST(request: Request) {
         id: String(user.id),
         email: user.email,
         name: user.name,
+        subscriptions: Array.isArray(user.companySubscriptions)
+          ? user.companySubscriptions.map((company) =>
+              String(typeof company === 'object' ? company.id : company),
+            )
+          : [],
       },
     },
     { headers: { 'Cache-Control': 'private, no-store', Vary: 'Cookie' } },
