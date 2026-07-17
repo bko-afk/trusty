@@ -1,24 +1,6 @@
 import { companyLogoUrl } from '@/lib/companyLogo'
 
-type CatalogCompanySource = {
-  id: string | number
-  slug: string
-  name: string
-  logo?: Parameters<typeof companyLogoUrl>[0]
-  logoFile?: string | null
-  overallRating?: number | null
-  reviewCount?: number | null
-  verified?: boolean | null
-  popular?: boolean | null
-  country?: string | null
-  foundedYear?: number | null
-  insuranceTypes?: Array<string | number | CatalogInsuranceTypeSource> | null
-}
-
-type CatalogInsuranceTypeSource = {
-  slug: string
-  title: string
-}
+type UnknownRecord = Record<string, unknown>
 
 export type CatalogInsuranceType = {
   id: number
@@ -40,20 +22,40 @@ export type CatalogCompany = {
   insuranceTypes: Pick<CatalogInsuranceType, 'slug' | 'title'>[]
 }
 
-export function toCatalogCompany(company: CatalogCompanySource): CatalogCompany {
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null
+}
+
+function requiredString(value: unknown, field: string): string {
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new Error(`Company ${field} is missing`)
+  }
+  return value
+}
+
+export function toCatalogCompany(value: unknown): CatalogCompany {
+  if (!isRecord(value) || (typeof value.id !== 'string' && typeof value.id !== 'number')) {
+    throw new Error('Invalid company document')
+  }
+
+  const insuranceTypes = Array.isArray(value.insuranceTypes)
+    ? value.insuranceTypes.flatMap((type) => {
+        if (!isRecord(type) || typeof type.slug !== 'string' || typeof type.title !== 'string') return []
+        return [{ slug: type.slug, title: type.title }]
+      })
+    : []
+
   return {
-    id: company.id,
-    slug: company.slug,
-    name: company.name,
-    logoUrl: companyLogoUrl(company.logo, company.logoFile),
-    rating: company.overallRating || 0,
-    reviewCount: company.reviewCount || 0,
-    verified: Boolean(company.verified),
-    popular: Boolean(company.popular),
-    country: company.country || undefined,
-    foundedYear: company.foundedYear || undefined,
-    insuranceTypes: (company.insuranceTypes || [])
-      .filter((type): type is CatalogInsuranceTypeSource => typeof type === 'object')
-      .map((type) => ({ slug: type.slug, title: type.title })),
+    id: value.id,
+    slug: requiredString(value.slug, 'slug'),
+    name: requiredString(value.name, 'name'),
+    logoUrl: companyLogoUrl(value.logo, value.logoFile),
+    rating: typeof value.overallRating === 'number' ? value.overallRating : 0,
+    reviewCount: typeof value.reviewCount === 'number' ? value.reviewCount : 0,
+    verified: value.verified === true,
+    popular: value.popular === true,
+    country: typeof value.country === 'string' ? value.country : undefined,
+    foundedYear: typeof value.foundedYear === 'number' ? value.foundedYear : undefined,
+    insuranceTypes,
   }
 }

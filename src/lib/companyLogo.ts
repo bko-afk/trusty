@@ -7,11 +7,12 @@ type CompanyLogoMedia = {
 }
 
 export function companyLogoUrl(
-  logo?: string | number | CompanyLogoMedia | null,
-  logoFile?: string | null,
+  logo?: unknown,
+  logoFile?: unknown,
 ): string | undefined {
   if (logo && typeof logo === 'object') {
-    return logo.sizes?.thumbnail?.url || logo.sizes?.card?.url || logo.url || undefined
+    const media = logo as CompanyLogoMedia
+    return media.sizes?.thumbnail?.url || media.sizes?.card?.url || media.url || undefined
   }
-  return logoFile ? `/images/companies/${logoFile}` : undefined
+  return typeof logoFile === 'string' && logoFile ? `/images/companies/${logoFile}` : undefined
 }
