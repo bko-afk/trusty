@@ -138,7 +138,6 @@ export type Dictionary = {
     ranking: {
       ratingsBreadcrumb: string
       onlineInsuranceBreadcrumb: string
-      marker: string
       title: string
       intro: string
       companiesInRating: string
@@ -499,7 +498,6 @@ export const dictionary: Record<Locale, Dictionary> = {
       ranking: {
         ratingsBreadcrumb: 'Рейтинги',
         onlineInsuranceBreadcrumb: 'Страхование онлайн',
-        marker: 'Р',
         title: 'Рейтинг сервисов страхования онлайн',
         intro: 'В рейтинге собраны страховые компании и онлайн-сервисы. Сравнивайте отзывы, итоговую оценку и доступные виды полисов.',
         companiesInRating: 'компаний в рейтинге',
@@ -865,7 +863,6 @@ export const dictionary: Record<Locale, Dictionary> = {
       ranking: {
         ratingsBreadcrumb: 'Ratings',
         onlineInsuranceBreadcrumb: 'Online insurance',
-        marker: 'R',
         title: 'Online insurance service ratings',
         intro: 'This ranking includes insurance companies and online services. Compare customer reviews, overall scores, and available policy types.',
         companiesInRating: 'companies in the ranking',
@@ -1232,7 +1229,6 @@ export const dictionary: Record<Locale, Dictionary> = {
       ranking: {
         ratingsBreadcrumb: 'Clasificaciones',
         onlineInsuranceBreadcrumb: 'Seguros online',
-        marker: 'C',
         title: 'Clasificación de servicios de seguros online',
         intro: 'Esta clasificación incluye aseguradoras y servicios online. Compara reseñas, puntuaciones generales y tipos de póliza disponibles.',
         companiesInRating: 'empresas en la clasificación',

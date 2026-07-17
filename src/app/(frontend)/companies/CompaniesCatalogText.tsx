@@ -145,7 +145,9 @@ export function CompaniesCatalogText({
         <div className="container-page">
           <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.nav.catalog }]} />
           <div className="mt-8 grid gap-6 md:grid-cols-[96px_1fr] md:items-start">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-brand text-2xl font-bold text-white md:h-24 md:w-24">{t.portal.ranking.marker}</div>
+            <div className="flex h-20 w-20 items-center justify-center border border-[#e7ddf8] bg-[#fbf8ff] p-2 shadow-[0_12px_30px_rgba(67,34,112,0.08)] md:h-24 md:w-24 md:p-2.5">
+              <Image src="/icon.svg" alt="" width={76} height={76} className="h-full w-full rounded-[18%]" priority />
+            </div>
             <div>
               <h1 className="max-w-4xl text-4xl font-extrabold leading-[1.05] tracking-[-0.045em] md:text-6xl">{t.portal.ranking.title}</h1>
               <p className="mt-7 max-w-4xl text-lg leading-8 text-gray-600">{t.portal.ranking.intro}</p>
