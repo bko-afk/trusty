@@ -81,6 +81,54 @@ body {
   contain-intrinsic-block-size: 420px;
 }
 
+.company-carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 2px 12px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+
+.company-carousel-track > [data-carousel-card] {
+  flex: 0 0 calc((100% - 32px) / 3);
+}
+
+.company-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-arrow {
+  display: inline-flex;
+  height: 42px;
+  width: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.carousel-arrow:hover:not(:disabled) {
+  border-color: var(--teal);
+  background: var(--teal);
+  color: #fff;
+}
+
+.carousel-arrow:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+
+.carousel-arrow:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
 ::selection {
   background: #d9c7f7;
   color: var(--ink);
@@ -89,5 +137,25 @@ body {
 @media (max-width: 640px) {
   .container-page {
     width: min(100% - 24px, 1180px);
+  }
+
+  .company-carousel-track {
+    padding-right: 34px;
+  }
+
+  .company-carousel-track > [data-carousel-card] {
+    flex-basis: calc(100% - 10px);
+  }
+}
+
+@media (min-width: 641px) and (max-width: 900px) {
+  .company-carousel-track > [data-carousel-card] {
+    flex-basis: calc((100% - 16px) / 2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .company-carousel-track {
+    scroll-behavior: auto;
   }
 }

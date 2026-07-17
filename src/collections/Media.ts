@@ -1,10 +1,14 @@
 import path from 'path'
 import type { CollectionConfig } from 'payload'
+import { isStaff } from '../lib/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
     read: () => true,
+    create: ({ req }) => isStaff(req),
+    update: ({ req }) => isStaff(req),
+    delete: ({ req }) => isStaff(req),
   },
   admin: {
     useAsTitle: 'alt',

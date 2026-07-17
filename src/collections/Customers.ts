@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { isCustomer, isStaff } from '../lib/access'
 
 // Публичная коллекция аккаунтов посетителей сайта (не путать с Users —
 // это админы/модераторы). Нужна для входа под своим именем при написании
@@ -26,17 +27,31 @@ export const Customers: CollectionConfig = {
     defaultColumns: ['email', 'name', 'createdAt'],
   },
   access: {
-    // Регистрация открыта всем
     create: () => true,
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    read: ({ req }) => {
+      if (isStaff(req)) return true
+      if (isCustomer(req) && req.user) return { id: { equals: req.user.id } }
+      return false
+    },
+    update: ({ req }) => {
+      if (isStaff(req)) return true
+      if (isCustomer(req) && req.user) return { id: { equals: req.user.id } }
+      return false
+    },
+    delete: ({ req }) => {
+      if (isStaff(req)) return true
+      if (isCustomer(req) && req.user) return { id: { equals: req.user.id } }
+      return false
+    },
   },
   fields: [
     {
       name: 'name',
+      label: 'Имя',
       type: 'text',
       required: true,
+      minLength: 2,
+      maxLength: 80,
     },
   ],
 }

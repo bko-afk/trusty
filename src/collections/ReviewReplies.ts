@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { isStaff } from '../lib/access'
 
 export const ReviewReplies: CollectionConfig = {
   slug: 'review-replies',
@@ -12,12 +13,12 @@ export const ReviewReplies: CollectionConfig = {
   },
   access: {
     read: ({ req }) => {
-      if (req.user) return true
+      if (isStaff(req)) return true
       return { status: { equals: 'published' } }
     },
-    create: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    create: ({ req }) => isStaff(req),
+    update: ({ req }) => isStaff(req),
+    delete: ({ req }) => isStaff(req),
   },
   fields: [
     {

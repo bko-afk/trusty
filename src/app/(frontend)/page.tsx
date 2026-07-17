@@ -23,14 +23,14 @@ export default async function HomePage() {
       where: { and: [{ status: { equals: 'published' } }, { popular: { equals: true } }] },
       sort: '-updatedAt',
       limit: 3,
-      depth: 0,
+      depth: 1,
     }),
     payload.find({
       collection: 'companies',
       where: { status: { equals: 'published' } },
       sort: '-createdAt',
       limit: 9,
-      depth: 0,
+      depth: 1,
     }),
     payload.find({
       collection: 'reviews',

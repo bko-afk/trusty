@@ -30,7 +30,7 @@ export default async function SearchPage({
         id: c.id,
         slug: c.slug,
         name: c.name,
-        logoUrl: companyLogoUrl(c.logoFile),
+        logoUrl: companyLogoUrl(c.logo, c.logoFile),
         rating: c.overallRating || 0,
         reviewCount: c.reviewCount || 0,
         verified: c.verified,

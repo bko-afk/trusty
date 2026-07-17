@@ -124,6 +124,85 @@ async function seed() {
       insuranceTypes: [types.travel.id],
       shortDescription: 'Туристическое страхование от Allianz Partners — части международной группы Allianz.',
     },
+    {
+      name: 'Seven Corners',
+      slug: 'seven-corners',
+      status: 'published',
+      verified: false,
+      website: 'https://www.sevencorners.com',
+      foundedYear: 1993,
+      country: 'US',
+      logoFile: 'seven-corners.webp',
+      insuranceTypes: [types.travel.id, types.medical.id],
+      shortDescription: 'Международный провайдер туристического и медицинского страхования с круглосуточной службой помощи путешественникам.',
+    },
+    {
+      name: 'Heymondo',
+      slug: 'heymondo',
+      status: 'published',
+      verified: false,
+      website: 'https://heymondo.com',
+      foundedYear: 2017,
+      country: 'ES',
+      logoFile: 'heymondo.webp',
+      insuranceTypes: [types.travel.id, types.medical.id],
+      shortDescription: 'Испанский цифровой сервис туристического страхования с оформлением полиса и поддержкой через мобильное приложение.',
+    },
+    {
+      name: 'SafetyWing',
+      slug: 'safetywing',
+      status: 'published',
+      verified: false,
+      website: 'https://safetywing.com',
+      country: 'US',
+      logoFile: 'safetywing.svg',
+      insuranceTypes: [types.travel.id, types.medical.id],
+      shortDescription: 'Международные страховые продукты для цифровых кочевников, удалённых специалистов и длительных поездок.',
+    },
+    {
+      name: 'Generali Global Assistance',
+      slug: 'generali-global-assistance',
+      status: 'published',
+      verified: false,
+      website: 'https://www.generalitravelinsurance.com',
+      country: 'IT',
+      logoFile: 'generali-global-assistance.png',
+      insuranceTypes: [types.travel.id, types.medical.id],
+      shortDescription: 'Туристическое страхование и экстренная помощь путешественникам от международной группы Generali.',
+    },
+    {
+      name: 'AXA Partners',
+      slug: 'axa-partners',
+      status: 'published',
+      verified: false,
+      website: 'https://www.axapartners.us/en/travel-insurance',
+      country: 'FR',
+      logoFile: 'axa-partners.svg',
+      insuranceTypes: [types.travel.id, types.medical.id],
+      shortDescription: 'Глобальные решения AXA в области туристического страхования, медицинской помощи и assistance-сервисов.',
+    },
+    {
+      name: 'Zurich Travel Insurance',
+      slug: 'zurich-travel-insurance',
+      status: 'published',
+      verified: false,
+      website: 'https://www.zurich.com',
+      country: 'CH',
+      logoFile: 'zurich.svg',
+      insuranceTypes: [types.travel.id, types.medical.id],
+      shortDescription: 'Туристические страховые продукты и международная помощь от Zurich Insurance Group.',
+    },
+    {
+      name: 'Blue Cross Blue Shield Global Solutions',
+      slug: 'bcbs-global-solutions',
+      status: 'published',
+      verified: false,
+      website: 'https://www.geobluetravelinsurance.com',
+      country: 'US',
+      logoFile: 'geoblue.svg',
+      insuranceTypes: [types.travel.id, types.medical.id],
+      shortDescription: 'Международное медицинское страхование для поездок и длительного пребывания за рубежом, ранее известное под брендом GeoBlue.',
+    },
   ]
 
   const realCompanies: any[] = []
@@ -137,18 +216,18 @@ async function seed() {
       }
       realCompanies.push(doc)
     } else {
-      realCompanies.push(await payload.create({ collection: 'companies', data: c as any }))
+      realCompanies.push(await payload.create({ collection: 'companies', data: c as any, context: { trustedInternal: true } }))
     }
   }
 
-  // Вымышленные тестовые компании (для демонстрации отзывов/рейтингов —
-  // весь связанный с ними контент полностью синтетический).
-  console.log('Добавляю тестовые (вымышленные) компании с демо-отзывами...')
+  // Демо-компании сохраняются для разработки, но никогда не публикуются
+  // в рабочем каталоге и не участвуют в рейтинге реальных страховщиков.
+  console.log('Скрываю тестовые компании и демо-отзывы...')
   const demoCompaniesData = [
     {
       name: 'VoyageGuard',
       slug: 'voyageguard',
-      status: 'published',
+      status: 'hidden',
       verified: true,
       website: 'https://example.com/voyageguard',
       foundedYear: 2012,
@@ -164,7 +243,7 @@ async function seed() {
     {
       name: 'SafeTrip Insurance',
       slug: 'safetrip-insurance',
-      status: 'published',
+      status: 'hidden',
       verified: false,
       website: 'https://example.com/safetrip',
       foundedYear: 2016,
@@ -184,13 +263,12 @@ async function seed() {
     const existing = await payload.find({ collection: 'companies', where: { slug: { equals: c.slug } }, limit: 1 })
     if (existing.docs[0]) {
       const doc = existing.docs[0]
-      if (!doc.logoFile) {
-        await payload.update({ collection: 'companies', id: doc.id, data: { logoFile: c.logoFile } })
-        doc.logoFile = c.logoFile
-      }
+      await payload.update({ collection: 'companies', id: doc.id, data: { logoFile: c.logoFile, status: 'hidden' } })
+      doc.logoFile = c.logoFile
+      doc.status = 'hidden'
       demoCompanies.push(doc)
     } else {
-      demoCompanies.push(await payload.create({ collection: 'companies', data: c as any }))
+      demoCompanies.push(await payload.create({ collection: 'companies', data: c as any, context: { trustedInternal: true } }))
     }
   }
 
@@ -206,7 +284,7 @@ async function seed() {
       pros: [{ text: 'Быстрое оформление' }, { text: 'Реальная помощь на месте' }],
       cons: [],
       recommend: true,
-      status: 'published',
+      status: 'hidden',
       helpfulUp: 6,
       helpfulDown: 0,
     },
@@ -220,7 +298,7 @@ async function seed() {
       pros: [{ text: 'В итоге компенсацию всё же получил' }],
       cons: [{ text: 'Долгие сроки рассмотрения' }],
       recommend: false,
-      status: 'published',
+      status: 'hidden',
       helpfulUp: 3,
       helpfulDown: 1,
     },
@@ -234,7 +312,7 @@ async function seed() {
       pros: [{ text: 'Понятные условия' }],
       cons: [],
       recommend: true,
-      status: 'published',
+      status: 'hidden',
       helpfulUp: 2,
       helpfulDown: 0,
     },
@@ -246,7 +324,9 @@ async function seed() {
       where: { and: [{ company: { equals: r.company } }, { title: { equals: r.title } }] },
       limit: 1,
     })
-    const review = existingReview.docs[0] || (await payload.create({ collection: 'reviews', data: r as any }))
+    const review = existingReview.docs[0]
+      ? await payload.update({ collection: 'reviews', id: existingReview.docs[0].id, data: { status: 'hidden' } })
+      : await payload.create({ collection: 'reviews', data: r as any, context: { trustedInternal: true } })
     if (r.rating <= 3 && !existingReview.docs[0]) {
       await payload.create({
         collection: 'review-replies',

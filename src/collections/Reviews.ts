@@ -1,5 +1,6 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 import { recalculateCompanyRating } from '../lib/recalculateCompanyRating'
+import { isCustomer, isStaff, isTrustedWrite } from '../lib/access'
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
@@ -13,13 +14,18 @@ export const Reviews: CollectionConfig = {
   },
   access: {
     read: ({ req }) => {
-      if (req.user) return true
+      if (isStaff(req)) return true
+      if (isCustomer(req) && req.user) {
+        const ownOrPublished: Where = {
+          or: [{ status: { equals: 'published' } }, { customer: { equals: req.user.id } }],
+        }
+        return ownOrPublished
+      }
       return { status: { equals: 'published' } }
     },
-    // Анонимная отправка через форму «Добавить отзыв» — попадёт со статусом pending
     create: () => true,
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    update: ({ req }) => isStaff(req),
+    delete: ({ req }) => isStaff(req),
   },
   hooks: {
     beforeChange: [
@@ -28,7 +34,13 @@ export const Reviews: CollectionConfig = {
         // `customers`, а не админ `users`) — привязываем отзыв к его
         // аккаунту и подставляем имя/email по умолчанию, если не заданы.
         const user = req.user as any
-        if (operation === 'create' && user?.collection === 'customers') {
+        if (operation === 'create' && !isTrustedWrite(req)) {
+          data.status = 'pending'
+          data.helpfulUp = 0
+          data.helpfulDown = 0
+          delete data.customer
+        }
+        if (operation === 'create' && isCustomer(req)) {
           data.customer = user.id
           if (!data.authorName) data.authorName = user.name || user.email
           if (!data.authorEmail) data.authorEmail = user.email
@@ -50,6 +62,7 @@ export const Reviews: CollectionConfig = {
   fields: [
     {
       name: 'company',
+      label: 'Компания',
       type: 'relationship',
       relationTo: 'companies',
       required: true,
@@ -61,16 +74,18 @@ export const Reviews: CollectionConfig = {
       relationTo: 'customers',
       admin: { description: 'Заполняется автоматически, если отзыв оставил залогиненный пользователь' },
     },
-    { name: 'authorName', type: 'text', required: true },
+    { name: 'authorName', label: 'Имя автора', type: 'text', required: true, minLength: 2, maxLength: 80 },
     {
       name: 'authorEmail',
+      label: 'Email автора',
       type: 'email',
       admin: { description: 'Не показывается публично, только для модерации' },
     },
-    { name: 'title', type: 'text', required: true },
-    { name: 'body', type: 'textarea', required: true },
+    { name: 'title', label: 'Заголовок', type: 'text', required: true, minLength: 5, maxLength: 160 },
+    { name: 'body', label: 'Текст отзыва', type: 'textarea', required: true, minLength: 30, maxLength: 5000 },
     {
       name: 'rating',
+      label: 'Общая оценка',
       type: 'number',
       required: true,
       min: 1,
@@ -102,6 +117,7 @@ export const Reviews: CollectionConfig = {
     { name: 'recommend', label: 'Рекомендует компанию', type: 'checkbox', defaultValue: true },
     {
       name: 'status',
+      label: 'Статус модерации',
       type: 'select',
       required: true,
       defaultValue: 'pending',
@@ -116,12 +132,14 @@ export const Reviews: CollectionConfig = {
     },
     {
       name: 'helpfulUp',
+      label: 'Полезно',
       type: 'number',
       defaultValue: 0,
       admin: { position: 'sidebar', readOnly: true },
     },
     {
       name: 'helpfulDown',
+      label: 'Не полезно',
       type: 'number',
       defaultValue: 0,
       admin: { position: 'sidebar', readOnly: true },

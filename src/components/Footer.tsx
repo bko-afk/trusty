@@ -14,21 +14,21 @@ export function Footer() {
           <p className="mt-4 leading-6 text-white/65">{t.footer.tagline}</p>
         </div>
         <div>
-          <div className="mb-4 font-bold">Страхование</div>
+          <div className="mb-4 font-bold">{t.portal.footer.insurance}</div>
           <ul className="space-y-3 text-white/65">
             <li>
               <Link href="/companies" className="hover:text-white">
-                Рейтинг компаний
+                {t.portal.footer.companyRatings}
               </Link>
             </li>
             <li>
               <Link href="/companies?type=travel" className="hover:text-white">
-                Туристическая страховка
+                {t.insuranceTypeNames.travel}
               </Link>
             </li>
             <li>
               <Link href="/companies?type=medical" className="hover:text-white">
-                Медицинская страховка
+                {t.insuranceTypeNames.medical}
               </Link>
             </li>
           </ul>
@@ -43,29 +43,29 @@ export function Footer() {
             </li>
             <li>
               <Link href="/companies" className="hover:text-white">
-                Найти страховщика
+                {t.portal.footer.findInsurer}
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <div className="mb-4 font-bold">Компаниям</div>
+          <div className="mb-4 font-bold">{t.portal.footer.forCompanies}</div>
           <ul className="space-y-3 text-white/65">
             <li>
               <Link href="/add-company" className="hover:text-white">
-                Добавить компанию
+                {t.nav.addCompany}
               </Link>
             </li>
             <li>
               <Link href="/login" className="hover:text-white">
-                Войти в профиль
+                {t.portal.footer.loginToProfile}
               </Link>
             </li>
           </ul>
         </div>
       </div>
       <div className="border-t border-white/10 py-5 text-center text-xs text-white/45">
-        © {new Date().getFullYear()} {t.brand}. Независимый каталог отзывов о страховании.
+        © {new Date().getFullYear()} {t.brand}. {t.portal.footer.copyright}
       </div>
     </footer>
   )

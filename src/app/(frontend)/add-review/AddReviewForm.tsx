@@ -45,6 +45,12 @@ export function AddReviewForm({
           title: form.get('title'),
           body: form.get('body'),
           rating: Number(form.get('rating')),
+          criteria: {
+            coverage: Number(form.get('coverage')),
+            price: Number(form.get('price')),
+            claimsService: Number(form.get('claimsService')),
+            support: Number(form.get('support')),
+          },
           recommend: form.get('recommend') === 'on',
           pros: prosText
             .split('\n')
@@ -56,7 +62,6 @@ export function AddReviewForm({
             .map((t) => t.trim())
             .filter(Boolean)
             .map((text) => ({ text })),
-          status: 'pending',
         }),
       })
       setStatus(res.ok ? 'success' : 'error')
@@ -97,7 +102,7 @@ export function AddReviewForm({
       {status === 'success' ? (
         <div className="card p-6">{t.addReviewPage.successMsg}</div>
       ) : (
-        <form onSubmit={onSubmit} className="card p-6 space-y-4">
+        <form onSubmit={onSubmit} className="card p-6 space-y-4" aria-busy={status === 'loading'}>
           <div>
             <label className="block text-sm font-medium mb-1">{t.addReviewPage.companyLabel}</label>
             <select
@@ -124,11 +129,11 @@ export function AddReviewForm({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">{t.addReviewPage.nameLabel}</label>
-                <input name="authorName" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+                <input name="authorName" required minLength={2} maxLength={80} autoComplete="name" className="w-full rounded-lg border border-gray-300 px-3 py-2" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">{t.addReviewPage.emailLabel}</label>
-                <input name="authorEmail" type="email" className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+                <input name="authorEmail" type="email" maxLength={254} autoComplete="email" className="w-full rounded-lg border border-gray-300 px-3 py-2" />
               </div>
             </div>
           )}
@@ -142,22 +147,35 @@ export function AddReviewForm({
               ))}
             </select>
           </div>
+          <fieldset>
+            <legend className="block text-sm font-medium mb-2">{t.addReviewPage.criteriaLabel}</legend>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {Object.entries(t.companyReviewsPage.criteria).map(([key, label]) => (
+                <label key={key} className="text-sm text-gray-600">
+                  <span className="mb-1 block">{label}</span>
+                  <select name={key} required defaultValue="5" className="w-full rounded-lg border border-gray-300 px-3 py-2">
+                    {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n}</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <div>
             <label className="block text-sm font-medium mb-1">{t.addReviewPage.titleLabel}</label>
-            <input name="title" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            <input name="title" required minLength={5} maxLength={160} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">{t.addReviewPage.bodyLabel}</label>
-            <textarea name="body" required rows={5} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            <textarea name="body" required minLength={30} maxLength={5000} rows={5} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">{t.addReviewPage.prosLabel}</label>
-              <textarea name="pros" rows={3} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+              <textarea name="pros" rows={3} maxLength={1200} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">{t.addReviewPage.consLabel}</label>
-              <textarea name="cons" rows={3} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+              <textarea name="cons" rows={3} maxLength={1200} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
             </div>
           </div>
           <label className="flex items-center gap-2 text-sm">
@@ -167,7 +185,7 @@ export function AddReviewForm({
           <button type="submit" disabled={status === 'loading'} className="btn-primary">
             {status === 'loading' ? t.addReviewPage.submittingBtn : t.addReviewPage.submitBtn}
           </button>
-          {status === 'error' && <p className="text-rose-600 text-sm">{t.addReviewPage.errorMsg}</p>}
+          {status === 'error' && <p role="alert" className="text-rose-600 text-sm">{t.addReviewPage.errorMsg}</p>}
         </form>
       )}
     </div>

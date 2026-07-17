@@ -1,4 +1,5 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
+import { isCustomer, isStaff, isTrustedWrite } from '../lib/access'
 
 export const Complaints: CollectionConfig = {
   slug: 'complaints',
@@ -12,13 +13,18 @@ export const Complaints: CollectionConfig = {
   },
   access: {
     read: ({ req }) => {
-      if (req.user) return true
+      if (isStaff(req)) return true
+      if (isCustomer(req) && req.user) {
+        const ownOrPublished: Where = {
+          or: [{ status: { equals: 'published' } }, { customer: { equals: req.user.id } }],
+        }
+        return ownOrPublished
+      }
       return { status: { equals: 'published' } }
     },
-    // Анонимная отправка через форму «Оставить жалобу» — попадёт со статусом pending
     create: () => true,
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    update: ({ req }) => isStaff(req),
+    delete: ({ req }) => isStaff(req),
   },
   hooks: {
     beforeChange: [
@@ -27,7 +33,12 @@ export const Complaints: CollectionConfig = {
         // `customers`) — привязываем её к аккаунту и подставляем
         // имя/email по умолчанию, если не заданы.
         const user = req.user as any
-        if (operation === 'create' && user?.collection === 'customers') {
+        if (operation === 'create' && !isTrustedWrite(req)) {
+          data.status = 'pending'
+          data.resolved = false
+          delete data.customer
+        }
+        if (operation === 'create' && isCustomer(req)) {
           data.customer = user.id
           if (!data.authorName) data.authorName = user.name || user.email
           if (!data.authorEmail) data.authorEmail = user.email
@@ -39,6 +50,7 @@ export const Complaints: CollectionConfig = {
   fields: [
     {
       name: 'company',
+      label: 'Компания',
       type: 'relationship',
       relationTo: 'companies',
       required: true,
@@ -50,16 +62,18 @@ export const Complaints: CollectionConfig = {
       relationTo: 'customers',
       admin: { description: 'Заполняется автоматически, если жалобу оставил залогиненный пользователь' },
     },
-    { name: 'authorName', type: 'text', required: true },
+    { name: 'authorName', label: 'Имя автора', type: 'text', required: true, minLength: 2, maxLength: 80 },
     {
       name: 'authorEmail',
+      label: 'Email автора',
       type: 'email',
       admin: { description: 'Не показывается публично, только для модерации и ответа' },
     },
-    { name: 'title', type: 'text', label: 'Тема жалобы', required: true },
-    { name: 'body', type: 'textarea', label: 'Описание проблемы', required: true },
+    { name: 'title', type: 'text', label: 'Тема жалобы', required: true, minLength: 5, maxLength: 160 },
+    { name: 'body', type: 'textarea', label: 'Описание проблемы', required: true, minLength: 30, maxLength: 5000 },
     {
       name: 'status',
+      label: 'Статус модерации',
       type: 'select',
       required: true,
       defaultValue: 'pending',

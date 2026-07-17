@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { isStaff } from '../lib/access'
 
 export const InsuranceTypes: CollectionConfig = {
   slug: 'insurance-types',
@@ -12,6 +13,9 @@ export const InsuranceTypes: CollectionConfig = {
   },
   access: {
     read: () => true,
+    create: ({ req }) => isStaff(req),
+    update: ({ req }) => isStaff(req),
+    delete: ({ req }) => isStaff(req),
   },
   fields: [
     { name: 'title', type: 'text', required: true },

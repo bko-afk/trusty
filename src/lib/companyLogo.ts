@@ -1,7 +1,17 @@
-// Логотипы компаний хранятся не в Payload Media (которое требует S3 на
-// Vercel), а как обычные статические файлы в public/images/companies/ —
-// это бесплатно и не зависит от сторонних сервисов. В админке поле
-// `logoFile` хранит только имя файла (например "auras.svg").
-export function companyLogoUrl(logoFile?: string | null): string | undefined {
+type CompanyLogoMedia = {
+  url?: string | null
+  sizes?: {
+    thumbnail?: { url?: string | null } | null
+    card?: { url?: string | null } | null
+  } | null
+}
+
+export function companyLogoUrl(
+  logo?: number | CompanyLogoMedia | null,
+  logoFile?: string | null,
+): string | undefined {
+  if (logo && typeof logo === 'object') {
+    return logo.sizes?.thumbnail?.url || logo.sizes?.card?.url || logo.url || undefined
+  }
   return logoFile ? `/images/companies/${logoFile}` : undefined
 }

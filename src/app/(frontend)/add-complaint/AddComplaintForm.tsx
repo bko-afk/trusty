@@ -45,7 +45,6 @@ export function AddComplaintForm({
           authorEmail: form.get('authorEmail'),
           title: form.get('title'),
           body: form.get('body'),
-          status: 'pending',
         }),
       })
       setStatus(res.ok ? 'success' : 'error')
@@ -86,7 +85,7 @@ export function AddComplaintForm({
       {status === 'success' ? (
         <div className="card p-6">{t.addComplaintPage.successMsg}</div>
       ) : (
-        <form onSubmit={onSubmit} className="card p-6 space-y-4">
+        <form onSubmit={onSubmit} className="card p-6 space-y-4" aria-busy={status === 'loading'}>
           <div>
             <label className="block text-sm font-medium mb-1">{t.addComplaintPage.companyLabel}</label>
             <select
@@ -113,26 +112,26 @@ export function AddComplaintForm({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">{t.addComplaintPage.nameLabel}</label>
-                <input name="authorName" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+                <input name="authorName" required minLength={2} maxLength={80} autoComplete="name" className="w-full rounded-lg border border-gray-300 px-3 py-2" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">{t.addComplaintPage.emailLabel}</label>
-                <input name="authorEmail" type="email" className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+                <input name="authorEmail" type="email" required maxLength={254} autoComplete="email" className="w-full rounded-lg border border-gray-300 px-3 py-2" />
               </div>
             </div>
           )}
           <div>
             <label className="block text-sm font-medium mb-1">{t.addComplaintPage.titleLabel}</label>
-            <input name="title" required className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            <input name="title" required minLength={5} maxLength={160} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">{t.addComplaintPage.bodyLabel}</label>
-            <textarea name="body" required rows={6} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
+            <textarea name="body" required minLength={30} maxLength={5000} rows={6} className="w-full rounded-lg border border-gray-300 px-3 py-2" />
           </div>
           <button type="submit" disabled={status === 'loading'} className="btn-primary">
             {status === 'loading' ? t.addComplaintPage.submittingBtn : t.addComplaintPage.submitBtn}
           </button>
-          {status === 'error' && <p className="text-rose-600 text-sm">{t.addComplaintPage.errorMsg}</p>}
+          {status === 'error' && <p role="alert" className="text-rose-600 text-sm">{t.addComplaintPage.errorMsg}</p>}
         </form>
       )}
     </div>

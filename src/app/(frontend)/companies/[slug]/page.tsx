@@ -36,7 +36,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     <CompanyDetailText
       slug={slug}
       name={company.name}
-      logoUrl={companyLogoUrl(company.logoFile)}
+      logoUrl={companyLogoUrl(company.logo, company.logoFile)}
       overallRating={company.overallRating || 0}
       reviewCount={company.reviewCount || 0}
       verified={company.verified}

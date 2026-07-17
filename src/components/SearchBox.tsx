@@ -54,7 +54,7 @@ export function SearchBox({
         params.set('where[and][0][status][equals]', 'published')
         params.set('where[and][1][name][like]', query.trim())
         params.set('limit', '6')
-        params.set('depth', '0')
+        params.set('depth', '1')
         const res = await fetch(`/api/companies?${params.toString()}`, { signal: controller.signal })
         if (res.ok) {
           const data = await res.json()
@@ -63,7 +63,7 @@ export function SearchBox({
               id: c.id,
               slug: c.slug,
               name: c.name,
-              logoUrl: companyLogoUrl(c.logoFile),
+              logoUrl: companyLogoUrl(c.logo, c.logoFile),
               overallRating: c.overallRating,
             })),
           )
@@ -123,12 +123,12 @@ export function SearchBox({
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/40 border-b border-gray-50 last:border-0"
             >
-              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
+              <div className="relative h-8 w-14 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
                 <Image
                   src={c.logoUrl || '/placeholders/logo-placeholder.svg'}
                   alt={c.name}
                   fill
-                  className="object-contain p-0.5"
+                  className="object-contain p-1"
                 />
               </div>
               <span className="truncate">{c.name}</span>
@@ -152,12 +152,12 @@ export function SearchBox({
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/40 border-b border-gray-50 last:border-0"
               >
-                <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
+                <div className="relative h-8 w-14 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50">
                   <Image
                     src={r.logoUrl || '/placeholders/logo-placeholder.svg'}
                     alt={r.name}
                     fill
-                    className="object-contain p-0.5"
+                    className="object-contain p-1"
                   />
                 </div>
                 <span className="truncate">{r.name}</span>
@@ -182,7 +182,7 @@ export function SearchBox({
       <div ref={wrapperRef} className="relative w-full">
         <div className="grid gap-2 bg-brand p-3 sm:grid-cols-[240px_1fr] sm:gap-0 sm:p-5">
           <div className="flex min-h-16 items-center bg-white px-6 text-left font-bold text-brand-dark sm:border-r sm:border-gray-200">
-            Страховые компании
+            {t.portal.insuranceCompanies}
           </div>
           <div className="relative min-h-16 bg-white">
             <input

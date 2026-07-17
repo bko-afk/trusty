@@ -95,6 +95,100 @@ export type Dictionary = {
     allCountries: string
     noResultsForType: string
   }
+  portal: {
+    insuranceCompanies: string
+    home: {
+      heroTitle: string
+      popularLabel: string
+      servicesKicker: string
+      servicesTitle: string
+      openRating: string
+      reviewDescription: string
+      compareTitle: string
+      compareDescription: string
+      catalogLink: string
+      understandTitle: string
+      understandDescription: string
+      methodologyLink: string
+      popularCategories: string
+      selectInsuranceType: string
+      allCompanies: string
+      place: string
+      company: string
+      reviews: string
+      rating: string
+      customerExperience: string
+      readReview: string
+      methodologyKicker: string
+      methodologyTitle: string
+      methodologyDescription: string
+      criteriaCount: string
+      openMethod: string
+      viewRating: string
+      newCompanies: string
+      entireCatalog: string
+      ratingLabel: string
+      imageAlt: string
+      recentlyAdded: string
+      carouselPrevious: string
+      carouselNext: string
+      carouselPosition: string
+      openCompany: string
+    }
+    ranking: {
+      ratingsBreadcrumb: string
+      onlineInsuranceBreadcrumb: string
+      marker: string
+      title: string
+      intro: string
+      companiesInRating: string
+      showFilter: string
+      hideFilter: string
+      companyName: string
+      companyNamePlaceholder: string
+      verifiedOnly: string
+      place: string
+      company: string
+      reviews: string
+      rating: string
+      programs: string
+      mobilePlace: string
+      verifiedProfile: string
+      details: string
+      noResults: string
+      aboutRating: string
+      chooseCompany: string
+      chooseCompanyText1: string
+      chooseCompanyText2: string
+    }
+    detail: {
+      ratingsBreadcrumb: string
+      notSpecified: string
+      verifiedProfile: string
+      companyRating: string
+      customerReviews: string
+      overview: string
+      reviews: string
+      specifications: string
+      independentReview: string
+      aboutCompanyPrefix: string
+      advantages: string
+      disadvantages: string
+      emptyList: string
+      experiencePrefix: string
+      experienceText: string
+      companyCard: string
+      keyDetails: string
+    }
+    footer: {
+      insurance: string
+      companyRatings: string
+      findInsurer: string
+      forCompanies: string
+      loginToProfile: string
+      copyright: string
+    }
+  }
   companyDetail: {
     officialSite: string
     foundedYear: string
@@ -165,6 +259,7 @@ export type Dictionary = {
     nameLabel: string
     emailLabel: string
     ratingLabel: string
+    criteriaLabel: string
     titleLabel: string
     bodyLabel: string
     prosLabel: string
@@ -253,6 +348,18 @@ export type Dictionary = {
     registerBenefit2: string
     registerBenefit3: string
     loginIntro: string
+    myReviews: string
+    myComplaints: string
+    noReviewsYet: string
+    noComplaintsYet: string
+    activityLoading: string
+    submissionStatus: {
+      pending: string
+      published: string
+      hidden: string
+      rejected: string
+      spam: string
+    }
   }
 }
 
@@ -335,6 +442,100 @@ export const dictionary: Record<Locale, Dictionary> = {
       allCountries: 'Все страны',
       noResultsForType: 'По этому виду страхования пока нет компаний.',
     },
+    portal: {
+      insuranceCompanies: 'Страховые компании',
+      home: {
+        heroTitle: 'Поиск информации и отзывов о страховых компаниях',
+        popularLabel: 'Популярно:',
+        servicesKicker: 'Сервисы',
+        servicesTitle: 'Помогаем выбрать страховку',
+        openRating: 'Открыть рейтинг',
+        reviewDescription: 'Расскажите о выплате, поддержке и условиях полиса.',
+        compareTitle: 'Сравнить компании',
+        compareDescription: 'Фильтруйте страховщиков по типу полиса, стране и рейтингу.',
+        catalogLink: 'К каталогу',
+        understandTitle: 'Понять рейтинг',
+        understandDescription: 'Показываем, из каких оценок складывается итоговый балл.',
+        methodologyLink: 'Как это работает',
+        popularCategories: 'Популярные категории',
+        selectInsuranceType: 'Выберите тип страхования',
+        allCompanies: 'Все компании',
+        place: 'Место',
+        company: 'Компания',
+        reviews: 'Отзывы',
+        rating: 'Рейтинг',
+        customerExperience: 'Опыт клиентов',
+        readReview: 'Читать отзыв',
+        methodologyKicker: 'Методология Trusty',
+        methodologyTitle: 'Рейтинг строится на реальном клиентском опыте',
+        methodologyDescription: 'Мы учитываем опубликованные отзывы и оценки по четырём критериям: покрытие, цена полиса, выплаты и поддержка. Непроверенные обещания компаний не повышают позицию в рейтинге.',
+        criteriaCount: 'критерия оценки',
+        openMethod: 'открытая методика',
+        viewRating: 'Смотреть рейтинг',
+        newCompanies: 'Новые компании',
+        entireCatalog: 'Весь каталог',
+        ratingLabel: 'Рейтинг',
+        imageAlt: 'Иллюстрация выбора туристической страховки',
+        recentlyAdded: 'Недавно добавлены',
+        carouselPrevious: 'Предыдущие компании',
+        carouselNext: 'Следующие компании',
+        carouselPosition: 'Компания {current} из {total}',
+        openCompany: 'Открыть компанию',
+      },
+      ranking: {
+        ratingsBreadcrumb: 'Рейтинги',
+        onlineInsuranceBreadcrumb: 'Страхование онлайн',
+        marker: 'Р',
+        title: 'Рейтинг сервисов страхования онлайн',
+        intro: 'В рейтинге собраны страховые компании и онлайн-сервисы. Сравнивайте отзывы, итоговую оценку и доступные виды полисов.',
+        companiesInRating: 'компаний в рейтинге',
+        showFilter: 'Показать фильтр',
+        hideFilter: 'Скрыть фильтр',
+        companyName: 'Название компании',
+        companyNamePlaceholder: 'Начните вводить название',
+        verifiedOnly: 'Только проверенные',
+        place: 'Место',
+        company: 'Компания',
+        reviews: 'Отзывы',
+        rating: 'Рейтинг',
+        programs: 'Программы',
+        mobilePlace: 'Место',
+        verifiedProfile: 'Профиль подтверждён',
+        details: 'Подробнее',
+        noResults: 'По выбранным фильтрам компании не найдены.',
+        aboutRating: 'О рейтинге',
+        chooseCompany: 'Как выбрать страховую компанию',
+        chooseCompanyText1: 'Проверяйте не только стоимость полиса, но и список исключений, размер покрытия, порядок обращения при страховом случае и опыт клиентов с реальными выплатами.',
+        chooseCompanyText2: 'Итоговая оценка Trusty формируется из опубликованных пользовательских отзывов. Профиль компании и рекламные обещания сами по себе не повышают позицию в таблице.',
+      },
+      detail: {
+        ratingsBreadcrumb: 'Рейтинг страховщиков',
+        notSpecified: 'Не указано',
+        verifiedProfile: 'Профиль подтверждён',
+        companyRating: 'Рейтинг компании',
+        customerReviews: 'отзывов клиентов',
+        overview: 'Обзор',
+        reviews: 'Отзывы',
+        specifications: 'Характеристики',
+        independentReview: 'Независимый обзор',
+        aboutCompanyPrefix: 'О компании',
+        advantages: 'Преимущества',
+        disadvantages: 'Недостатки',
+        emptyList: 'Пока не указаны',
+        experiencePrefix: 'Есть опыт с',
+        experienceText: 'Подробный отзыв о покупке полиса или страховом случае поможет другим путешественникам сделать осознанный выбор.',
+        companyCard: 'Карточка компании',
+        keyDetails: 'Основные данные',
+      },
+      footer: {
+        insurance: 'Страхование',
+        companyRatings: 'Рейтинг компаний',
+        findInsurer: 'Найти страховщика',
+        forCompanies: 'Компаниям',
+        loginToProfile: 'Войти в профиль',
+        copyright: 'Независимый каталог отзывов о страховании.',
+      },
+    },
     companyDetail: {
       officialSite: 'Официальный сайт',
       foundedYear: 'Год основания',
@@ -407,6 +608,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       nameLabel: 'Ваше имя *',
       emailLabel: 'Email',
       ratingLabel: 'Оценка *',
+      criteriaLabel: 'Оценки по критериям',
       titleLabel: 'Заголовок отзыва *',
       bodyLabel: 'Текст отзыва *',
       prosLabel: 'Плюсы (по одному в строке)',
@@ -500,6 +702,18 @@ export const dictionary: Record<Locale, Dictionary> = {
       registerBenefit2: 'История ваших отзывов и жалоб — в личном кабинете',
       registerBenefit3: 'Уведомления об ответах от компаний',
       loginIntro: 'Войдите, чтобы оставлять отзывы и жалобы от своего аккаунта и видеть их статус.',
+      myReviews: 'Мои отзывы',
+      myComplaints: 'Мои жалобы',
+      noReviewsYet: 'Вы ещё не оставляли отзывов.',
+      noComplaintsYet: 'Вы ещё не отправляли жалоб.',
+      activityLoading: 'Загружаем вашу историю...',
+      submissionStatus: {
+        pending: 'На модерации',
+        published: 'Опубликовано',
+        hidden: 'Скрыто',
+        rejected: 'Отклонено',
+        spam: 'Спам',
+      },
     },
   },
   en: {
@@ -580,6 +794,100 @@ export const dictionary: Record<Locale, Dictionary> = {
       allCountries: 'All countries',
       noResultsForType: 'No companies for this insurance type yet.',
     },
+    portal: {
+      insuranceCompanies: 'Insurance companies',
+      home: {
+        heroTitle: 'Find information and reviews about insurance companies',
+        popularLabel: 'Popular:',
+        servicesKicker: 'Services',
+        servicesTitle: 'Helping you choose insurance',
+        openRating: 'Open ratings',
+        reviewDescription: 'Share your experience with claims, support, and policy terms.',
+        compareTitle: 'Compare companies',
+        compareDescription: 'Filter insurers by policy type, country, and rating.',
+        catalogLink: 'Open catalog',
+        understandTitle: 'Understand the rating',
+        understandDescription: 'See which customer scores make up the final rating.',
+        methodologyLink: 'How it works',
+        popularCategories: 'Popular categories',
+        selectInsuranceType: 'Choose an insurance type',
+        allCompanies: 'All companies',
+        place: 'Rank',
+        company: 'Company',
+        reviews: 'Reviews',
+        rating: 'Rating',
+        customerExperience: 'Customer experience',
+        readReview: 'Read review',
+        methodologyKicker: 'Trusty methodology',
+        methodologyTitle: 'Ratings are built on real customer experience',
+        methodologyDescription: 'We use published reviews and scores across four criteria: coverage, policy price, claims handling, and support. Unverified marketing claims do not improve a company’s position.',
+        criteriaCount: 'rating criteria',
+        openMethod: 'transparent method',
+        viewRating: 'View ratings',
+        newCompanies: 'New companies',
+        entireCatalog: 'Full catalog',
+        ratingLabel: 'Rating',
+        imageAlt: 'Illustration about choosing travel insurance',
+        recentlyAdded: 'Recently added',
+        carouselPrevious: 'Previous companies',
+        carouselNext: 'Next companies',
+        carouselPosition: 'Company {current} of {total}',
+        openCompany: 'Open company',
+      },
+      ranking: {
+        ratingsBreadcrumb: 'Ratings',
+        onlineInsuranceBreadcrumb: 'Online insurance',
+        marker: 'R',
+        title: 'Online insurance service ratings',
+        intro: 'This ranking includes insurance companies and online services. Compare customer reviews, overall scores, and available policy types.',
+        companiesInRating: 'companies in the ranking',
+        showFilter: 'Show filters',
+        hideFilter: 'Hide filters',
+        companyName: 'Company name',
+        companyNamePlaceholder: 'Start typing a company name',
+        verifiedOnly: 'Verified companies only',
+        place: 'Rank',
+        company: 'Company',
+        reviews: 'Reviews',
+        rating: 'Rating',
+        programs: 'Programs',
+        mobilePlace: 'Rank',
+        verifiedProfile: 'Verified profile',
+        details: 'Details',
+        noResults: 'No companies match the selected filters.',
+        aboutRating: 'About the rating',
+        chooseCompany: 'How to choose an insurance company',
+        chooseCompanyText1: 'Check more than the policy price: review exclusions, coverage limits, the claims process, and customers’ experience with real payouts.',
+        chooseCompanyText2: 'Trusty’s overall score is calculated from published customer reviews. A company profile and marketing promises do not improve its table position by themselves.',
+      },
+      detail: {
+        ratingsBreadcrumb: 'Insurer ratings',
+        notSpecified: 'Not specified',
+        verifiedProfile: 'Verified profile',
+        companyRating: 'Company rating',
+        customerReviews: 'customer reviews',
+        overview: 'Overview',
+        reviews: 'Reviews',
+        specifications: 'Details',
+        independentReview: 'Independent review',
+        aboutCompanyPrefix: 'About',
+        advantages: 'Advantages',
+        disadvantages: 'Disadvantages',
+        emptyList: 'Not specified yet',
+        experiencePrefix: 'Have experience with',
+        experienceText: 'A detailed review about buying a policy or handling a claim will help other travelers make an informed choice.',
+        companyCard: 'Company profile',
+        keyDetails: 'Key details',
+      },
+      footer: {
+        insurance: 'Insurance',
+        companyRatings: 'Company ratings',
+        findInsurer: 'Find an insurer',
+        forCompanies: 'For companies',
+        loginToProfile: 'Log in to profile',
+        copyright: 'Independent insurance review catalog.',
+      },
+    },
     companyDetail: {
       officialSite: 'Official website',
       foundedYear: 'Founded',
@@ -652,6 +960,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       nameLabel: 'Your name *',
       emailLabel: 'Email',
       ratingLabel: 'Rating *',
+      criteriaLabel: 'Scores by criterion',
       titleLabel: 'Review title *',
       bodyLabel: 'Review text *',
       prosLabel: 'Pros (one per line)',
@@ -746,6 +1055,18 @@ export const dictionary: Record<Locale, Dictionary> = {
       registerBenefit2: 'Your review and complaint history in one account page',
       registerBenefit3: 'Notifications when companies respond',
       loginIntro: 'Log in to post reviews and complaints under your account and track their status.',
+      myReviews: 'My reviews',
+      myComplaints: 'My complaints',
+      noReviewsYet: 'You have not submitted any reviews yet.',
+      noComplaintsYet: 'You have not filed any complaints yet.',
+      activityLoading: 'Loading your activity...',
+      submissionStatus: {
+        pending: 'Under review',
+        published: 'Published',
+        hidden: 'Hidden',
+        rejected: 'Rejected',
+        spam: 'Spam',
+      },
     },
   },
   es: {
@@ -826,6 +1147,100 @@ export const dictionary: Record<Locale, Dictionary> = {
       allCountries: 'Todos los países',
       noResultsForType: 'Todavía no hay empresas para este tipo de seguro.',
     },
+    portal: {
+      insuranceCompanies: 'Aseguradoras',
+      home: {
+        heroTitle: 'Busca información y reseñas sobre aseguradoras',
+        popularLabel: 'Popular:',
+        servicesKicker: 'Servicios',
+        servicesTitle: 'Te ayudamos a elegir un seguro',
+        openRating: 'Abrir clasificación',
+        reviewDescription: 'Comparte tu experiencia con siniestros, atención y condiciones de la póliza.',
+        compareTitle: 'Comparar empresas',
+        compareDescription: 'Filtra aseguradoras por tipo de póliza, país y puntuación.',
+        catalogLink: 'Abrir catálogo',
+        understandTitle: 'Entender la clasificación',
+        understandDescription: 'Consulta qué valoraciones forman la puntuación final.',
+        methodologyLink: 'Cómo funciona',
+        popularCategories: 'Categorías populares',
+        selectInsuranceType: 'Elige un tipo de seguro',
+        allCompanies: 'Todas las empresas',
+        place: 'Puesto',
+        company: 'Empresa',
+        reviews: 'Reseñas',
+        rating: 'Puntuación',
+        customerExperience: 'Experiencia de clientes',
+        readReview: 'Leer reseña',
+        methodologyKicker: 'Metodología de Trusty',
+        methodologyTitle: 'La clasificación se basa en experiencias reales',
+        methodologyDescription: 'Usamos reseñas publicadas y puntuaciones en cuatro criterios: cobertura, precio, gestión de siniestros y atención. Las promesas publicitarias no verificadas no mejoran la posición.',
+        criteriaCount: 'criterios de valoración',
+        openMethod: 'método transparente',
+        viewRating: 'Ver clasificación',
+        newCompanies: 'Empresas nuevas',
+        entireCatalog: 'Catálogo completo',
+        ratingLabel: 'Puntuación',
+        imageAlt: 'Ilustración sobre la elección de un seguro de viaje',
+        recentlyAdded: 'Añadidas recientemente',
+        carouselPrevious: 'Empresas anteriores',
+        carouselNext: 'Empresas siguientes',
+        carouselPosition: 'Empresa {current} de {total}',
+        openCompany: 'Abrir empresa',
+      },
+      ranking: {
+        ratingsBreadcrumb: 'Clasificaciones',
+        onlineInsuranceBreadcrumb: 'Seguros online',
+        marker: 'C',
+        title: 'Clasificación de servicios de seguros online',
+        intro: 'Esta clasificación incluye aseguradoras y servicios online. Compara reseñas, puntuaciones generales y tipos de póliza disponibles.',
+        companiesInRating: 'empresas en la clasificación',
+        showFilter: 'Mostrar filtros',
+        hideFilter: 'Ocultar filtros',
+        companyName: 'Nombre de la empresa',
+        companyNamePlaceholder: 'Empieza a escribir el nombre',
+        verifiedOnly: 'Solo empresas verificadas',
+        place: 'Puesto',
+        company: 'Empresa',
+        reviews: 'Reseñas',
+        rating: 'Puntuación',
+        programs: 'Programas',
+        mobilePlace: 'Puesto',
+        verifiedProfile: 'Perfil verificado',
+        details: 'Detalles',
+        noResults: 'Ninguna empresa coincide con los filtros seleccionados.',
+        aboutRating: 'Sobre la clasificación',
+        chooseCompany: 'Cómo elegir una aseguradora',
+        chooseCompanyText1: 'No compruebes solo el precio: revisa exclusiones, límites de cobertura, el proceso de siniestros y la experiencia de clientes con pagos reales.',
+        chooseCompanyText2: 'La puntuación general de Trusty se calcula con reseñas publicadas. El perfil y las promesas publicitarias no mejoran por sí solos la posición en la tabla.',
+      },
+      detail: {
+        ratingsBreadcrumb: 'Clasificación de aseguradoras',
+        notSpecified: 'No especificado',
+        verifiedProfile: 'Perfil verificado',
+        companyRating: 'Puntuación de la empresa',
+        customerReviews: 'reseñas de clientes',
+        overview: 'Resumen',
+        reviews: 'Reseñas',
+        specifications: 'Detalles',
+        independentReview: 'Análisis independiente',
+        aboutCompanyPrefix: 'Sobre',
+        advantages: 'Ventajas',
+        disadvantages: 'Desventajas',
+        emptyList: 'Todavía no se ha indicado',
+        experiencePrefix: '¿Tienes experiencia con',
+        experienceText: 'Una reseña detallada sobre la compra de una póliza o la gestión de un siniestro ayudará a otros viajeros a decidir mejor.',
+        companyCard: 'Ficha de empresa',
+        keyDetails: 'Datos principales',
+      },
+      footer: {
+        insurance: 'Seguros',
+        companyRatings: 'Clasificación de empresas',
+        findInsurer: 'Buscar aseguradora',
+        forCompanies: 'Para empresas',
+        loginToProfile: 'Entrar al perfil',
+        copyright: 'Catálogo independiente de reseñas de seguros.',
+      },
+    },
     companyDetail: {
       officialSite: 'Sitio web oficial',
       foundedYear: 'Año de fundación',
@@ -898,6 +1313,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       nameLabel: 'Tu nombre *',
       emailLabel: 'Email',
       ratingLabel: 'Puntuación *',
+      criteriaLabel: 'Puntuaciones por criterio',
       titleLabel: 'Título de la reseña *',
       bodyLabel: 'Texto de la reseña *',
       prosLabel: 'Ventajas (una por línea)',
@@ -992,6 +1408,18 @@ export const dictionary: Record<Locale, Dictionary> = {
       registerBenefit2: 'Historial de tus reseñas y quejas en tu cuenta',
       registerBenefit3: 'Notificaciones cuando las empresas respondan',
       loginIntro: 'Inicia sesión para publicar reseñas y quejas con tu cuenta y seguir su estado.',
+      myReviews: 'Mis reseñas',
+      myComplaints: 'Mis quejas',
+      noReviewsYet: 'Todavía no has enviado reseñas.',
+      noComplaintsYet: 'Todavía no has presentado quejas.',
+      activityLoading: 'Cargando tu actividad...',
+      submissionStatus: {
+        pending: 'En moderación',
+        published: 'Publicado',
+        hidden: 'Oculto',
+        rejected: 'Rechazado',
+        spam: 'Spam',
+      },
     },
   },
 } as const

@@ -24,13 +24,13 @@ async function getPopularCompanies() {
     where: { and: [{ status: { equals: 'published' } }, { popular: { equals: true } }] },
     sort: '-updatedAt',
     limit: 3,
-    depth: 0,
+    depth: 1,
   })
   return result.docs.map((c: any) => ({
     id: c.id,
     slug: c.slug,
     name: c.name,
-    logoUrl: companyLogoUrl(c.logoFile),
+    logoUrl: companyLogoUrl(c.logo, c.logoFile),
   }))
 }
 
