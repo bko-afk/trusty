@@ -90,6 +90,7 @@ export type Dictionary = {
   }
   catalog: {
     title: string
+    subtitle: string
     allTypes: string
     allCountries: string
     noResultsForType: string
@@ -287,7 +288,8 @@ export const dictionary: Record<Locale, Dictionary> = {
       clear: 'Очистить',
     },
     catalog: {
-      title: 'Каталог страховых компаний',
+      title: 'Каталог и рейтинг страховых компаний',
+      subtitle: 'Компании отсортированы по рейтингу — среднему баллу опубликованных отзывов клиентов.',
       allTypes: 'Все виды',
       allCountries: 'Все страны',
       noResultsForType: 'По этому виду страхования пока нет компаний.',
@@ -484,7 +486,8 @@ export const dictionary: Record<Locale, Dictionary> = {
       clear: 'Clear',
     },
     catalog: {
-      title: 'Insurance company catalog',
+      title: 'Insurance company catalog & ratings',
+      subtitle: 'Companies are ranked by rating — the average score of published customer reviews.',
       allTypes: 'All types',
       allCountries: 'All countries',
       noResultsForType: 'No companies for this insurance type yet.',
@@ -681,7 +684,8 @@ export const dictionary: Record<Locale, Dictionary> = {
       clear: 'Borrar',
     },
     catalog: {
-      title: 'Catálogo de aseguradoras',
+      title: 'Catálogo y clasificación de aseguradoras',
+      subtitle: 'Las empresas se ordenan por puntuación — la media de las reseñas publicadas.',
       allTypes: 'Todos los tipos',
       allCountries: 'Todos los países',
       noResultsForType: 'Todavía no hay empresas para este tipo de seguro.',

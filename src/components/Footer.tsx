@@ -46,11 +46,6 @@ export function Footer() {
                 {t.nav.catalog}
               </Link>
             </li>
-            <li>
-              <Link href="/ratings" className="hover:text-brand">
-                {t.nav.ratings}
-              </Link>
-            </li>
           </ul>
         </div>
       </div>

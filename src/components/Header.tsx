@@ -21,7 +21,6 @@ export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCo
   const navItems = [
     { label: t.common.home, href: '/' },
     { label: t.nav.catalog, href: '/companies' },
-    { label: t.nav.ratings, href: '/ratings' },
     { label: t.nav.articles, href: '/articles' },
   ]
 

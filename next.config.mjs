@@ -25,6 +25,18 @@ const nextConfig = {
       { protocol: 'https', hostname: '**' },
     ],
   },
+  // Каталог и рейтинги — по сути одна и та же таблица компаний,
+  // отсортированная по рейтингу, так что отдельная страница /ratings
+  // больше не нужна: постоянный редирект на объединённую /companies.
+  async redirects() {
+    return [
+      {
+        source: '/ratings',
+        destination: '/companies',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default withPayload(nextConfig)

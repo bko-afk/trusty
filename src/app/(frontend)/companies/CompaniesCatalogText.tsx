@@ -50,7 +50,8 @@ export function CompaniesCatalogText({
   return (
     <div className="container-page py-8">
       <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.catalog.title }]} />
-      <h1 className="text-2xl font-bold mb-6">{t.catalog.title}</h1>
+      <h1 className="text-2xl font-bold mb-2">{t.catalog.title}</h1>
+      <p className="text-gray-500 mb-6">{t.catalog.subtitle}</p>
 
       <div className="flex flex-wrap gap-2 mb-3">
         <Link
@@ -104,9 +105,10 @@ export function CompaniesCatalogText({
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {companies.map((company) => (
+        {companies.map((company, index) => (
           <CompanyCard
             key={company.id}
+            rank={index + 1}
             slug={company.slug}
             name={company.name}
             logoUrl={company.logoUrl}
