@@ -12,6 +12,7 @@ import { InsuranceTypes } from './collections/InsuranceTypes'
 import { Companies } from './collections/Companies'
 import { Reviews } from './collections/Reviews'
 import { ReviewReplies } from './collections/ReviewReplies'
+import { Complaints } from './collections/Complaints'
 import { Articles } from './collections/Articles'
 import { Customers } from './collections/Customers'
 
@@ -38,7 +39,17 @@ export default buildConfig({
     },
   },
   editor: lexicalEditor({}),
-  collections: [Users, Media, InsuranceTypes, Companies, Reviews, ReviewReplies, Articles, Customers],
+  collections: [
+    Users,
+    Media,
+    InsuranceTypes,
+    Companies,
+    Reviews,
+    ReviewReplies,
+    Complaints,
+    Articles,
+    Customers,
+  ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

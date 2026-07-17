@@ -1,9 +1,9 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
-import { AddReviewForm } from './AddReviewForm'
+import { AddComplaintForm } from './AddComplaintForm'
 
 export const revalidate = 120
 
-export default async function AddReviewPage({
+export default async function AddComplaintPage({
   searchParams,
 }: {
   searchParams: Promise<{ company?: string }>
@@ -19,7 +19,7 @@ export default async function AddReviewPage({
   })
 
   return (
-    <AddReviewForm
+    <AddComplaintForm
       companies={companies.docs.map((c: any) => ({ id: c.id, name: c.name, slug: c.slug }))}
       preselectedSlug={company}
     />

@@ -2,7 +2,7 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 import { companyLogoUrl } from '@/lib/companyLogo'
 import { CompaniesCatalogText } from './CompaniesCatalogText'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 type SearchParams = { type?: string; country?: string }
 

@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { SearchBox } from './SearchBox'
 import { LanguageSwitcher } from './LanguageSwitcher'
+import { NavMenu } from './NavMenu'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { useCustomer } from '@/lib/useCustomer'
 
@@ -16,6 +17,7 @@ export function Header() {
   const { customer, loading } = useCustomer()
 
   const navItems = [
+    { label: t.common.home, href: '/' },
     { label: t.nav.catalog, href: '/companies' },
     { label: t.nav.ratings, href: '/ratings' },
     { label: t.nav.articles, href: '/articles' },
@@ -28,16 +30,13 @@ export function Header() {
           {t.brand}
         </Link>
 
-        <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-gray-600">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-brand">
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <NavMenu items={navItems} />
 
-        <div className="hidden lg:block ml-auto min-w-0 flex-1 max-w-xl">
+        <div className="hidden lg:flex ml-auto min-w-0 flex-1 max-w-xl items-center gap-2">
           <SearchBox />
+          <Link href="/add-review" className="btn-secondary whitespace-nowrap shrink-0">
+            {t.nav.addReview}
+          </Link>
         </div>
 
         <div className="ml-auto lg:ml-0 flex items-center gap-3 shrink-0">
@@ -61,8 +60,14 @@ export function Header() {
         </div>
       </div>
 
-      <div className="lg:hidden border-t border-gray-100 px-4 py-2">
+      <div className="lg:hidden border-t border-gray-100 px-4 py-2 flex items-center gap-2">
         <SearchBox />
+        <Link
+          href="/add-review"
+          className="btn-secondary whitespace-nowrap shrink-0 px-3 py-2 text-xs sm:text-sm"
+        >
+          {t.nav.addReview}
+        </Link>
       </div>
     </header>
   )

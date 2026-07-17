@@ -2,7 +2,7 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 import { companyLogoUrl } from '@/lib/companyLogo'
 import { SearchText } from './SearchText'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 30
 
 export default async function SearchPage({
   searchParams,

@@ -1,7 +1,7 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { AddCompanyForm } from './AddCompanyForm'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 120
 
 export default async function AddCompanyPage() {
   const payload = await getPayloadClient()

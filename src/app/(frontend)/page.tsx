@@ -1,20 +1,37 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { HomeText } from './HomeText'
 
-export const dynamic = 'force-dynamic'
+// Главную не обязательно перегенерировать на каждый запрос — модерация
+// отзывов/компаний не мгновенная, поэтому кэшируем страницу на 60 секунд
+// (ISR) вместо полного отключения кэша. Это заметно ускоряет отдачу
+// страницы для большинства посетителей.
+export const revalidate = 60
 
 export default async function HomePage() {
   const payload = await getPayloadClient()
 
-  const [companies, insuranceTypes, articles, latestReviews] = await Promise.all([
+  const [companies, popularCompanies, newestCompanies, articles, latestReviews] = await Promise.all([
     payload.find({
       collection: 'companies',
       where: { status: { equals: 'published' } },
       sort: '-overallRating',
-      limit: 8,
+      limit: 12,
       depth: 1,
     }),
-    payload.find({ collection: 'insurance-types', sort: 'order', limit: 20 }),
+    payload.find({
+      collection: 'companies',
+      where: { and: [{ status: { equals: 'published' } }, { popular: { equals: true } }] },
+      sort: '-updatedAt',
+      limit: 3,
+      depth: 0,
+    }),
+    payload.find({
+      collection: 'companies',
+      where: { status: { equals: 'published' } },
+      sort: '-createdAt',
+      limit: 9,
+      depth: 0,
+    }),
     payload.find({
       collection: 'articles',
       where: { status: { equals: 'published' } },
@@ -33,7 +50,8 @@ export default async function HomePage() {
   return (
     <HomeText
       companies={companies.docs}
-      insuranceTypes={insuranceTypes.docs}
+      popularCompanies={popularCompanies.docs}
+      newestCompanies={newestCompanies.docs}
       articles={articles.docs}
       latestReviews={latestReviews.docs}
     />

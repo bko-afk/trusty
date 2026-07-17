@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 import { CompanyCard } from '@/components/CompanyCard'
 import { SearchBox } from '@/components/SearchBox'
 import { RatingStars } from '@/components/RatingStars'
@@ -11,34 +12,42 @@ import { companyLogoUrl } from '@/lib/companyLogo'
 
 type Props = {
   companies: any[]
-  insuranceTypes: any[]
+  popularCompanies: any[]
+  newestCompanies: any[]
   articles: any[]
   latestReviews: any[]
 }
 
-export function HomeText({ companies, insuranceTypes, articles, latestReviews }: Props) {
+const INITIAL_VISIBLE = 9
+
+export function HomeText({ companies, popularCompanies, newestCompanies, articles, latestReviews }: Props) {
   const { t } = useLanguage()
+  const [showAll, setShowAll] = useState(false)
 
   function typeLabel(type: any): string {
     return insuranceTypeLabel(t, type)
   }
+
+  const visibleCompanies = showAll ? companies : companies.slice(0, INITIAL_VISIBLE)
+  const hasMore = companies.length > INITIAL_VISIBLE
 
   return (
     <div>
       <section className="bg-brand-light/60 py-14">
         <div className="container-page flex flex-col items-center gap-6 text-center">
           <h1 className="text-3xl md:text-4xl font-bold max-w-2xl">{t.hero.title}</h1>
-          <p className="text-gray-600 max-w-xl">{t.hero.subtitle}</p>
           <SearchBox />
-          {insuranceTypes.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2 mt-2">
-              {insuranceTypes.map((type: any) => (
+
+          {popularCompanies.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+              <span className="text-gray-500">{t.home.popularCompaniesLabel}:</span>
+              {popularCompanies.map((company: any) => (
                 <Link
-                  key={type.id}
-                  href={`/companies?type=${type.slug}`}
-                  className="rounded-full bg-white border border-gray-200 px-4 py-1.5 text-sm hover:border-brand hover:text-brand"
+                  key={company.id}
+                  href={`/companies/${company.slug}`}
+                  className="rounded-full bg-white border border-gray-200 px-4 py-1.5 hover:border-brand hover:text-brand"
                 >
-                  {typeLabel(type)}
+                  {company.name}
                 </Link>
               ))}
             </div>
@@ -46,15 +55,38 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
         </div>
       </section>
 
-      <section className="container-page py-12">
+      <section className="container-page py-10">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="card p-5">
+            <h3 className="font-semibold">{t.home.ctaReviewTitle}</h3>
+            <Link href="/add-review" className="text-sm text-brand hover:underline mt-1 inline-block">
+              {t.home.ctaMoreLink}
+            </Link>
+          </div>
+          <div className="card p-5">
+            <h3 className="font-semibold">{t.home.ctaComplaintTitle}</h3>
+            <Link href="/add-complaint" className="text-sm text-brand hover:underline mt-1 inline-block">
+              {t.home.ctaMoreLink}
+            </Link>
+          </div>
+          <div className="card p-5">
+            <h3 className="font-semibold">{t.home.ctaCompanyTitle}</h3>
+            <Link href="/add-company" className="text-sm text-brand hover:underline mt-1 inline-block">
+              {t.home.ctaMoreLink}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="container-page pb-12">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-semibold">{t.home.bestCompanies}</h2>
           <Link href="/companies" className="text-sm text-brand hover:underline">
             {t.home.allCompanies}
           </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {companies.map((company: any) => (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {visibleCompanies.map((company: any) => (
             <CompanyCard
               key={company.id}
               slug={company.slug}
@@ -68,23 +100,13 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
             />
           ))}
         </div>
-      </section>
-
-      <section className="container-page pb-12">
-        <div className="card flex flex-col sm:flex-row items-center justify-between gap-4 p-6">
-          <div>
-            <h3 className="font-semibold text-lg">{t.home.claimCtaTitle}</h3>
-            <p className="text-gray-500 text-sm mt-1">{t.home.claimCtaText}</p>
+        {hasMore && !showAll && (
+          <div className="flex justify-center mt-6">
+            <button type="button" onClick={() => setShowAll(true)} className="btn-secondary">
+              {t.home.showMoreBtn}
+            </button>
           </div>
-          <div className="flex flex-wrap justify-center gap-3 shrink-0">
-            <Link href="/add-company" className="btn-primary whitespace-nowrap">
-              {t.home.addCompanyBtn}
-            </Link>
-            <Link href="/add-review" className="btn-secondary whitespace-nowrap">
-              {t.home.writeReviewBtn}
-            </Link>
-          </div>
-        </div>
+        )}
       </section>
 
       {latestReviews.length > 0 && (
@@ -125,6 +147,34 @@ export function HomeText({ companies, insuranceTypes, articles, latestReviews }:
               <Link key={article.id} href={`/articles/${article.slug}`} className="card p-4 min-w-0">
                 <div className="font-semibold mb-1">{article.title}</div>
                 <p className="text-sm text-gray-500 line-clamp-3">{article.excerpt}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {newestCompanies.length > 0 && (
+        <section className="container-page pb-12">
+          <h2 className="text-xl font-semibold mb-5">{t.home.newestCompaniesTitle}</h2>
+          <div className="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory">
+            {newestCompanies.map((company: any) => (
+              <Link
+                key={company.id}
+                href={`/companies/${company.slug}`}
+                className="card p-4 flex items-center gap-3 min-w-[220px] max-w-[220px] shrink-0 snap-start hover:shadow-md transition-shadow"
+              >
+                <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-gray-100 bg-gray-50">
+                  <Image
+                    src={companyLogoUrl(company.logoFile) || '/placeholders/logo-placeholder.svg'}
+                    alt={company.name}
+                    fill
+                    className="object-contain p-1"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-medium text-sm truncate">{company.name}</div>
+                  <RatingStars value={company.overallRating || 0} size="sm" />
+                </div>
               </Link>
             ))}
           </div>

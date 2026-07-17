@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { RatingStars } from './RatingStars'
+import { RatingCircle } from './RatingCircle'
 import { useLanguage } from '@/i18n/LanguageContext'
 
 type CompanyCardProps = {
@@ -43,24 +44,31 @@ export function CompanyCard({
         </div>
         <div className="min-w-0 flex-1">
           <div className="font-semibold leading-tight break-words">{name}</div>
+          <div className="text-xs text-gray-500 mt-0.5">
+            {t.company.reviewsCount}: {reviewCount}
+          </div>
           {insuranceTypeLabels && insuranceTypeLabels.length > 0 && (
-            <div className="text-xs text-gray-500">{insuranceTypeLabels.join(', ')}</div>
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {insuranceTypeLabels.map((label) => (
+                <span
+                  key={label}
+                  className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
           )}
         </div>
+        <RatingCircle value={rating} size="sm" />
+      </div>
+      <div className="flex items-center justify-between text-sm gap-2">
+        <RatingStars value={rating} size="sm" />
         {verified && (
-          <span className="shrink-0 whitespace-nowrap self-start rounded-full bg-brand-light px-2 py-0.5 text-[11px] font-medium text-brand-dark">
+          <span className="shrink-0 whitespace-nowrap rounded-full bg-brand-light px-2 py-0.5 text-[11px] font-medium text-brand-dark">
             {t.company.verifiedShort}
           </span>
         )}
-      </div>
-      <div className="flex items-center justify-between text-sm gap-2">
-        <div className="flex items-center gap-1.5">
-          <RatingStars value={rating} size="sm" />
-          <span className="text-gray-500 text-xs">{rating.toFixed(1)}</span>
-        </div>
-        <span className="text-gray-500 shrink-0">
-          {t.company.reviewsCount}: {reviewCount}
-        </span>
       </div>
     </Link>
   )

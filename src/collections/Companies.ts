@@ -22,6 +22,30 @@ export const Companies: CollectionConfig = {
     update: ({ req }) => Boolean(req.user),
     delete: ({ req }) => Boolean(req.user),
   },
+  hooks: {
+    beforeChange: [
+      async ({ data, req, originalDoc }) => {
+        // Ограничение: максимум 3 компании с отметкой "популярная" —
+        // они выводятся отдельным блоком на главной странице.
+        if (data.popular) {
+          const existing = await req.payload.find({
+            collection: 'companies',
+            where: { popular: { equals: true } },
+            limit: 10,
+            depth: 0,
+            req,
+          })
+          const otherPopularCount = existing.docs.filter((doc) => doc.id !== originalDoc?.id).length
+          if (otherPopularCount >= 3) {
+            throw new Error(
+              'Максимум 3 компании с отметкой «Популярная». Снимите отметку у одной из существующих, прежде чем добавить новую.',
+            )
+          }
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     { name: 'name', type: 'text', required: true },
     {
@@ -49,6 +73,16 @@ export const Companies: CollectionConfig = {
       label: 'Подтверждённая компания',
       defaultValue: false,
       admin: { position: 'sidebar' },
+    },
+    {
+      name: 'popular',
+      type: 'checkbox',
+      label: 'Популярная компания',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description: 'Показывается в блоке «Популярные компании» на главной. Максимум 3 компании одновременно.',
+      },
     },
     {
       name: 'logoFile',

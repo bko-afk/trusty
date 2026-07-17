@@ -35,14 +35,40 @@ async function seed() {
   const typeDefs = [
     { title: 'Медицинская страховка', slug: 'medical', shortDescription: 'Покрытие экстренной медицинской помощи', order: 1 },
     { title: 'Туристическая страховка', slug: 'travel', shortDescription: 'Комплексная страховка для путешествий за границу', order: 2 },
-    { title: 'ОСАГО', slug: 'osago', shortDescription: 'Обязательное страхование автогражданской ответственности', order: 3 },
-    { title: 'КАСКО', slug: 'kasko', shortDescription: 'Добровольное страхование автомобиля', order: 4 },
   ]
 
   const types: Record<string, any> = {}
   for (const t of typeDefs) {
     const existing = await payload.find({ collection: 'insurance-types', where: { slug: { equals: t.slug } }, limit: 1 })
     types[t.slug] = existing.docs[0] || (await payload.create({ collection: 'insurance-types', data: t }))
+  }
+
+  // Сайт снова только про туристическое/медицинское страхование —
+  // ОСАГО и КАСКО больше не нужны. Убираем их у компаний (если были
+  // отмечены) и удаляем сами виды, если они остались в базе от
+  // предыдущего запуска seed.
+  console.log('Убираю ОСАГО и КАСКО (больше не используются)...')
+  const obsoleteTypes = await payload.find({
+    collection: 'insurance-types',
+    where: { slug: { in: ['osago', 'kasko'] } },
+    limit: 10,
+  })
+  for (const obsoleteType of obsoleteTypes.docs as any[]) {
+    const affectedCompanies = await payload.find({
+      collection: 'companies',
+      where: { insuranceTypes: { contains: obsoleteType.id } },
+      limit: 200,
+      depth: 0,
+    })
+    for (const company of affectedCompanies.docs as any[]) {
+      const remainingTypeIds = (company.insuranceTypes || []).filter((id: any) => id !== obsoleteType.id)
+      await payload.update({
+        collection: 'companies',
+        id: company.id,
+        data: { insuranceTypes: remainingTypeIds },
+      })
+    }
+    await payload.delete({ collection: 'insurance-types', id: obsoleteType.id })
   }
 
   // Реальные, публично известные туристические страховые компании.

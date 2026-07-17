@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { CompanyReviewsText } from './CompanyReviewsText'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 const CRITERIA_KEYS = ['coverage', 'price', 'claimsService', 'support'] as const
 

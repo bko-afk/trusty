@@ -46,6 +46,13 @@ export type Dictionary = {
     aboutTitle: string
     aboutText: string
     aboutTextExtra: string
+    popularCompaniesLabel: string
+    ctaReviewTitle: string
+    ctaComplaintTitle: string
+    ctaCompanyTitle: string
+    ctaMoreLink: string
+    showMoreBtn: string
+    newestCompaniesTitle: string
   }
   insuranceTypeNames: {
     medical: string
@@ -79,6 +86,7 @@ export type Dictionary = {
     button: string
     pageTitle: string
     noResults: string
+    clear: string
   }
   catalog: {
     title: string
@@ -155,6 +163,21 @@ export type Dictionary = {
     errorMsg: string
     loggedInAs: string
   }
+  addComplaintPage: {
+    title: string
+    subtitle: string
+    companyLabel: string
+    companyPlaceholder: string
+    nameLabel: string
+    emailLabel: string
+    titleLabel: string
+    bodyLabel: string
+    submitBtn: string
+    submittingBtn: string
+    successMsg: string
+    errorMsg: string
+    loggedInAs: string
+  }
   reviewCard: {
     pros: string
     cons: string
@@ -221,6 +244,13 @@ export const dictionary: Record<Locale, Dictionary> = {
         'Trusty — независимый каталог отзывов и рейтингов туристических страховых компаний. Мы помогаем путешественникам сравнивать условия полисов, читать реальные отзывы клиентов и выбирать страховку осознанно, до поездки, а не после проблем в ней.',
       aboutTextExtra:
         'Мы не продаём страховки и не работаем с продавцами за комиссию — рейтинг компаний считается только по оценкам реальных пользователей. Каждый отзыв проходит модерацию, а карточки компаний можно дополнять и уточнять — как самим компаниям, так и клиентам, которые пользовались их услугами.',
+      popularCompaniesLabel: 'Популярные компании',
+      ctaReviewTitle: 'Добавить отзыв',
+      ctaComplaintTitle: 'Оставить жалобу',
+      ctaCompanyTitle: 'Добавить компанию',
+      ctaMoreLink: 'Подробнее',
+      showMoreBtn: 'Показать ещё',
+      newestCompaniesTitle: 'Новые компании',
     },
     insuranceTypeNames: {
       medical: 'Медицинская страховка',
@@ -254,6 +284,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       button: 'Найти',
       pageTitle: 'Поиск страховых компаний',
       noResults: 'Ничего не найдено по запросу',
+      clear: 'Очистить',
     },
     catalog: {
       title: 'Каталог страховых компаний',
@@ -330,6 +361,22 @@ export const dictionary: Record<Locale, Dictionary> = {
       errorMsg: 'Не удалось отправить отзыв. Попробуйте ещё раз.',
       loggedInAs: 'Вы пишете отзыв от имени аккаунта',
     },
+    addComplaintPage: {
+      title: 'Оставить жалобу',
+      subtitle:
+        'Расскажите, что произошло — жалоба появится на сайте после проверки модератором, и представитель компании сможет на неё ответить.',
+      companyLabel: 'Компания *',
+      companyPlaceholder: 'Выберите компанию',
+      nameLabel: 'Ваше имя *',
+      emailLabel: 'Email',
+      titleLabel: 'Тема жалобы *',
+      bodyLabel: 'Описание проблемы *',
+      submitBtn: 'Отправить жалобу',
+      submittingBtn: 'Отправка...',
+      successMsg: 'Жалоба принята! Она появится на сайте после модерации.',
+      errorMsg: 'Не удалось отправить жалобу. Попробуйте ещё раз.',
+      loggedInAs: 'Вы отправляете жалобу от имени аккаунта',
+    },
     reviewCard: {
       pros: 'Плюсы',
       cons: 'Минусы',
@@ -394,6 +441,13 @@ export const dictionary: Record<Locale, Dictionary> = {
         'Trusty is an independent catalog of reviews and ratings for travel insurance companies. We help travelers compare policy terms, read real customer reviews, and choose coverage with confidence — before the trip, not after something goes wrong.',
       aboutTextExtra:
         "We don't sell insurance and don't take commissions from sellers — company ratings are based only on scores from real users. Every review goes through moderation, and company listings can be expanded and corrected by both the companies themselves and customers who've used their services.",
+      popularCompaniesLabel: 'Popular companies',
+      ctaReviewTitle: 'Write a review',
+      ctaComplaintTitle: 'File a complaint',
+      ctaCompanyTitle: 'Add a company',
+      ctaMoreLink: 'Learn more',
+      showMoreBtn: 'Show more',
+      newestCompaniesTitle: 'New companies',
     },
     insuranceTypeNames: {
       medical: 'Medical insurance',
@@ -427,6 +481,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       button: 'Search',
       pageTitle: 'Search insurance companies',
       noResults: 'No results found for',
+      clear: 'Clear',
     },
     catalog: {
       title: 'Insurance company catalog',
@@ -503,6 +558,22 @@ export const dictionary: Record<Locale, Dictionary> = {
       errorMsg: 'Could not submit the review. Please try again.',
       loggedInAs: 'You are writing this review as',
     },
+    addComplaintPage: {
+      title: 'File a complaint',
+      subtitle:
+        "Tell us what happened — your complaint will appear on the site after moderator review, and the company's representative will be able to respond.",
+      companyLabel: 'Company *',
+      companyPlaceholder: 'Select a company',
+      nameLabel: 'Your name *',
+      emailLabel: 'Email',
+      titleLabel: 'Complaint subject *',
+      bodyLabel: 'Describe the issue *',
+      submitBtn: 'Submit complaint',
+      submittingBtn: 'Submitting...',
+      successMsg: 'Complaint received! It will appear on the site after moderation.',
+      errorMsg: 'Could not submit the complaint. Please try again.',
+      loggedInAs: 'You are filing this complaint as',
+    },
     reviewCard: {
       pros: 'Pros',
       cons: 'Cons',
@@ -567,6 +638,13 @@ export const dictionary: Record<Locale, Dictionary> = {
         'Trusty es un catálogo independiente de reseñas y clasificaciones de empresas de seguros de viaje. Ayudamos a los viajeros a comparar condiciones de las pólizas, leer reseñas reales de clientes y elegir su cobertura con confianza, antes del viaje.',
       aboutTextExtra:
         'No vendemos seguros ni cobramos comisión a las aseguradoras — la clasificación se basa solo en las valoraciones de usuarios reales. Cada reseña pasa por moderación, y las fichas de empresas pueden ser completadas tanto por las propias empresas como por los clientes que usaron sus servicios.',
+      popularCompaniesLabel: 'Empresas populares',
+      ctaReviewTitle: 'Escribir una reseña',
+      ctaComplaintTitle: 'Presentar una queja',
+      ctaCompanyTitle: 'Añadir empresa',
+      ctaMoreLink: 'Más información',
+      showMoreBtn: 'Mostrar más',
+      newestCompaniesTitle: 'Empresas nuevas',
     },
     insuranceTypeNames: {
       medical: 'Seguro médico',
@@ -600,6 +678,7 @@ export const dictionary: Record<Locale, Dictionary> = {
       button: 'Buscar',
       pageTitle: 'Buscar aseguradoras',
       noResults: 'No se encontraron resultados para',
+      clear: 'Borrar',
     },
     catalog: {
       title: 'Catálogo de aseguradoras',
@@ -675,6 +754,22 @@ export const dictionary: Record<Locale, Dictionary> = {
       successMsg: '¡Gracias por tu reseña! Aparecerá tras la moderación.',
       errorMsg: 'No se pudo enviar la reseña. Inténtalo de nuevo.',
       loggedInAs: 'Estás escribiendo esta reseña como',
+    },
+    addComplaintPage: {
+      title: 'Presentar una queja',
+      subtitle:
+        'Cuéntanos qué pasó — tu queja aparecerá en el sitio tras la revisión del moderador, y el representante de la empresa podrá responder.',
+      companyLabel: 'Empresa *',
+      companyPlaceholder: 'Selecciona una empresa',
+      nameLabel: 'Tu nombre *',
+      emailLabel: 'Email',
+      titleLabel: 'Motivo de la queja *',
+      bodyLabel: 'Describe el problema *',
+      submitBtn: 'Enviar queja',
+      submittingBtn: 'Enviando...',
+      successMsg: '¡Queja recibida! Aparecerá en el sitio tras la moderación.',
+      errorMsg: 'No se pudo enviar la queja. Inténtalo de nuevo.',
+      loggedInAs: 'Estás presentando esta queja como',
     },
     reviewCard: {
       pros: 'Ventajas',

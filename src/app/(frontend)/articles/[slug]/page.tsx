@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { ArticleText } from './ArticleText'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 function extractText(node: any): string {
   if (!node) return ''

@@ -2,7 +2,7 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 import { companyLogoUrl } from '@/lib/companyLogo'
 import { RatingsText } from './RatingsText'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export default async function RatingsPage() {
   const payload = await getPayloadClient()

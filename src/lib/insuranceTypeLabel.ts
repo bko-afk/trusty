@@ -5,6 +5,7 @@ import type { Dictionary } from '@/i18n/dictionary'
 // Для четырёх известных на сегодня видов подставляем перевод по slug;
 // для новых видов, которые администратор добавит сам, используем то,
 // что он написал в админке (перевести на лету мы не можем).
-export function insuranceTypeLabel(t: Dictionary, type: { slug: string; title: string }): string {
+export function insuranceTypeLabel(t: Dictionary, type: { slug: string; title: string } | null | undefined): string {
+  if (!type) return ''
   return (t.insuranceTypeNames as Record<string, string | undefined>)[type.slug] || type.title
 }

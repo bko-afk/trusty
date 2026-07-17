@@ -3,7 +3,7 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 import { companyLogoUrl } from '@/lib/companyLogo'
 import { CompanyDetailText } from './CompanyDetailText'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 async function getCompany(slug: string) {
   const payload = await getPayloadClient()

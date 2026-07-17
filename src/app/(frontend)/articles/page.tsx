@@ -1,7 +1,7 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { ArticlesText } from './ArticlesText'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export default async function ArticlesPage() {
   const payload = await getPayloadClient()
