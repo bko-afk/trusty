@@ -146,30 +146,26 @@ export function SearchBox({
   if (isLarge) {
     return (
       <div ref={wrapperRef} className="relative w-full max-w-2xl">
-        <div className="relative flex h-16 items-stretch">
-          <div className="flex flex-1 items-center rounded-l-full bg-brand pl-2 pr-7">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') goToFullSearch()
-              }}
-              onFocus={() => {
-                if (results.length > 0) setOpen(true)
-              }}
-              placeholder={t.search.placeholder}
-              className="h-12 w-full rounded-full bg-white pl-5 pr-4 text-base focus:outline-none"
-            />
-          </div>
-          {/* Треугольный "хвостик" справа от фиолетовой плашки */}
-          <div className="h-0 w-0 shrink-0 border-y-[32px] border-l-[26px] border-y-transparent border-l-brand" />
+        <div className="relative flex h-16 items-center rounded-full border-2 border-brand bg-white shadow-sm">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') goToFullSearch()
+            }}
+            onFocus={() => {
+              if (results.length > 0) setOpen(true)
+            }}
+            placeholder={t.search.placeholder}
+            className="h-full w-full rounded-full bg-transparent pl-6 pr-24 text-base focus:outline-none"
+          />
           {clearBtn}
           <button
             type="button"
             onClick={goToFullSearch}
             aria-label={t.search.button}
-            className="absolute right-2 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-gray-900 text-white hover:bg-black"
+            className="absolute right-1.5 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white hover:bg-brand-dark transition-colors"
           >
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <circle cx="9" cy="9" r="6.5" stroke="currentColor" strokeWidth="2" />

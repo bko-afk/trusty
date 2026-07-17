@@ -72,37 +72,43 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
       <section className="container-page py-10">
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="card p-5 hover:-translate-y-0.5 hover:shadow-md transition-all">
-            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-lg">
-              ✍️
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-light text-lg">
+                ✍️
+              </div>
+              <h3 className="font-semibold">{t.home.ctaReviewTitle}</h3>
             </div>
-            <h3 className="font-semibold">{t.home.ctaReviewTitle}</h3>
             <Link
               href="/add-review"
-              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-1 inline-block"
+              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-2 inline-block"
             >
               {t.home.ctaMoreLink}
             </Link>
           </div>
           <div className="card p-5 hover:-translate-y-0.5 hover:shadow-md transition-all">
-            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-lg">
-              ⚠️
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-light text-lg">
+                ⚠️
+              </div>
+              <h3 className="font-semibold">{t.home.ctaComplaintTitle}</h3>
             </div>
-            <h3 className="font-semibold">{t.home.ctaComplaintTitle}</h3>
             <Link
               href="/add-complaint"
-              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-1 inline-block"
+              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-2 inline-block"
             >
               {t.home.ctaMoreLink}
             </Link>
           </div>
           <div className="card p-5 hover:-translate-y-0.5 hover:shadow-md transition-all">
-            <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-lg">
-              🏢
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-light text-lg">
+                🏢
+              </div>
+              <h3 className="font-semibold">{t.home.ctaCompanyTitle}</h3>
             </div>
-            <h3 className="font-semibold">{t.home.ctaCompanyTitle}</h3>
             <Link
               href="/add-company"
-              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-1 inline-block"
+              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-2 inline-block"
             >
               {t.home.ctaMoreLink}
             </Link>
