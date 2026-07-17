@@ -28,9 +28,8 @@ export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCo
     <header className="relative z-40 border-b border-gray-200 bg-white text-brand-dark">
       <div className="container-page flex h-[76px] items-center gap-3 md:gap-6">
         <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label={t.brand}>
-          <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#eadfff] bg-[#f3e8ff] transition-transform group-hover:-translate-y-0.5">
-            <Image src="/placeholders/logo-placeholder.svg" alt="" width={40} height={40} className="h-full w-full" />
-            <span aria-hidden="true" className="absolute bottom-0 left-0 h-1 w-full bg-[#579c9e]" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-[0_6px_16px_rgba(109,40,217,0.18)] transition-transform group-hover:-translate-y-0.5">
+            <Image src="/icon.svg" alt="" width={40} height={40} className="h-full w-full" />
           </span>
           <span className="text-base font-black tracking-[0.035em] sm:text-xl">
             <span className="text-brand-dark">TRUST</span><span className="text-brand">Y</span>

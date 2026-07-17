@@ -73,22 +73,22 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
             <Link href="/companies" className="dotted-link hidden text-sm font-semibold sm:inline">{t.portal.home.openRating}</Link>
           </div>
 
-          <div className="grid gap-px overflow-hidden border border-gray-200 bg-gray-200 md:grid-cols-3">
-            <Link href="/add-review" className="group min-h-48 bg-white p-7 transition-colors hover:bg-[#fbf9ff]">
-              <span className="text-xs font-bold text-brand">01</span>
-              <h3 className="mt-8 text-2xl font-bold">{t.home.ctaReviewTitle}</h3>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Link href="/add-review" className="group relative min-h-64 overflow-hidden border border-[#e8ddf8] bg-[#fbf8ff] p-7 transition-all hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(67,34,112,0.10)]">
+              <div className="flex items-start justify-between gap-4"><ServiceIcon kind="review" className="bg-[#ede3ff] text-brand" /><span className="text-xs font-extrabold text-brand/60">01</span></div>
+              <h3 className="mt-9 text-2xl font-bold">{t.home.ctaReviewTitle}</h3>
               <p className="mt-3 max-w-xs leading-6 text-gray-500">{t.portal.home.reviewDescription}</p>
               <span className="dotted-link mt-6 inline-block text-sm font-semibold">{t.home.ctaMoreLink}</span>
             </Link>
-            <Link href="/companies" className="group min-h-48 bg-white p-7 transition-colors hover:bg-[#fbf9ff]">
-              <span className="text-xs font-bold text-brand">02</span>
-              <h3 className="mt-8 text-2xl font-bold">{t.portal.home.compareTitle}</h3>
+            <Link href="/companies" className="group relative min-h-64 overflow-hidden border border-[#d8ebea] bg-[#f4fbfa] p-7 transition-all hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(42,96,98,0.10)]">
+              <div className="flex items-start justify-between gap-4"><ServiceIcon kind="compare" className="bg-[#dff2f1] text-[#397f81]" /><span className="text-xs font-extrabold text-[#579c9e]">02</span></div>
+              <h3 className="mt-9 text-2xl font-bold">{t.portal.home.compareTitle}</h3>
               <p className="mt-3 max-w-xs leading-6 text-gray-500">{t.portal.home.compareDescription}</p>
               <span className="dotted-link mt-6 inline-block text-sm font-semibold">{t.portal.home.catalogLink}</span>
             </Link>
-            <a href="#methodology" className="group min-h-48 bg-white p-7 transition-colors hover:bg-[#fbf9ff]">
-              <span className="text-xs font-bold text-brand">03</span>
-              <h3 className="mt-8 text-2xl font-bold">{t.portal.home.understandTitle}</h3>
+            <a href="#methodology" className="group relative min-h-64 overflow-hidden border border-[#dce5f3] bg-[#f6f9fd] p-7 transition-all hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(7,27,69,0.09)]">
+              <div className="flex items-start justify-between gap-4"><ServiceIcon kind="rating" className="bg-[#e6edf8] text-[#0a2352]" /><span className="text-xs font-extrabold text-[#0a2352]/50">03</span></div>
+              <h3 className="mt-9 text-2xl font-bold">{t.portal.home.understandTitle}</h3>
               <p className="mt-3 max-w-xs leading-6 text-gray-500">{t.portal.home.understandDescription}</p>
               <span className="dotted-link mt-6 inline-block text-sm font-semibold">{t.portal.home.methodologyLink}</span>
             </a>
@@ -97,24 +97,25 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
       </section>}
 
       {visibility.complaintCTA && <section className="container-page py-10 md:py-14">
-        <div className="grid overflow-hidden border border-[#d8ddea] shadow-[0_18px_55px_rgba(7,27,69,0.08)] lg:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.65fr)]">
-          <div className="bg-[#0a2352] px-6 py-9 text-white sm:px-10 md:py-11 lg:px-12">
+        <div className="grid overflow-hidden border border-[#e0e5ee] bg-white shadow-[0_18px_55px_rgba(7,27,69,0.06)] lg:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.65fr)]">
+          <div className="relative overflow-hidden bg-[#f7f9fc] px-6 py-9 text-brand-dark sm:px-10 md:py-11 lg:px-12">
+            <div aria-hidden="true" className="absolute -bottom-24 -right-20 h-56 w-56 rounded-full border-[42px] border-[#dfe8f5]/55" />
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-lg font-black text-[#82c8ca]">!</span>
-              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#82c8ca]">{t.home.ctaComplaintTitle}</p>
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#dff2f1] text-lg font-black text-[#397f81]">!</span>
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#579c9e]">{t.home.ctaComplaintTitle}</p>
             </div>
-            <h2 className="mt-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-[-0.035em] sm:text-4xl">{t.addComplaintPage.whyTitle}</h2>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-white/70">{t.addComplaintPage.introText}</p>
+            <h2 className="relative mt-5 max-w-3xl text-3xl font-extrabold leading-tight tracking-[-0.035em] sm:text-4xl">{t.addComplaintPage.whyTitle}</h2>
+            <p className="relative mt-4 max-w-3xl text-base leading-7 text-gray-600">{t.addComplaintPage.introText}</p>
           </div>
 
-          <div className="relative flex min-h-64 flex-col justify-between overflow-hidden bg-brand p-7 text-white sm:p-9 lg:min-h-0">
-            <div aria-hidden="true" className="absolute -right-14 -top-14 h-40 w-40 rounded-full border-[30px] border-white/10" />
+          <div className="relative flex min-h-64 flex-col justify-between overflow-hidden border-t border-[#e3d8f6] bg-[#f3edff] p-7 text-brand-dark sm:p-9 lg:min-h-0 lg:border-l lg:border-t-0">
+            <div aria-hidden="true" className="absolute -right-14 -top-14 h-40 w-40 rounded-full border-[30px] border-brand/10" />
             <div className="relative">
-              <span className="text-6xl font-black leading-none text-white/20">03</span>
-              <p className="mt-2 max-w-xs text-sm font-bold leading-6 text-white/75">{t.addComplaintPage.stepsSubtitle}</p>
-              <p className="mt-1 max-w-xs text-sm leading-6 text-white/60">{t.addComplaintPage.step3Title}</p>
+              <span className="text-6xl font-black leading-none text-brand/15">03</span>
+              <p className="mt-2 max-w-xs text-sm font-bold leading-6 text-brand-dark">{t.addComplaintPage.stepsSubtitle}</p>
+              <p className="mt-1 max-w-xs text-sm leading-6 text-gray-500">{t.addComplaintPage.step3Title}</p>
             </div>
-            <Link href="/add-complaint" className="relative mt-8 inline-flex min-h-14 items-center justify-between gap-4 bg-white px-6 py-4 text-base font-extrabold text-brand transition-colors hover:bg-[#f3edff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            <Link href="/add-complaint" className="relative mt-8 inline-flex min-h-14 items-center justify-between gap-4 bg-brand px-6 py-4 text-base font-extrabold text-white transition-colors hover:bg-[#5720b5] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
               {t.addComplaintPage.submitBtn}
               <span aria-hidden="true" className="text-xl">→</span>
             </Link>
@@ -231,5 +232,15 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
         </section>
       )}
     </div>
+  )
+}
+
+function ServiceIcon({ kind, className }: { kind: 'review' | 'compare' | 'rating'; className: string }) {
+  return (
+    <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${className}`} aria-hidden="true">
+      {kind === 'review' && <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 5h14v10H9l-4 4V5Z"/><path d="m9 10 2 2 4-4"/></svg>}
+      {kind === 'compare' && <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M7 4v16M17 4v16M4 8h6M14 16h6"/><path d="m8 6 2 2-2 2M16 14l-2 2 2 2"/></svg>}
+      {kind === 'rating' && <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 19V9M12 19V5M19 19v-7"/><path d="M3 19h18"/></svg>}
+    </span>
   )
 }
