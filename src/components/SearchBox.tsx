@@ -9,7 +9,14 @@ import { companyLogoUrl } from '@/lib/companyLogo'
 
 type Result = { id: string; slug: string; name: string; logoUrl?: string; overallRating?: number }
 
-export function SearchBox({ initialQuery = '' }: { initialQuery?: string }) {
+export function SearchBox({
+  initialQuery = '',
+  size = 'default',
+}: {
+  initialQuery?: string
+  size?: 'default' | 'large'
+}) {
+  const isLarge = size === 'large'
   const [query, setQuery] = useState(initialQuery)
   const [results, setResults] = useState<Result[]>([])
   const [open, setOpen] = useState(false)
@@ -79,7 +86,7 @@ export function SearchBox({ initialQuery = '' }: { initialQuery?: string }) {
   }
 
   return (
-    <div ref={wrapperRef} className="relative w-full max-w-xl">
+    <div ref={wrapperRef} className={`relative w-full ${isLarge ? 'max-w-2xl' : 'max-w-xl'}`}>
       <input
         type="text"
         value={query}
@@ -91,7 +98,11 @@ export function SearchBox({ initialQuery = '' }: { initialQuery?: string }) {
           if (results.length > 0) setOpen(true)
         }}
         placeholder={t.search.placeholder}
-        className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-brand"
+        className={
+          isLarge
+            ? 'w-full rounded-full border-2 border-brand bg-white pl-5 pr-14 py-3.5 text-base focus:outline-none focus:ring-2 focus:ring-brand/40'
+            : 'w-full rounded-lg border border-gray-300 px-4 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-brand'
+        }
       />
 
       {query.length > 0 && (
@@ -103,9 +114,25 @@ export function SearchBox({ initialQuery = '' }: { initialQuery?: string }) {
             setOpen(false)
           }}
           aria-label={t.search.clear}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          className={`absolute top-1/2 -translate-y-1/2 flex h-5 w-5 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 ${
+            isLarge ? 'right-14' : 'right-2.5'
+          }`}
         >
           ×
+        </button>
+      )}
+
+      {isLarge && (
+        <button
+          type="button"
+          onClick={goToFullSearch}
+          aria-label={t.search.button}
+          className="absolute right-1.5 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white hover:bg-brand-dark"
+        >
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="9" cy="9" r="6.5" stroke="currentColor" strokeWidth="2" />
+            <path d="M18 18l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
         </button>
       )}
 

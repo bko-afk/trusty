@@ -48,11 +48,11 @@ export function CompanyCard({
             {t.company.reviewsCount}: {reviewCount}
           </div>
           {insuranceTypeLabels && insuranceTypeLabels.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1.5">
+            <div className="flex flex-wrap gap-x-2 gap-y-1 mt-1.5">
               {insuranceTypeLabels.map((label) => (
                 <span
                   key={label}
-                  className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-600"
+                  className="text-[11px] text-brand underline decoration-dotted underline-offset-2"
                 >
                   {label}
                 </span>

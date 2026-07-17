@@ -36,7 +36,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
       <section className="bg-brand-light/60 py-14">
         <div className="container-page flex flex-col items-center gap-6 text-center">
           <h1 className="text-3xl md:text-4xl font-bold max-w-2xl">{t.hero.title}</h1>
-          <SearchBox />
+          <SearchBox size="large" />
 
           {popularCompanies.length > 0 && (
             <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
@@ -59,19 +59,28 @@ export function HomeText({ companies, popularCompanies, newestCompanies, article
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="card p-5">
             <h3 className="font-semibold">{t.home.ctaReviewTitle}</h3>
-            <Link href="/add-review" className="text-sm text-brand hover:underline mt-1 inline-block">
+            <Link
+              href="/add-review"
+              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-1 inline-block"
+            >
               {t.home.ctaMoreLink}
             </Link>
           </div>
           <div className="card p-5">
             <h3 className="font-semibold">{t.home.ctaComplaintTitle}</h3>
-            <Link href="/add-complaint" className="text-sm text-brand hover:underline mt-1 inline-block">
+            <Link
+              href="/add-complaint"
+              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-1 inline-block"
+            >
               {t.home.ctaMoreLink}
             </Link>
           </div>
           <div className="card p-5">
             <h3 className="font-semibold">{t.home.ctaCompanyTitle}</h3>
-            <Link href="/add-company" className="text-sm text-brand hover:underline mt-1 inline-block">
+            <Link
+              href="/add-company"
+              className="text-sm text-brand underline decoration-dotted underline-offset-4 hover:text-brand-dark mt-1 inline-block"
+            >
               {t.home.ctaMoreLink}
             </Link>
           </div>

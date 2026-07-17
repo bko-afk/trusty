@@ -6,9 +6,10 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#1f6feb',
-          dark: '#0b4fa8',
-          light: '#e8f1ff',
+          // Фиолетовая палитра — ближе к визуальному стилю eto-razvod.ru
+          DEFAULT: '#6D28D9',
+          dark: '#4C1D95',
+          light: '#F3E8FF',
         },
       },
       container: {
