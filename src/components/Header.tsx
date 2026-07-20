@@ -30,14 +30,14 @@ export function Header({ popularCompanies = [] }: { popularCompanies?: PopularCo
       <div className="container-page flex h-[76px] items-center gap-3 md:gap-6">
         <Link href="/" className="group flex shrink-0 items-center gap-2.5" aria-label={t.brand}>
           <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-[0_6px_16px_rgba(109,40,217,0.18)] transition-transform group-hover:-translate-y-0.5">
-            <Image src="/icon.svg" alt="" width={40} height={40} className="h-full w-full" />
+            <Image src="/icon.svg" alt="" width={40} height={40} priority className="h-full w-full" />
           </span>
           <span className="text-base font-black tracking-[0.035em] sm:text-xl">
             <span className="text-brand-dark">TRUST</span><span className="text-brand">Y</span>
           </span>
         </Link>
 
-        <NavMenu items={navItems} />
+        <NavMenu items={navItems} mobileExtra={<LanguageSwitcher />} />
 
         <div className="ml-auto hidden min-w-0 max-w-xl flex-1 items-center gap-2 lg:flex">
           <SearchBox popularCompanies={popularCompanies} />

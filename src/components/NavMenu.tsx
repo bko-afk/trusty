@@ -3,11 +3,12 @@
 import Link from './LocalizedLink'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { splitLocalePath } from '@/i18n/routing'
 
 export type NavMenuItem = { label: string; href: string }
 
-export function NavMenu({ items }: { items: NavMenuItem[] }) {
+export function NavMenu({ items, mobileExtra }: { items: NavMenuItem[]; mobileExtra?: ReactNode }) {
   const pathname = usePathname()
   const publicPathname = splitLocalePath(pathname).pathname
   const [open, setOpen] = useState(false)
@@ -31,6 +32,8 @@ export function NavMenu({ items }: { items: NavMenuItem[] }) {
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex items-center gap-1.5 px-2 py-1.5 text-sm font-bold text-current transition-opacity hover:opacity-70"
+        aria-haspopup="menu"
+        aria-expanded={open}
       >
         {active.label}
         <svg
@@ -58,6 +61,7 @@ export function NavMenu({ items }: { items: NavMenuItem[] }) {
               {item.label}
             </Link>
           ))}
+          {mobileExtra && <div className="border-t border-gray-100 px-3 py-3 sm:hidden">{mobileExtra}</div>}
         </div>
       )}
     </div>

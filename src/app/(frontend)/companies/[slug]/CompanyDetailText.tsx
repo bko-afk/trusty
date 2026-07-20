@@ -177,7 +177,7 @@ export function CompanyDetailText({
           <Breadcrumbs items={[{ label: t.common.home, href: '/' }, { label: t.nav.catalog, href: '/companies' }, { label: name }]} />
           <div className="mt-8 grid gap-7 lg:grid-cols-[1fr_280px] lg:items-start">
             <div className="flex flex-col gap-6 sm:flex-row">
-              <div className="relative h-24 w-40 shrink-0 overflow-hidden border border-gray-200 bg-white"><Image src={logoUrl || '/placeholders/logo-placeholder.svg'} alt={name} fill className="object-contain p-3" /></div>
+              <div className="relative h-24 w-40 shrink-0 overflow-hidden border border-gray-200 bg-white"><Image src={logoUrl || '/placeholders/logo-placeholder.svg'} alt={name} fill priority sizes="160px" className="object-contain p-3" /></div>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3"><h1 className="text-4xl font-extrabold tracking-[-0.04em] md:text-5xl">{name}</h1><span className={`px-3 py-1 text-xs font-bold ${verified ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>{verified ? text.verified : text.unverified}</span></div>
                 <p className="mt-4 max-w-2xl text-lg leading-7 text-gray-600">{shortDescription || t.companyDetail.noDescription}</p>
