@@ -39,6 +39,12 @@ const reviewFilterCopy = {
   es: { all: 'Todas', positive: 'Positivas', negative: 'Negativas', claims: 'Con siniestro', verified: 'Verificadas', ratingBasis: (published: number) => `El ranking se basa en todas las reseñas publicadas: ${published}.` },
 } as const
 
+const paginationCopy = {
+  ru: { previous: 'Предыдущая', next: 'Следующая', page: 'Страница', all: 'Посмотреть все отзывы' },
+  en: { previous: 'Previous', next: 'Next', page: 'Page', all: 'View all reviews' },
+  es: { previous: 'Anterior', next: 'Siguiente', page: 'Página', all: 'Ver todas las reseñas' },
+} as const
+
 type ReviewsPanelProps = {
   slug: string
   companyName: string
@@ -47,6 +53,7 @@ type ReviewsPanelProps = {
   criteriaAverages: Record<string, number>
   reviews: CompanyReviewItem[]
   compactHeading?: boolean
+  pagination?: { page: number; totalPages: number }
 }
 
 export function CompanyReviewsPanel({
@@ -57,6 +64,7 @@ export function CompanyReviewsPanel({
   criteriaAverages,
   reviews,
   compactHeading = false,
+  pagination,
 }: ReviewsPanelProps) {
   const { t, locale } = useLanguage()
   const [filter, setFilter] = useState<'all' | 'positive' | 'negative' | 'claims' | 'verified'>('all')
@@ -101,6 +109,20 @@ export function CompanyReviewsPanel({
         {visibleReviews.map((review) => <ReviewCard key={review.id} reviewId={review.id} authorName={review.authorName} title={review.title} body={review.body} rating={review.rating} experienceType={review.experienceType} policyType={review.policyType} tripCountry={review.tripCountry} claimOutcome={review.claimOutcome} claimAmount={review.claimAmount} responseTime={review.responseTime} verifiedExperience={review.verifiedExperience} criteria={review.criteria} pros={review.pros} cons={review.cons} recommend={review.recommend} createdAt={review.createdAt} helpfulUp={review.helpfulUp} helpfulDown={review.helpfulDown} replies={review.replies} />)}
         {visibleReviews.length === 0 && <div className="border border-gray-200 bg-white p-8 text-center text-gray-500">{t.companyReviewsPage.noReviews}</div>}
       </div>
+      {!pagination && reviewCount > reviews.length && (
+        <div className="mt-8 text-center">
+          <Link href={`/companies/${slug}/reviews`} className="btn-secondary">
+            {paginationCopy[locale].all} ({reviewCount})
+          </Link>
+        </div>
+      )}
+      {pagination && pagination.totalPages > 1 && (
+        <nav className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-5" aria-label={paginationCopy[locale].page}>
+          {pagination.page > 1 ? <Link href={`/companies/${slug}/reviews?page=${pagination.page - 1}`} className="btn-secondary">{paginationCopy[locale].previous}</Link> : <span />}
+          <span className="text-sm font-semibold text-gray-500">{paginationCopy[locale].page} {pagination.page} / {pagination.totalPages}</span>
+          {pagination.page < pagination.totalPages ? <Link href={`/companies/${slug}/reviews?page=${pagination.page + 1}`} className="btn-secondary">{paginationCopy[locale].next}</Link> : <span />}
+        </nav>
+      )}
     </section>
   )
 }

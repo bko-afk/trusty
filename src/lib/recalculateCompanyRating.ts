@@ -28,7 +28,7 @@ export async function recalculateCompanyRating(
         { status: { equals: 'published' } },
       ],
     },
-    limit: 10000,
+    pagination: false,
     depth: 0,
     req,
   })
@@ -43,6 +43,7 @@ export async function recalculateCompanyRating(
       reviewCount: stats.reviewCount,
       positiveReviewCount: stats.positiveReviewCount,
       negativeReviewCount: stats.negativeReviewCount,
+      criteriaAverages: stats.criteriaAverages,
     },
     req,
   })

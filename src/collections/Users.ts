@@ -1,4 +1,4 @@
-import { type CollectionConfig } from 'payload'
+import type { CollectionConfig } from 'payload'
 import { isAdmin, isStaff } from '@/lib/access'
 
 export const Users: CollectionConfig = {

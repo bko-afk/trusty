@@ -5,7 +5,7 @@ import { recalculateCompanyRating } from '@/lib/recalculateCompanyRating'
 const payload = await getPayloadClient()
 const reviews = await payload.find({
   collection: 'reviews',
-  limit: 10000,
+  pagination: false,
   depth: 0,
   overrideAccess: true,
 })
@@ -24,7 +24,7 @@ for (const review of reviews.docs) {
 
 const companies = await payload.find({
   collection: 'companies',
-  limit: 10000,
+  pagination: false,
   depth: 0,
   overrideAccess: true,
 })

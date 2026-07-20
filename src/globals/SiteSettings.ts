@@ -1,4 +1,4 @@
-import { type GlobalConfig } from 'payload'
+import type { GlobalConfig } from 'payload'
 import { isStaff } from '@/lib/access'
 
 export const SiteSettings: GlobalConfig = {

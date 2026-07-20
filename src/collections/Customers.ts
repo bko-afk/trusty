@@ -1,4 +1,4 @@
-import { type CollectionConfig } from 'payload'
+import type { CollectionConfig } from 'payload'
 import { isCustomer, isStaff } from '@/lib/access'
 
 // Публичная коллекция аккаунтов посетителей сайта (не путать с Users —

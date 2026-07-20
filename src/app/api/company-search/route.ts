@@ -8,6 +8,8 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 type FilterBody = {
+  locale?: unknown
+  page?: unknown
   query?: unknown
   verified?: unknown
   popular?: unknown
@@ -46,11 +48,13 @@ function numberArray(value: unknown, maxItems: number) {
 export async function POST(request: Request) {
   const oversized = rejectLargeRequest(request, 16_000)
   if (oversized) return oversized
-  const limited = rateLimit(request, 'company-search', 120, 60 * 1000)
+  const limited = await rateLimit(request, 'company-search', 120, 60 * 1000)
   if (limited) return limited
 
   try {
     const body = (await request.json()) as FilterBody
+    const locale = body.locale === 'ru' || body.locale === 'es' ? body.locale : 'en'
+    const page = optionalNumber(body.page, 1, 10_000) || 1
     const query = typeof body.query === 'string' ? body.query.trim().slice(0, 120) : ''
     const selectedCountries = stringArray(body.countries, 20)
     const insuranceTypeIds = numberArray(body.insuranceTypeIds, 20)
@@ -83,15 +87,20 @@ export async function POST(request: Request) {
     const result = await payload.find({
       collection: 'companies',
       where: { and },
-      sort: '-overallRating',
-      limit: 100,
+      pagination: false,
       depth: 1,
+      locale,
     })
+    const pageSize = 25
+    const rankedCompanies = sortCompaniesByRanking(result.docs, insuranceTypeIds)
+    const offset = (page - 1) * pageSize
 
     return NextResponse.json(
       {
-        companies: sortCompaniesByRanking(result.docs, insuranceTypeIds).map(toCatalogCompany),
-        total: result.totalDocs,
+        companies: rankedCompanies.slice(offset, offset + pageSize).map(toCatalogCompany),
+        total: rankedCompanies.length,
+        page,
+        totalPages: Math.max(1, Math.ceil(rankedCompanies.length / pageSize)),
       },
       { headers: publicNoStoreHeaders },
     )

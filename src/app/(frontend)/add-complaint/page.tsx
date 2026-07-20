@@ -19,7 +19,7 @@ export default async function AddComplaintPage({
     collection: 'companies',
     where: { status: { equals: 'published' } },
     sort: 'name',
-    limit: 100,
+    pagination: false,
     locale,
   })
 

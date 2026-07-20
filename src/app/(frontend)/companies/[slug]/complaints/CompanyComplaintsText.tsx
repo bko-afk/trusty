@@ -15,14 +15,20 @@ export type CompanyComplaintItem = {
 }
 
 const copy = {
-  ru: { title: 'Жалобы на', breadcrumb: 'Жалобы', add: 'Подать жалобу', empty: 'Опубликованных жалоб пока нет.', response: 'Официальный ответ компании', statuses: { submitted: 'Получена', company_replied: 'Компания ответила', resolved: 'Решена', unresolved: 'Не решена' } },
-  en: { title: 'Complaints about', breadcrumb: 'Complaints', add: 'Submit a complaint', empty: 'There are no published complaints yet.', response: 'Official company response', statuses: { submitted: 'Submitted', company_replied: 'Company replied', resolved: 'Resolved', unresolved: 'Unresolved' } },
-  es: { title: 'Quejas sobre', breadcrumb: 'Quejas', add: 'Presentar una queja', empty: 'Aún no hay quejas publicadas.', response: 'Respuesta oficial de la empresa', statuses: { submitted: 'Recibida', company_replied: 'La empresa respondió', resolved: 'Resuelta', unresolved: 'No resuelta' } },
+  ru: { title: 'Жалобы на', breadcrumb: 'Жалобы', add: 'Подать жалобу', all: 'Посмотреть все жалобы', empty: 'Опубликованных жалоб пока нет.', response: 'Официальный ответ компании', statuses: { submitted: 'Получена', company_replied: 'Компания ответила', resolved: 'Решена', unresolved: 'Не решена' } },
+  en: { title: 'Complaints about', breadcrumb: 'Complaints', add: 'Submit a complaint', all: 'View all complaints', empty: 'There are no published complaints yet.', response: 'Official company response', statuses: { submitted: 'Submitted', company_replied: 'Company replied', resolved: 'Resolved', unresolved: 'Unresolved' } },
+  es: { title: 'Quejas sobre', breadcrumb: 'Quejas', add: 'Presentar una queja', all: 'Ver todas las quejas', empty: 'Aún no hay quejas publicadas.', response: 'Respuesta oficial de la empresa', statuses: { submitted: 'Recibida', company_replied: 'La empresa respondió', resolved: 'Resuelta', unresolved: 'No resuelta' } },
 } as const
 
-type ComplaintsPanelProps = { slug: string; companyName: string; complaints: CompanyComplaintItem[] }
+type ComplaintsPanelProps = {
+  slug: string
+  companyName: string
+  complaints: CompanyComplaintItem[]
+  totalCount?: number
+  pagination?: { page: number; totalPages: number }
+}
 
-export function CompanyComplaintsPanel({ slug, companyName, complaints }: ComplaintsPanelProps) {
+export function CompanyComplaintsPanel({ slug, companyName, complaints, totalCount = complaints.length, pagination }: ComplaintsPanelProps) {
   const { locale } = useLanguage()
   const text = copy[locale]
   return (
@@ -41,6 +47,18 @@ export function CompanyComplaintsPanel({ slug, companyName, complaints }: Compla
         ))}
         {complaints.length === 0 && <div className="border border-gray-200 bg-white p-8 text-center text-gray-500">{text.empty}</div>}
       </div>
+      {!pagination && totalCount > complaints.length && (
+        <div className="mt-8 text-center">
+          <Link href={`/companies/${slug}/complaints`} className="btn-secondary">{text.all} ({totalCount})</Link>
+        </div>
+      )}
+      {pagination && pagination.totalPages > 1 && (
+        <nav className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-gray-200 pt-5" aria-label={text.breadcrumb}>
+          {pagination.page > 1 ? <Link href={`/companies/${slug}/complaints?page=${pagination.page - 1}`} className="btn-secondary">←</Link> : <span />}
+          <span className="text-sm font-semibold text-gray-500">{pagination.page} / {pagination.totalPages}</span>
+          {pagination.page < pagination.totalPages ? <Link href={`/companies/${slug}/complaints?page=${pagination.page + 1}`} className="btn-secondary">→</Link> : <span />}
+        </nav>
+      )}
     </section>
   )
 }

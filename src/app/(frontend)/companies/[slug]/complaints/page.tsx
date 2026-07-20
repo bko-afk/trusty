@@ -35,10 +35,14 @@ export async function generateMetadata({
 
 export default async function CompanyComplaintsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ page?: string }>
 }) {
   const { slug } = await params
+  const requestedPage = Number((await searchParams).page)
+  const page = Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1
   const locale = await getRequestLocale()
   const payload = await getPayloadClient()
   const company = await getPublishedCompany(slug, locale)
@@ -48,7 +52,8 @@ export default async function CompanyComplaintsPage({
     collection: 'complaints',
     where: { company: { equals: company.id }, status: { equals: 'published' } },
     sort: '-createdAt',
-    limit: 100,
+    limit: 20,
+    page,
     locale,
   })
 
@@ -56,6 +61,8 @@ export default async function CompanyComplaintsPage({
     <CompanyComplaintsText
       slug={slug}
       companyName={company.name}
+      totalCount={complaints.totalDocs}
+      pagination={{ page: complaints.page || page, totalPages: complaints.totalPages }}
       complaints={complaints.docs.map((complaint) => ({
         id: String(complaint.id),
         authorName: complaint.authorName,

@@ -48,16 +48,22 @@ const comparisonCopy = {
 export function CompaniesCatalogText({
   insuranceTypes,
   companies,
-  availableCountries,
+  total,
+  totalPages,
   updatedAt,
 }: {
   insuranceTypes: CatalogInsuranceType[]
   companies: CatalogCompany[]
-  availableCountries: string[]
+  total: number
+  totalPages: number
   updatedAt: string
 }) {
   const { t, locale } = useLanguage()
   const [results, setResults] = useState(companies)
+  const [knownCompanies, setKnownCompanies] = useState(companies)
+  const [totalResults, setTotalResults] = useState(total)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [availablePages, setAvailablePages] = useState(totalPages)
   const [filters, setFilters] = useState<Filters>(emptyFilters)
   const [filterOpen, setFilterOpen] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
@@ -65,23 +71,23 @@ export function CompaniesCatalogText({
   const [comparisonIds, setComparisonIds] = useState<string[]>([])
   const abortRef = useRef<AbortController | null>(null)
   const resultsRef = useRef<HTMLElement | null>(null)
-  const countryList = countries.filter((country) => availableCountries.includes(country.code))
+  const countryList = countries
   const comparisonText = comparisonCopy[locale]
   const updatedText = locale === 'ru' ? 'Рейтинг актуален на' : locale === 'es' ? 'Ranking actualizado el' : 'Ranking updated on'
-  const comparedCompanies = companies.filter((company) => comparisonIds.includes(String(company.id)))
+  const comparedCompanies = knownCompanies.filter((company) => comparisonIds.includes(String(company.id)))
   const countLabel = locale === 'ru'
-    ? results.length % 10 === 1 && results.length % 100 !== 11
+    ? totalResults % 10 === 1 && totalResults % 100 !== 11
       ? t.portal.ranking.companyInRating
-      : [2, 3, 4].includes(results.length % 10) && ![12, 13, 14].includes(results.length % 100)
+      : [2, 3, 4].includes(totalResults % 10) && ![12, 13, 14].includes(totalResults % 100)
         ? t.portal.ranking.companiesInRatingFew
         : t.portal.ranking.companiesInRating
-    : results.length === 1
+    : totalResults === 1
       ? t.portal.ranking.companyInRating
       : t.portal.ranking.companiesInRating
 
   useEffect(() => () => abortRef.current?.abort(), [])
 
-  const requestCompanies = async (nextFilters: Filters) => {
+  const requestCompanies = async (nextFilters: Filters, page = 1, append = false) => {
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
@@ -92,7 +98,7 @@ export function CompaniesCatalogText({
       const response = await fetch('/api/company-search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(nextFilters),
+        body: JSON.stringify({ ...nextFilters, locale, page }),
         signal: controller.signal,
       })
 
@@ -100,11 +106,28 @@ export function CompaniesCatalogText({
         setError(t.portal.ranking.filterError)
         return
       }
-      const data = (await response.json()) as { companies: CatalogCompany[] }
-      startTransition(() => setResults(data.companies))
-      window.requestAnimationFrame(() => {
-        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      const data = (await response.json()) as {
+        companies: CatalogCompany[]
+        total: number
+        page: number
+        totalPages: number
+      }
+      startTransition(() => {
+        setResults((current) => append ? [...current, ...data.companies] : data.companies)
+        setKnownCompanies((current) => {
+          const merged = new Map(current.map((company) => [String(company.id), company]))
+          data.companies.forEach((company) => merged.set(String(company.id), company))
+          return Array.from(merged.values())
+        })
+        setTotalResults(data.total)
+        setCurrentPage(data.page)
+        setAvailablePages(data.totalPages)
       })
+      if (!append) {
+        window.requestAnimationFrame(() => {
+          resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        })
+      }
     } catch (requestError) {
       if (requestError instanceof DOMException && requestError.name === 'AbortError') return
       setError(t.portal.ranking.filterError)
@@ -154,7 +177,7 @@ export function CompaniesCatalogText({
       <section className="bg-[#eef3f5] py-8 md:py-10">
         <div className="container-page">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-            <div><div><span className="font-extrabold">{results.length}</span> {countLabel}</div><div className="mt-1 text-xs text-gray-500">{updatedText} {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(updatedAt))}</div></div>
+            <div><div><span className="font-extrabold">{totalResults}</span> {countLabel}</div><div className="mt-1 text-xs text-gray-500">{updatedText} {new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(new Date(updatedAt))}</div></div>
             <button type="button" onClick={() => setFilterOpen((open) => !open)} className="flex items-center gap-2 text-sm font-bold text-brand-dark">
               {filterOpen ? t.portal.ranking.hideFilter : t.portal.ranking.showFilter}
               <span className={`transition-transform ${filterOpen ? 'rotate-180' : ''}`} aria-hidden="true">⌄</span>
@@ -267,6 +290,18 @@ export function CompaniesCatalogText({
             {results.length === 0 && <div className="p-10 text-center text-gray-500">{t.portal.ranking.noResults}</div>}
           </div>
         </div>
+        {currentPage < availablePages && (
+          <div className="mt-8 text-center">
+            <button
+              type="button"
+              disabled={isLoading}
+              onClick={() => void requestCompanies(filters, currentPage + 1, true)}
+              className="btn-secondary min-w-48 disabled:cursor-wait disabled:opacity-60"
+            >
+              {isLoading ? t.portal.ranking.filtering : t.home.showMoreBtn}
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="surface-section py-14">

@@ -17,6 +17,7 @@ const getArticles = unstable_cache(async (locale: Locale) => {
     limit: 50,
     depth: 1,
     locale,
+    fallbackLocale: false,
   })
 }, ['articles-list'], { revalidate: 300 })
 
@@ -28,7 +29,7 @@ export default async function ArticlesPage() {
 
   return (
     <ArticlesText
-      articles={articles.docs.map((a: any) => ({
+      articles={articles.docs.filter((a: any) => typeof a.title === 'string').map((a: any) => ({
         id: a.id,
         slug: a.slug,
         title: a.title,

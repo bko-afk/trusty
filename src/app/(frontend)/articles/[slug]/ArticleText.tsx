@@ -1,8 +1,8 @@
-'use client'
-
 import Image from 'next/image'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
-import { useLanguage } from '@/i18n/LanguageContext'
+import { RichText } from '@payloadcms/richtext-lexical/react'
+import type { Article } from '@/payload-types'
+import type { Locale } from '@/i18n/dictionary'
 
 export function ArticleText({
   title,
@@ -10,14 +10,19 @@ export function ArticleText({
   body,
   coverUrl,
   publishedAt,
+  locale,
+  homeLabel,
+  articlesLabel,
 }: {
   title: string
   excerpt?: string
-  body: string
+  body?: Article['body']
   coverUrl?: string
   publishedAt?: string
+  locale: Locale
+  homeLabel: string
+  articlesLabel: string
 }) {
-  const { t, locale } = useLanguage()
   const date = publishedAt ? new Date(publishedAt) : null
   const dateLocale = locale === 'ru' ? 'ru-RU' : locale === 'es' ? 'es-ES' : 'en-US'
   const dateLabel = date && !Number.isNaN(date.getTime())
@@ -28,8 +33,8 @@ export function ArticleText({
     <article className="container-page max-w-4xl py-8 md:py-12">
       <Breadcrumbs
         items={[
-          { label: t.common.home, href: '/' },
-          { label: t.nav.articles, href: '/articles' },
+          { label: homeLabel, href: '/' },
+          { label: articlesLabel, href: '/articles' },
           { label: title },
         ]}
       />
@@ -43,21 +48,7 @@ export function ArticleText({
           <Image src={coverUrl} alt={title} fill priority sizes="(max-width: 1024px) 100vw, 896px" className="object-cover" />
         </div>
       )}
-      <div className="prose mt-10 max-w-none text-gray-700">
-        {body.split(/\n{2,}/).filter(Boolean).map((paragraph, index) => (
-          <p key={`${index}-${paragraph.slice(0, 24)}`}>{linkify(paragraph)}</p>
-        ))}
-      </div>
+      {body && <RichText data={body} className="prose mt-10 max-w-none text-gray-700" />}
     </article>
-  )
-}
-
-function linkify(text: string) {
-  return text.split(/(https?:\/\/[^\s]+)/g).map((part, index) =>
-    part.startsWith('http://') || part.startsWith('https://') ? (
-      <a key={`${index}-${part}`} href={part} target="_blank" rel="noopener noreferrer nofollow">
-        {part}
-      </a>
-    ) : part,
   )
 }

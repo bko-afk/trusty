@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   }
   const oversized = rejectLargeRequest(request, 2_000)
   if (oversized) return oversized
-  const limited = rateLimit(request, 'company-subscription', 60, 15 * 60 * 1000)
+  const limited = await rateLimit(request, 'company-subscription', 60, 15 * 60 * 1000)
   if (limited) return limited
 
   try {

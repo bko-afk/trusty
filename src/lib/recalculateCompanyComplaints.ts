@@ -8,12 +8,12 @@ export async function recalculateCompanyComplaints(
   const companyId = typeof company === 'object' ? company.id : company
   if (!companyId) return
 
-  const { docs, totalDocs } = await payload.find({
+  const { docs } = await payload.find({
     collection: 'complaints',
     where: {
       and: [{ company: { equals: companyId } }, { status: { equals: 'published' } }],
     },
-    limit: 10000,
+    pagination: false,
     depth: 0,
     req,
   })
@@ -22,7 +22,7 @@ export async function recalculateCompanyComplaints(
     collection: 'companies',
     id: companyId,
     data: {
-      complaintCount: totalDocs,
+      complaintCount: docs.length,
       resolvedComplaintCount: docs.filter(
         (complaint) => complaint.workflowStatus === 'resolved' || complaint.resolved === true,
       ).length,

@@ -16,15 +16,20 @@ function sitemapDate(value: unknown): string | Date | undefined {
 function localizedEntries(
   pathname: string,
   data: Omit<MetadataRoute.Sitemap[number], 'url' | 'alternates'>,
+  availableLocales = locales,
 ): MetadataRoute.Sitemap {
+  if (availableLocales.length === 0) return []
+  const defaultLocale = availableLocales.includes(DEFAULT_LOCALE)
+    ? DEFAULT_LOCALE
+    : availableLocales[0]
   const languages = {
     ...Object.fromEntries(
-      locales.map((locale) => [locale, absoluteUrl(localizePath(pathname, locale))]),
+      availableLocales.map((locale) => [locale, absoluteUrl(localizePath(pathname, locale))]),
     ),
-    'x-default': absoluteUrl(localizePath(pathname, DEFAULT_LOCALE)),
+    'x-default': absoluteUrl(localizePath(pathname, defaultLocale)),
   }
 
-  return locales.map((locale) => ({
+  return availableLocales.map((locale) => ({
     ...data,
     url: absoluteUrl(localizePath(pathname, locale)),
     alternates: { languages },
@@ -37,16 +42,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     payload.find({
       collection: 'companies',
       where: { status: { equals: 'published' } },
-      limit: 10000,
+      pagination: false,
       depth: 0,
       select: { slug: true, updatedAt: true },
     }),
     payload.find({
       collection: 'articles',
       where: { status: { equals: 'published' } },
-      limit: 10000,
+      pagination: false,
       depth: 0,
-      select: { slug: true, updatedAt: true, publishedAt: true },
+      locale: 'all',
+      fallbackLocale: false,
+      select: { slug: true, title: true, updatedAt: true, publishedAt: true },
     }),
   ])
 
@@ -66,13 +73,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]
   })
 
-  const articlePages: MetadataRoute.Sitemap = articles.docs.flatMap((article) =>
-    localizedEntries(`/articles/${article.slug}`, {
+  const articlePages: MetadataRoute.Sitemap = articles.docs.flatMap((article) => {
+    const title = article.title as unknown
+    const availableLocales = title && typeof title === 'object'
+      ? locales.filter((locale) => typeof (title as Record<string, unknown>)[locale] === 'string')
+      : []
+    return localizedEntries(`/articles/${article.slug}`, {
       lastModified: sitemapDate(article.updatedAt) || sitemapDate(article.publishedAt),
       changeFrequency: 'monthly',
       priority: 0.65,
-    }),
-  )
+    }, availableLocales)
+  })
 
   return [...staticPages, ...companyPages, ...articlePages]
 }

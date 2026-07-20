@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ArticleText } from './ArticleText'
-import { getPublishedArticle } from '@/lib/getPublishedContent'
+import { getPublishedArticle, getPublishedArticleLocales } from '@/lib/getPublishedContent'
 import { absoluteUrl, mediaUrl, plainDescription } from '@/lib/seo'
-import { richTextToPlainText } from '@/lib/richText'
 import { JsonLd } from '@/components/JsonLd'
 import { articleCoverUrl } from '@/lib/articleCover'
 import { getRequestLocale, localizedAlternates, localizedOpenGraph } from '@/i18n/seo'
 import { localizePath } from '@/i18n/routing'
+import { dictionary } from '@/i18n/dictionary'
 
 export const revalidate = 300
 
@@ -19,7 +19,10 @@ export async function generateMetadata({
   const { slug } = await params
   const locale = await getRequestLocale()
   const article: any = await getPublishedArticle(slug, locale)
-  if (!article) return { title: 'Article not found', robots: { index: false, follow: false } }
+  if (!article || typeof article.title !== 'string') {
+    return { title: 'Article not found', robots: { index: false, follow: false } }
+  }
+  const availableLocales = await getPublishedArticleLocales(slug)
 
   const title = article.seo?.title || article.title
   const description = plainDescription(
@@ -36,7 +39,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: localizedAlternates(canonical, locale),
+    alternates: localizedAlternates(canonical, locale, availableLocales),
     openGraph: {
       ...localizedOpenGraph(locale),
       type: 'article',
@@ -55,9 +58,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params
   const locale = await getRequestLocale()
   const article: any = await getPublishedArticle(slug, locale)
-  if (!article) notFound()
+  if (!article || typeof article.title !== 'string') notFound()
+  const t = dictionary[locale]
 
-  const body = article.body ? richTextToPlainText(article.body) : ''
   const image = mediaUrl(article.cover) || articleCoverUrl(slug)
 
   return (
@@ -78,9 +81,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <ArticleText
         title={article.title}
         excerpt={article.excerpt}
-        body={body}
+        body={article.body}
         coverUrl={image}
         publishedAt={article.publishedAt || article.createdAt}
+        locale={locale}
+        homeLabel={t.common.home}
+        articlesLabel={t.nav.articles}
       />
     </>
   )

@@ -20,7 +20,7 @@ export default async function AddReviewPage({
       collection: 'companies',
       where: { status: { equals: 'published' } },
       sort: 'name',
-      limit: 100,
+      pagination: false,
       locale,
     }),
     payload.find({ collection: 'insurance-types', sort: 'order', limit: 50, locale }),

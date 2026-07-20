@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'node:crypto'
+import { createHmac } from 'node:crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import {
@@ -13,9 +13,7 @@ import { payloadSecret } from '@/lib/runtimeConfig'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const COOKIE_NAME = 'trusty_review_votes'
 type Vote = 'up' | 'down'
-type VoteMap = Record<string, Vote>
 
 function positiveId(value: unknown) {
   const id = Number(value)
@@ -26,40 +24,13 @@ function text(value: unknown, maxLength: number) {
   return typeof value === 'string' ? value.trim().slice(0, maxLength) : ''
 }
 
-function sign(value: string) {
-  return createHmac('sha256', payloadSecret()).update(value).digest('base64url')
-}
-
-function readVotes(cookieValue?: string): VoteMap {
-  if (!cookieValue) return {}
-  const separator = cookieValue.lastIndexOf('.')
-  if (separator < 1) return {}
-  const encoded = cookieValue.slice(0, separator)
-  const suppliedSignature = cookieValue.slice(separator + 1)
-  const expectedSignature = sign(encoded)
-  const supplied = Buffer.from(suppliedSignature)
-  const expected = Buffer.from(expectedSignature)
-  if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return {}
-
-  try {
-    const parsed = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8')) as VoteMap
-    return Object.fromEntries(
-      Object.entries(parsed).filter(([, vote]) => vote === 'up' || vote === 'down').slice(-100),
-    )
-  } catch {
-    return {}
-  }
-}
-
-function writeVotes(response: NextResponse, votes: VoteMap) {
-  const encoded = Buffer.from(JSON.stringify(votes)).toString('base64url')
-  response.cookies.set(COOKIE_NAME, `${encoded}.${sign(encoded)}`, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 60 * 24 * 365,
-  })
+function anonymousVoterKey(request: NextRequest, reviewId: number) {
+  const forwardedFor = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+  const address = forwardedFor || request.headers.get('x-real-ip') || 'unknown'
+  const userAgent = request.headers.get('user-agent') || 'unknown'
+  return createHmac('sha256', payloadSecret())
+    .update(`${address}|${userAgent}|${reviewId}`)
+    .digest('hex')
 }
 
 async function publishedReview(reviewId: number) {
@@ -87,41 +58,66 @@ async function vote(request: NextRequest, body: Record<string, unknown>) {
   const source = await publishedReview(reviewId)
   if (!source) return NextResponse.json({ error: 'Review not found' }, { status: 404, headers: publicNoStoreHeaders })
 
-  const votes = readVotes(request.cookies.get(COOKIE_NAME)?.value)
-  const previousVote = votes[String(reviewId)]
-  let helpfulUp = Number(source.review.helpfulUp || 0)
-  let helpfulDown = Number(source.review.helpfulDown || 0)
+  const { user } = await source.payload.auth({ headers: request.headers })
+  const identity = user?.collection === 'customers'
+    ? `customer:${user.id}:${reviewId}`
+    : `anonymous:${anonymousVoterKey(request, reviewId)}`
+  const voterKey = createHmac('sha256', payloadSecret()).update(identity).digest('hex')
+  const existing = await source.payload.find({
+    collection: 'review-votes',
+    where: { voterKey: { equals: voterKey } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const previousVote = existing.docs[0]?.direction as Vote | undefined
+  let selectedVote: Vote | null = direction
 
-  if (previousVote === direction) {
-    if (direction === 'up') helpfulUp = Math.max(0, helpfulUp - 1)
-    if (direction === 'down') helpfulDown = Math.max(0, helpfulDown - 1)
-    delete votes[String(reviewId)]
-    await source.payload.update({
-      collection: 'reviews',
-      id: reviewId,
+  if (existing.docs[0] && previousVote === direction) {
+    await source.payload.delete({
+      collection: 'review-votes',
+      id: existing.docs[0].id,
       overrideAccess: true,
-      data: { helpfulUp, helpfulDown },
+    })
+    selectedVote = null
+  } else if (existing.docs[0]) {
+    await source.payload.update({
+      collection: 'review-votes',
+      id: existing.docs[0].id,
+      overrideAccess: true,
+      data: { direction },
     })
   } else {
-    if (previousVote === 'up') helpfulUp = Math.max(0, helpfulUp - 1)
-    if (previousVote === 'down') helpfulDown = Math.max(0, helpfulDown - 1)
-    if (direction === 'up') helpfulUp += 1
-    if (direction === 'down') helpfulDown += 1
-    votes[String(reviewId)] = direction
-    await source.payload.update({
-      collection: 'reviews',
-      id: reviewId,
+    await source.payload.create({
+      collection: 'review-votes',
       overrideAccess: true,
-      data: { helpfulUp, helpfulDown },
+      data: { review: reviewId, voterKey, direction },
     })
   }
 
-  const response = NextResponse.json(
-    { success: true, helpfulUp, helpfulDown, vote: votes[String(reviewId)] || null },
+  const [upVotes, downVotes] = await Promise.all([
+    source.payload.count({
+      collection: 'review-votes',
+      where: { and: [{ review: { equals: reviewId } }, { direction: { equals: 'up' } }] },
+      overrideAccess: true,
+    }),
+    source.payload.count({
+      collection: 'review-votes',
+      where: { and: [{ review: { equals: reviewId } }, { direction: { equals: 'down' } }] },
+      overrideAccess: true,
+    }),
+  ])
+  await source.payload.update({
+    collection: 'reviews',
+    id: reviewId,
+    overrideAccess: true,
+    data: { helpfulUp: upVotes.totalDocs, helpfulDown: downVotes.totalDocs },
+  })
+
+  return NextResponse.json(
+    { success: true, helpfulUp: upVotes.totalDocs, helpfulDown: downVotes.totalDocs, vote: selectedVote },
     { headers: privateNoStoreHeaders },
   )
-  writeVotes(response, votes)
-  return response
 }
 
 async function reply(request: NextRequest, body: Record<string, unknown>) {
@@ -167,7 +163,7 @@ export async function POST(request: NextRequest) {
     const action = body.action === 'reply' ? 'reply' : body.action === 'vote' ? 'vote' : null
     if (!action) return NextResponse.json({ error: 'Invalid action' }, { status: 400, headers: publicNoStoreHeaders })
 
-    const limited = rateLimit(request, `review:${action}`, action === 'vote' ? 30 : 5, 15 * 60 * 1000)
+    const limited = await rateLimit(request, `review:${action}`, action === 'vote' ? 30 : 5, 15 * 60 * 1000)
     if (limited) return limited
     return await (action === 'vote' ? vote(request, body) : reply(request, body))
   } catch (error) {

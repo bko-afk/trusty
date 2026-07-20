@@ -1,6 +1,7 @@
-import { type CollectionConfig } from 'payload'
+import type { CollectionConfig } from 'payload'
 import { countries } from '@/lib/countries'
 import { isStaff, isTrustedWrite } from '@/lib/access'
+import { validateHttpUrl } from '@/lib/safeUrl'
 
 function slugify(value: string) {
   return value
@@ -122,7 +123,7 @@ export const Companies: CollectionConfig = {
             const companiesInCategories = await req.payload.find({
               collection: 'companies',
               where: { 'ranking.categoryPositions.insuranceType': { in: categoryIds } },
-              limit: 1000,
+              pagination: false,
               depth: 1,
               req,
               overrideAccess: true,
@@ -261,7 +262,7 @@ export const Companies: CollectionConfig = {
         },
       ],
     },
-    { name: 'website', label: 'Официальный сайт', type: 'text', maxLength: 300 },
+    { name: 'website', label: 'Официальный сайт', type: 'text', maxLength: 300, validate: validateHttpUrl },
     {
       name: 'verification',
       label: 'Проверка и лицензия',
@@ -270,7 +271,7 @@ export const Companies: CollectionConfig = {
         { name: 'legalName', label: 'Юридическое название', type: 'text', maxLength: 200 },
         { name: 'regulator', label: 'Регулятор', type: 'text', maxLength: 200 },
         { name: 'licenseNumber', label: 'Номер лицензии', type: 'text', maxLength: 120 },
-        { name: 'licenseUrl', label: 'Ссылка на реестр/лицензию', type: 'text', maxLength: 500 },
+        { name: 'licenseUrl', label: 'Ссылка на реестр/лицензию', type: 'text', maxLength: 500, validate: validateHttpUrl },
         { name: 'verifiedAt', label: 'Дата проверки профиля', type: 'date' },
       ],
     },
@@ -383,6 +384,21 @@ export const Companies: CollectionConfig = {
       type: 'number',
       defaultValue: 0,
       admin: { readOnly: true, position: 'sidebar' },
+    },
+    {
+      name: 'criteriaAverages',
+      label: 'Средние оценки по критериям',
+      type: 'group',
+      admin: {
+        readOnly: true,
+        description: 'Пересчитываются автоматически по всем опубликованным отзывам.',
+      },
+      fields: [
+        { name: 'coverage', label: 'Полнота покрытия', type: 'number', defaultValue: 0 },
+        { name: 'price', label: 'Цена полиса', type: 'number', defaultValue: 0 },
+        { name: 'claimsService', label: 'Урегулирование страховых случаев', type: 'number', defaultValue: 0 },
+        { name: 'support', label: 'Поддержка и сервис', type: 'number', defaultValue: 0 },
+      ],
     },
     {
       name: 'complaintCount',

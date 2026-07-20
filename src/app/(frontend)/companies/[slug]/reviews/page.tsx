@@ -5,7 +5,6 @@ import { CompanyReviewsText } from './CompanyReviewsText'
 import { getPublishedCompany } from '@/lib/getPublishedContent'
 import { getRequestLocale, localizedAlternates, localizedOpenGraph } from '@/i18n/seo'
 import { localizePath } from '@/i18n/routing'
-import { calculateReviewStats } from '@/lib/companyReviewStats'
 
 export const revalidate = 60
 
@@ -38,10 +37,14 @@ export async function generateMetadata({
 
 export default async function CompanyReviewsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ page?: string }>
 }) {
   const { slug } = await params
+  const requestedPage = Number((await searchParams).page)
+  const page = Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1
   const locale = await getRequestLocale()
   const payload = await getPayloadClient()
   const company: any = await getPublishedCompany(slug, locale)
@@ -51,7 +54,8 @@ export default async function CompanyReviewsPage({
     collection: 'reviews',
     where: { company: { equals: company.id }, status: { equals: 'published' } },
     sort: '-createdAt',
-    limit: 50,
+    limit: 20,
+    page,
     depth: 1,
     locale,
   })
@@ -63,7 +67,7 @@ export default async function CompanyReviewsPage({
           review: { in: reviewsResult.docs.map((review) => review.id) },
           status: { equals: 'published' },
         },
-        limit: 200,
+        pagination: false,
       })
     : { docs: [] }
 
@@ -74,25 +78,18 @@ export default async function CompanyReviewsPage({
     repliesByReview.get(reviewId)!.push(reply)
   }
 
-  const criteriaAverages: Record<string, number> = {}
-  const ratingReviews = reviewsResult.docs.filter((review: any) => review.includeInRating === true)
-  const reviewStats = calculateReviewStats(reviewsResult.docs)
-  for (const key of CRITERIA_KEYS) {
-    const values = ratingReviews
-      .map((r: any) => r.criteria?.[key])
-      .filter((v: any) => typeof v === 'number')
-    criteriaAverages[key] = values.length
-      ? values.reduce((a: number, b: number) => a + b, 0) / values.length
-      : 0
-  }
+  const criteriaAverages = Object.fromEntries(
+    CRITERIA_KEYS.map((key) => [key, Number(company.criteriaAverages?.[key] || 0)]),
+  )
 
   return (
     <CompanyReviewsText
       slug={slug}
       companyName={company.name}
-      overallRating={reviewStats.overallRating}
-      reviewCount={reviewStats.reviewCount}
+      overallRating={Number(company.overallRating || 0)}
+      reviewCount={Number(company.reviewCount || reviewsResult.totalDocs)}
       criteriaAverages={criteriaAverages}
+      pagination={{ page: reviewsResult.page || page, totalPages: reviewsResult.totalPages }}
       reviews={reviewsResult.docs.map((review: any) => ({
         id: String(review.id),
         authorName: review.authorName,

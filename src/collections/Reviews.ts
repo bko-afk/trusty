@@ -1,4 +1,4 @@
-import { type CollectionConfig, type Where } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 import { recalculateCompanyRating } from '@/lib/recalculateCompanyRating'
 import { isCustomer, isStaff, isTrustedWrite } from '@/lib/access'
 import { countries } from '@/lib/countries'
@@ -90,6 +90,9 @@ export const Reviews: CollectionConfig = {
       label: 'Аккаунт пользователя',
       type: 'relationship',
       relationTo: 'customers',
+      access: {
+        read: ({ req }) => isStaff(req),
+      },
       admin: { description: 'Заполняется автоматически, если отзыв оставил залогиненный пользователь' },
     },
     { name: 'authorName', label: 'Имя автора', type: 'text', required: true, minLength: 2, maxLength: 80 },
@@ -97,6 +100,9 @@ export const Reviews: CollectionConfig = {
       name: 'authorEmail',
       label: 'Email автора',
       type: 'email',
+      access: {
+        read: ({ req }) => isStaff(req),
+      },
       admin: { description: 'Не показывается публично, только для модерации' },
     },
     { name: 'title', label: 'Заголовок', type: 'text', required: true, minLength: 5, maxLength: 160 },

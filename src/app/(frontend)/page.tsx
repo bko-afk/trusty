@@ -7,7 +7,6 @@ import { articleCoverUrl } from '@/lib/articleCover'
 import { unstable_cache } from 'next/cache'
 import { getRequestLocale } from '@/i18n/seo'
 import type { Locale } from '@/i18n/dictionary'
-import { applyCompanyReviewStats, reviewStatsByCompany } from '@/lib/companyReviewStats'
 
 // Главную не обязательно перегенерировать на каждый запрос — модерация
 // отзывов/компаний не мгновенная, поэтому кэшируем страницу на 60 секунд
@@ -52,18 +51,13 @@ const getHomePageData = unstable_cache(async (locale: Locale) => {
       locale,
     }),
     payload.find({
-      collection: 'reviews',
-      where: { status: { equals: 'published' } },
-      limit: 10000,
-      depth: 0,
-    }),
-    payload.find({
       collection: 'articles',
       where: { status: { equals: 'published' } },
       sort: '-publishedAt',
       limit: 4,
       depth: 1,
       locale,
+      fallbackLocale: false,
     }),
   ])
 }, ['home-page-data'], { revalidate: 60 })
@@ -76,7 +70,7 @@ function publishedRelations(value: unknown) {
 
 export default async function HomePage() {
   const locale = await getRequestLocale()
-  const [siteSettings, companies, popularCompanies, newestCompanies, latestReviews, ratingSourceReviews, latestArticles] = await getHomePageData(locale)
+  const [siteSettings, companies, popularCompanies, newestCompanies, latestReviews, latestArticles] = await getHomePageData(locale)
 
   const homepage = siteSettings.homepage || {}
   const rankingLimit = Math.min(12, Math.max(3, Number(homepage.rankingLimit || 12)))
@@ -85,19 +79,9 @@ export default async function HomePage() {
   const configuredRanking = publishedRelations(homepage.rankingCompanies)
   const configuredPopular = publishedRelations(homepage.popularCompanies)
   const configuredNewest = publishedRelations(homepage.newCompanies)
-  const reviewStats = reviewStatsByCompany(ratingSourceReviews.docs)
-  const rankedCompanies = applyCompanyReviewStats(
-    configuredRanking.length > 0 ? configuredRanking : companies.docs,
-    reviewStats,
-  )
-  const highlightedCompanies = applyCompanyReviewStats(
-    configuredPopular.length > 0 ? configuredPopular : popularCompanies.docs,
-    reviewStats,
-  )
-  const freshCompanies = applyCompanyReviewStats(
-    configuredNewest.length > 0 ? configuredNewest : newestCompanies.docs,
-    reviewStats,
-  )
+  const rankedCompanies = configuredRanking.length > 0 ? configuredRanking : companies.docs
+  const highlightedCompanies = configuredPopular.length > 0 ? configuredPopular : popularCompanies.docs
+  const freshCompanies = configuredNewest.length > 0 ? configuredNewest : newestCompanies.docs
 
   return (
     <HomeText
@@ -105,7 +89,7 @@ export default async function HomePage() {
       popularCompanies={highlightedCompanies.slice(0, 3)}
       newestCompanies={freshCompanies.slice(0, newCompaniesLimit)}
       latestReviews={latestReviews.docs.slice(0, latestReviewsLimit)}
-      latestArticles={latestArticles.docs.map((article) => ({
+      latestArticles={latestArticles.docs.filter((article) => typeof article.title === 'string').map((article) => ({
         id: String(article.id),
         slug: article.slug,
         title: article.title,

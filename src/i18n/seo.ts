@@ -20,14 +20,21 @@ export async function getRequestPathname(): Promise<string> {
   return (await headers()).get('x-trusty-pathname') || '/'
 }
 
-export function localizedAlternates(pathname: string, locale: Locale): Metadata['alternates'] {
+export function localizedAlternates(
+  pathname: string,
+  locale: Locale,
+  availableLocales: Locale[] = locales,
+): Metadata['alternates'] {
+  const defaultLocale = availableLocales.includes(DEFAULT_LOCALE)
+    ? DEFAULT_LOCALE
+    : availableLocales[0] || locale
   const languages = Object.fromEntries(
-    locales.map((availableLocale) => [availableLocale, localizePath(pathname, availableLocale)]),
+    availableLocales.map((availableLocale) => [availableLocale, localizePath(pathname, availableLocale)]),
   )
 
   return {
     canonical: localizePath(pathname, locale),
-    languages: { ...languages, 'x-default': localizePath(pathname, DEFAULT_LOCALE) },
+    languages: { ...languages, 'x-default': localizePath(pathname, defaultLocale) },
   }
 }
 
@@ -117,4 +124,3 @@ export const rootSeoCopy = {
     keywords: ['seguros de viaje', 'reseñas de aseguradoras', 'seguro médico', 'ranking de aseguradoras', 'quejas de seguros'],
   },
 } as const
-

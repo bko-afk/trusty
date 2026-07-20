@@ -10,7 +10,7 @@ import { richTextToPlainText } from '@/lib/richText'
 import { JsonLd } from '@/components/JsonLd'
 import { getRequestLocale, localizedAlternates, localizedOpenGraph } from '@/i18n/seo'
 import { localizePath } from '@/i18n/routing'
-import { calculateReviewStats } from '@/lib/companyReviewStats'
+import { safeHttpUrl } from '@/lib/safeUrl'
 
 export const revalidate = 60
 
@@ -72,7 +72,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       where: { status: { equals: 'published' } },
       sort: '-overallRating',
       depth: 1,
-      limit: 100,
+      pagination: false,
       locale,
     }),
     payload.find({
@@ -84,13 +84,15 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         ],
       },
       depth: 0,
-      limit: 1000,
+      limit: 20,
+      sort: '-createdAt',
     }),
     payload.find({
       collection: 'complaints',
       where: { company: { equals: company.id }, status: { equals: 'published' } },
       depth: 0,
-      limit: 1000,
+      limit: 20,
+      sort: '-createdAt',
     }),
     payload.find({
       collection: 'articles',
@@ -109,7 +111,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
           review: { in: reviewsResult.docs.map((review) => review.id) },
           status: { equals: 'published' },
         },
-        limit: 500,
+        pagination: false,
       })
     : { docs: [] }
   const repliesByReview = new Map<string, any[]>()
@@ -120,11 +122,6 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     repliesByReview.set(reviewId, replies)
   }
 
-  const reviewStats = calculateReviewStats(reviewsResult.docs)
-
-  const resolvedComplaintCount = complaintsResult.docs.filter(
-    (complaint: any) => complaint.workflowStatus === 'resolved' || complaint.resolved,
-  ).length
   const sharesInsuranceType = (candidate: any) => {
     const candidateTypeIds = (candidate.insuranceTypes || []).map((type: any) =>
       typeof type === 'object' ? type.id : type,
@@ -175,13 +172,13 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         }
       : undefined,
     aggregateRating:
-      reviewStats.ratingReviewCount > 0
+      Number(company.reviewCount || 0) > 0
         ? {
             '@type': 'AggregateRating',
-            ratingValue: reviewStats.overallRating,
+            ratingValue: Number(company.overallRating || 0),
             bestRating: 5,
             worstRating: 1,
-            ratingCount: reviewStats.ratingReviewCount,
+            ratingCount: Number(company.reviewCount || 0),
           }
         : undefined,
   }
@@ -194,18 +191,21 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       slug={slug}
       name={company.name}
       logoUrl={logoUrl}
-      overallRating={reviewStats.overallRating}
-      reviewCount={reviewStats.reviewCount}
+      overallRating={Number(company.overallRating || 0)}
+      reviewCount={Number(company.reviewCount || 0)}
       verified={company.verified}
-      verification={company.verification}
+      verification={company.verification ? {
+        ...company.verification,
+        licenseUrl: safeHttpUrl(company.verification.licenseUrl),
+      } : undefined}
       dataUpdatedAt={company.dataUpdatedAt || company.updatedAt}
       uniqueFeature={company.uniqueFeature}
       insuranceProfile={company.insuranceProfile}
-      positiveReviewCount={reviewStats.positiveReviewCount}
-      negativeReviewCount={reviewStats.negativeReviewCount}
-      complaintCount={complaintsResult.totalDocs}
-      resolvedComplaintCount={resolvedComplaintCount}
-      website={company.website}
+      positiveReviewCount={Number(company.positiveReviewCount || 0)}
+      negativeReviewCount={Number(company.negativeReviewCount || 0)}
+      complaintCount={Number(company.complaintCount || 0)}
+      resolvedComplaintCount={Number(company.resolvedComplaintCount || 0)}
+      website={safeHttpUrl(company.website, 300)}
       foundedYear={company.foundedYear}
       city={company.city}
       country={company.country}
@@ -229,7 +229,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         title: article.title,
         excerpt: article.excerpt,
       }))}
-      criteriaAverages={reviewStats.criteriaAverages}
+      criteriaAverages={company.criteriaAverages || {}}
       reviews={reviewsResult.docs.map((review: any) => ({
         id: String(review.id),
         authorName: review.authorName,

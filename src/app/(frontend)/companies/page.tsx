@@ -5,7 +5,6 @@ import { sortCompaniesByRanking } from '@/lib/companyRanking'
 import { unstable_cache } from 'next/cache'
 import { getRequestLocale, localizedPageMetadata } from '@/i18n/seo'
 import type { Locale } from '@/i18n/dictionary'
-import { applyCompanyReviewStats, reviewStatsByCompany } from '@/lib/companyReviewStats'
 
 export const revalidate = 60
 
@@ -16,16 +15,9 @@ const getCatalogData = unstable_cache(async (locale: Locale) => {
     payload.find({
       collection: 'companies',
       where: { status: { equals: 'published' } },
-      sort: '-overallRating',
-      limit: 100,
+      pagination: false,
       depth: 1,
       locale,
-    }),
-    payload.find({
-      collection: 'reviews',
-      where: { status: { equals: 'published' } },
-      limit: 10000,
-      depth: 0,
     }),
   ])
 }, ['companies-catalog'], { revalidate: 60 })
@@ -34,14 +26,10 @@ export const generateMetadata = () => localizedPageMetadata('companies', '/compa
 
 export default async function CompaniesCatalogPage() {
   const locale = await getRequestLocale()
-  const [insuranceTypes, companies, reviews] = await getCatalogData(locale)
+  const [insuranceTypes, companies] = await getCatalogData(locale)
 
-  const rankedCompanies = sortCompaniesByRanking(
-    applyCompanyReviewStats(companies.docs, reviewStatsByCompany(reviews.docs)),
-  )
-  const availableCountries = Array.from(
-    new Set(rankedCompanies.map((company) => company.country).filter(Boolean)),
-  ) as string[]
+  const rankedCompanies = sortCompaniesByRanking(companies.docs)
+  const pageSize = 25
 
   return (
     <CompaniesCatalogText
@@ -50,8 +38,9 @@ export default async function CompaniesCatalogPage() {
         slug: type.slug,
         title: type.title,
       }))}
-      companies={rankedCompanies.map(toCatalogCompany)}
-      availableCountries={availableCountries}
+      companies={rankedCompanies.slice(0, pageSize).map(toCatalogCompany)}
+      total={rankedCompanies.length}
+      totalPages={Math.max(1, Math.ceil(rankedCompanies.length / pageSize))}
       updatedAt={new Date().toISOString()}
     />
   )

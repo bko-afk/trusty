@@ -9,6 +9,7 @@ import {
   rejectLargeRequest,
 } from '@/lib/apiSecurity'
 import { countries } from '@/lib/countries'
+import { safeHttpUrl } from '@/lib/safeUrl'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -170,6 +171,11 @@ async function createCompany(payload: BasePayload, body: JsonObject) {
   const insuranceTypes = Array.isArray(body.insuranceTypes)
     ? body.insuranceTypes.map(positiveId).filter((id): id is number => id !== undefined).slice(0, 20)
     : []
+  const websiteInput = optionalText(body.website, 300)
+  const website = websiteInput ? safeHttpUrl(websiteInput, 300) : undefined
+  if (websiteInput && !website) {
+    return NextResponse.json({ error: 'Invalid website URL' }, { status: 400, headers: publicNoStoreHeaders })
+  }
 
   await payload.create({
     collection: 'companies',
@@ -178,7 +184,7 @@ async function createCompany(payload: BasePayload, body: JsonObject) {
       name,
       slug: slugify(name) || `company-${Date.now().toString(36)}`,
       status: 'draft',
-      website: optionalText(body.website, 300),
+      website,
       city: optionalText(body.city, 120),
       country: countryCode(body.country),
       shortDescription: optionalText(body.shortDescription, 800),
@@ -206,7 +212,7 @@ export async function POST(
   const oversized = rejectLargeRequest(request, type === 'review' ? 32_000 : 12_000)
   if (oversized) return oversized
 
-  const limited = rateLimit(request, `submission:${type}`, 5, 15 * 60 * 1000)
+  const limited = await rateLimit(request, `submission:${type}`, 5, 15 * 60 * 1000)
   if (limited) return limited
 
   try {

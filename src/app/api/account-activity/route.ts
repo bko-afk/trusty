@@ -23,7 +23,7 @@ export async function POST(request: Request) {
   if (!isSameOriginRequest(request)) {
     return NextResponse.json({ error: 'Invalid request origin' }, { status: 403, headers: privateNoStoreHeaders })
   }
-  const limited = rateLimit(request, 'account-activity', 60, 15 * 60 * 1000)
+  const limited = await rateLimit(request, 'account-activity', 60, 15 * 60 * 1000)
   if (limited) return limited
 
   try {

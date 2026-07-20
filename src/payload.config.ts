@@ -13,6 +13,7 @@ import { InsuranceTypes } from './collections/InsuranceTypes'
 import { Companies } from './collections/Companies'
 import { Reviews } from './collections/Reviews'
 import { ReviewReplies } from './collections/ReviewReplies'
+import { ReviewVotes } from './collections/ReviewVotes'
 import { Complaints } from './collections/Complaints'
 import { Articles } from './collections/Articles'
 import { Customers } from './collections/Customers'
@@ -76,6 +77,7 @@ export default buildConfig({
     Companies,
     Reviews,
     ReviewReplies,
+    ReviewVotes,
     Complaints,
     Articles,
     Customers,

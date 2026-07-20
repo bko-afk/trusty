@@ -1,4 +1,4 @@
-import { type CollectionConfig, type Where } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 import { isCustomer, isStaff, isTrustedWrite } from '@/lib/access'
 import { recalculateCompanyComplaints } from '@/lib/recalculateCompanyComplaints'
 
@@ -84,6 +84,9 @@ export const Complaints: CollectionConfig = {
       label: 'Аккаунт пользователя',
       type: 'relationship',
       relationTo: 'customers',
+      access: {
+        read: ({ req }) => isStaff(req),
+      },
       admin: { description: 'Заполняется автоматически, если жалобу оставил залогиненный пользователь' },
     },
     { name: 'authorName', label: 'Имя автора', type: 'text', required: true, minLength: 2, maxLength: 80 },
@@ -91,6 +94,9 @@ export const Complaints: CollectionConfig = {
       name: 'authorEmail',
       label: 'Email автора',
       type: 'email',
+      access: {
+        read: ({ req }) => isStaff(req),
+      },
       admin: { description: 'Не показывается публично, только для модерации и ответа' },
     },
     { name: 'title', type: 'text', label: 'Тема жалобы', required: true, minLength: 5, maxLength: 160 },
