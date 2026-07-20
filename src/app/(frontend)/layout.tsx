@@ -10,7 +10,7 @@ import { getSiteSettings } from '@/lib/getSiteSettings'
 import { absoluteUrl, mediaUrl, siteUrl } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { CustomerProvider } from '@/lib/useCustomer'
-import { toCustomerSession } from '@/lib/customerSession'
+import { hasPayloadAuthCookie, toCustomerSession } from '@/lib/customerSession'
 import { DEFAULT_LOCALE, isLocale } from '@/i18n/dictionary'
 import {
   DEFAULT_SITE_DESCRIPTION,
@@ -105,13 +105,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const requestHeaders = new Headers(headerStore)
   const requestedLocale = headerStore.get('x-trusty-locale')
   const initialLocale = isLocale(requestedLocale) ? requestedLocale : DEFAULT_LOCALE
+  const customerPromise = hasPayloadAuthCookie(requestHeaders.get('cookie'))
+    ? getPayloadClient()
+        .then((payload) => payload.auth({ headers: requestHeaders }))
+        .then(({ user }) => toCustomerSession(user))
+        .catch(() => null)
+    : Promise.resolve(null)
   const [popularCompanies, settings, currentCustomer] = await Promise.all([
     getPopularCompanies(),
     getSiteSettings(initialLocale),
-    getPayloadClient()
-      .then((payload) => payload.auth({ headers: requestHeaders }))
-      .then(({ user }) => toCustomerSession(user))
-      .catch(() => null),
+    customerPromise,
   ])
   const siteName = settings.seo?.siteName || 'Trusty'
   const rootUrl = absoluteUrl(localizePath('/', initialLocale))

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/getPayloadClient'
-import { isSameOriginRequest, privateNoStoreHeaders, rateLimit } from '@/lib/apiSecurity'
+import { isSameOriginRequest, privateNoStoreHeaders, rateLimit, rejectLargeRequest } from '@/lib/apiSecurity'
+import { boundedPage, paginationMeta } from '@/lib/pagination'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -23,10 +24,15 @@ export async function POST(request: Request) {
   if (!isSameOriginRequest(request)) {
     return NextResponse.json({ error: 'Invalid request origin' }, { status: 403, headers: privateNoStoreHeaders })
   }
+  const oversized = rejectLargeRequest(request, 4_000)
+  if (oversized) return oversized
   const limited = await rateLimit(request, 'account-activity', 60, 15 * 60 * 1000)
   if (limited) return limited
 
   try {
+    const body = await request.json().catch(() => ({})) as Record<string, unknown>
+    const reviewPage = boundedPage(body.reviewPage)
+    const complaintPage = boundedPage(body.complaintPage)
     const payload = await getPayloadClient()
     const { user } = await payload.auth({ headers: request.headers })
 
@@ -43,14 +49,16 @@ export async function POST(request: Request) {
       collection: 'reviews',
       where: ownActivity,
       sort: '-createdAt',
-      limit: 20,
+      limit: 10,
+      page: reviewPage,
       depth: 1,
     }),
     payload.find({
       collection: 'complaints',
       where: ownActivity,
       sort: '-createdAt',
-      limit: 20,
+      limit: 10,
+      page: complaintPage,
       depth: 1,
     }),
     payload.findByID({ collection: 'customers', id: user.id, depth: 1, overrideAccess: true }),
@@ -77,6 +85,10 @@ export async function POST(request: Request) {
       {
         reviews: reviews.docs.map(activityItem),
         complaints: complaints.docs.map(activityItem),
+        reviewTotal: reviews.totalDocs,
+        complaintTotal: complaints.totalDocs,
+        reviewPagination: paginationMeta(reviews.page || reviewPage, reviews.totalPages),
+        complaintPagination: paginationMeta(complaints.page || complaintPage, complaints.totalPages),
         subscriptions: Array.isArray(customer.companySubscriptions)
           ? customer.companySubscriptions.flatMap((company) =>
               company && typeof company === 'object'

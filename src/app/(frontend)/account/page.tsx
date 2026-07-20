@@ -18,9 +18,9 @@ type SubscriptionItem = { id: string; name: string; slug: string }
 type SubscriptionUpdate = ActivityItem & { type: 'review' | 'complaint' }
 
 const accountCopy = {
-  ru: { overview: 'Обзор аккаунта', submissions: 'Мои обращения', quickActions: 'Быстрые действия', writeReview: 'Оставить отзыв', fileComplaint: 'Подать жалобу', openCatalog: 'Открыть каталог', followed: 'Подписки на компании', noFollowed: 'Вы пока не подписаны ни на одну компанию.', updates: 'Обновления подписок', newReview: 'Новый отзыв', newComplaint: 'Новая жалоба', reviewsStat: 'отзывов', complaintsStat: 'жалоб', followedStat: 'подписок', profileHint: 'Здесь собраны ваши публикации, статусы модерации и обновления компаний.' },
-  en: { overview: 'Account overview', submissions: 'My submissions', quickActions: 'Quick actions', writeReview: 'Write a review', fileComplaint: 'File a complaint', openCatalog: 'Browse catalog', followed: 'Followed companies', noFollowed: 'You are not following any companies yet.', updates: 'Subscription updates', newReview: 'New review', newComplaint: 'New complaint', reviewsStat: 'reviews', complaintsStat: 'complaints', followedStat: 'following', profileHint: 'Your submissions, moderation statuses, and company updates are collected here.' },
-  es: { overview: 'Resumen de la cuenta', submissions: 'Mis publicaciones', quickActions: 'Acciones rápidas', writeReview: 'Escribir reseña', fileComplaint: 'Presentar una queja', openCatalog: 'Abrir catálogo', followed: 'Empresas seguidas', noFollowed: 'Aún no sigues ninguna empresa.', updates: 'Actualizaciones', newReview: 'Nueva reseña', newComplaint: 'Nueva queja', reviewsStat: 'reseñas', complaintsStat: 'quejas', followedStat: 'seguidas', profileHint: 'Aquí encontrarás tus publicaciones, estados de moderación y actualizaciones.' },
+  ru: { overview: 'Обзор аккаунта', submissions: 'Мои обращения', quickActions: 'Быстрые действия', writeReview: 'Оставить отзыв', fileComplaint: 'Подать жалобу', openCatalog: 'Открыть каталог', followed: 'Подписки на компании', noFollowed: 'Вы пока не подписаны ни на одну компанию.', updates: 'Обновления подписок', newReview: 'Новый отзыв', newComplaint: 'Новая жалоба', reviewsStat: 'отзывов', complaintsStat: 'жалоб', followedStat: 'подписок', profileHint: 'Здесь собраны ваши публикации, статусы модерации и обновления компаний.', loadMore: 'Показать ещё' },
+  en: { overview: 'Account overview', submissions: 'My submissions', quickActions: 'Quick actions', writeReview: 'Write a review', fileComplaint: 'File a complaint', openCatalog: 'Browse catalog', followed: 'Followed companies', noFollowed: 'You are not following any companies yet.', updates: 'Subscription updates', newReview: 'New review', newComplaint: 'New complaint', reviewsStat: 'reviews', complaintsStat: 'complaints', followedStat: 'following', profileHint: 'Your submissions, moderation statuses, and company updates are collected here.', loadMore: 'Load more' },
+  es: { overview: 'Resumen de la cuenta', submissions: 'Mis publicaciones', quickActions: 'Acciones rápidas', writeReview: 'Escribir reseña', fileComplaint: 'Presentar una queja', openCatalog: 'Abrir catálogo', followed: 'Empresas seguidas', noFollowed: 'Aún no sigues ninguna empresa.', updates: 'Actualizaciones', newReview: 'Nueva reseña', newComplaint: 'Nueva queja', reviewsStat: 'reseñas', complaintsStat: 'quejas', followedStat: 'seguidas', profileHint: 'Aquí encontrarás tus publicaciones, estados de moderación y actualizaciones.', loadMore: 'Mostrar más' },
 } as const
 
 export default function AccountPage() {
@@ -32,6 +32,13 @@ export default function AccountPage() {
   const [subscriptions, setSubscriptions] = useState<SubscriptionItem[]>([])
   const [updates, setUpdates] = useState<SubscriptionUpdate[]>([])
   const [activityLoading, setActivityLoading] = useState(false)
+  const [reviewPage, setReviewPage] = useState(1)
+  const [reviewTotalPages, setReviewTotalPages] = useState(1)
+  const [reviewTotal, setReviewTotal] = useState(0)
+  const [complaintPage, setComplaintPage] = useState(1)
+  const [complaintTotalPages, setComplaintTotalPages] = useState(1)
+  const [complaintTotal, setComplaintTotal] = useState(0)
+  const [loadingMore, setLoadingMore] = useState<'review' | 'complaint' | null>(null)
 
   useEffect(() => {
     if (!customer) {
@@ -39,6 +46,10 @@ export default function AccountPage() {
       setComplaints([])
       setSubscriptions([])
       setUpdates([])
+      setReviewPage(1)
+      setComplaintPage(1)
+      setReviewTotal(0)
+      setComplaintTotal(0)
       return
     }
 
@@ -57,6 +68,12 @@ export default function AccountPage() {
         setComplaints(data.complaints || [])
         setSubscriptions(data.subscriptions || [])
         setUpdates(data.updates || [])
+        setReviewPage(data.reviewPagination?.page || 1)
+        setReviewTotalPages(data.reviewPagination?.totalPages || 1)
+        setReviewTotal(data.reviewTotal || 0)
+        setComplaintPage(data.complaintPagination?.page || 1)
+        setComplaintTotalPages(data.complaintPagination?.totalPages || 1)
+        setComplaintTotal(data.complaintTotal || 0)
       })
       .catch((requestError) => {
         if (requestError instanceof DOMException && requestError.name === 'AbortError') return
@@ -71,6 +88,36 @@ export default function AccountPage() {
 
     return () => controller.abort()
   }, [customer])
+
+  async function loadMore(type: 'review' | 'complaint') {
+    if (loadingMore) return
+    const nextReviewPage = type === 'review' ? reviewPage + 1 : reviewPage
+    const nextComplaintPage = type === 'complaint' ? complaintPage + 1 : complaintPage
+    setLoadingMore(type)
+    try {
+      const response = await fetch('/api/account-activity', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewPage: nextReviewPage, complaintPage: nextComplaintPage }),
+      })
+      if (!response.ok) return
+      const data = await response.json()
+      if (type === 'review') {
+        setReviews((current) => [...current, ...(data.reviews || [])])
+        setReviewPage(data.reviewPagination?.page || nextReviewPage)
+        setReviewTotalPages(data.reviewPagination?.totalPages || 1)
+      } else {
+        setComplaints((current) => [...current, ...(data.complaints || [])])
+        setComplaintPage(data.complaintPagination?.page || nextComplaintPage)
+        setComplaintTotalPages(data.complaintPagination?.totalPages || 1)
+      }
+    } catch {
+      // Keep the already loaded activity visible when a later page fails.
+    } finally {
+      setLoadingMore(null)
+    }
+  }
 
   async function onLogout() {
     await logout()
@@ -106,8 +153,8 @@ export default function AccountPage() {
             </header>
 
             <section aria-label={copy.overview} className="grid gap-4 sm:grid-cols-3">
-              <StatCard value={reviews.length} label={copy.reviewsStat} accent="purple" />
-              <StatCard value={complaints.length} label={copy.complaintsStat} accent="teal" />
+              <StatCard value={reviewTotal} label={copy.reviewsStat} accent="purple" />
+              <StatCard value={complaintTotal} label={copy.complaintsStat} accent="teal" />
               <StatCard value={subscriptions.length} label={copy.followedStat} accent="navy" />
             </section>
 
@@ -127,8 +174,8 @@ export default function AccountPage() {
                   <p className="py-8 text-sm text-gray-500">{t.auth.activityLoading}</p>
                 ) : (
                   <div className="mt-6 grid gap-8 md:grid-cols-2">
-                    <ActivityList type="review" title={t.auth.myReviews} emptyText={t.auth.noReviewsYet} items={reviews} locale={locale} statusLabels={t.auth.submissionStatus} />
-                    <ActivityList type="complaint" title={t.auth.myComplaints} emptyText={t.auth.noComplaintsYet} items={complaints} locale={locale} statusLabels={t.auth.submissionStatus} />
+                    <ActivityList type="review" title={t.auth.myReviews} emptyText={t.auth.noReviewsYet} items={reviews} locale={locale} statusLabels={t.auth.submissionStatus} hasMore={reviewPage < reviewTotalPages} loadingMore={loadingMore === 'review'} loadMoreLabel={copy.loadMore} onLoadMore={() => loadMore('review')} />
+                    <ActivityList type="complaint" title={t.auth.myComplaints} emptyText={t.auth.noComplaintsYet} items={complaints} locale={locale} statusLabels={t.auth.submissionStatus} hasMore={complaintPage < complaintTotalPages} loadingMore={loadingMore === 'complaint'} loadMoreLabel={copy.loadMore} onLoadMore={() => loadMore('complaint')} />
                   </div>
                 )}
               </section>
@@ -165,6 +212,10 @@ function ActivityList({
   items,
   locale,
   statusLabels,
+  hasMore,
+  loadingMore,
+  loadMoreLabel,
+  onLoadMore,
 }: {
   type: 'review' | 'complaint'
   title: string
@@ -172,6 +223,10 @@ function ActivityList({
   items: ActivityItem[]
   locale: string
   statusLabels: Record<ActivityItem['status'], string>
+  hasMore: boolean
+  loadingMore: boolean
+  loadMoreLabel: string
+  onLoadMore: () => void
 }) {
   return (
     <section>
@@ -201,6 +256,7 @@ function ActivityList({
           })}
         </ul>
       )}
+      {hasMore && <button type="button" onClick={onLoadMore} disabled={loadingMore} className="btn-secondary mt-4 w-full disabled:opacity-60">{loadMoreLabel}</button>}
     </section>
   )
 }

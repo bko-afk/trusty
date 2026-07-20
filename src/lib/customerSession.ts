@@ -5,6 +5,10 @@ export type CustomerSession = {
   subscriptions: string[]
 }
 
+export function hasPayloadAuthCookie(cookieHeader: string | null) {
+  return /(?:^|;\s*)payload-token=/.test(cookieHeader || '')
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }

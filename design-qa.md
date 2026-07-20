@@ -23,7 +23,7 @@ Mobile hero and mobile insurance ranking were compared side by side. The generat
 - Fonts and typography: Avenir Next/Trebuchet fallback approximates the source's geometric sans; heading weights, tight tracking, and body hierarchy are consistent. No actionable wrapping or truncation remains.
 - Spacing and layout rhythm: desktop uses the source's wide centered frame and thin dividers; mobile measures `390px` content width inside a `390px` viewport with no horizontal overflow.
 - Colors and visual tokens: deep navy, saturated purple, muted teal, cool gray surfaces, and green account action map to the source.
-- Image quality and asset fidelity: existing company logos remain local; the old placeholder illustration was replaced by a project-local generated editorial asset at `public/images/trusty-insurance-rating.png` with an appropriate crop and palette.
+- Image quality and asset fidelity: existing company logos remain local; the old placeholder illustration was replaced by a project-local generated editorial asset at `public/images/trusty-insurance-rating.webp` with an appropriate crop and palette.
 - Copy and content: universal categories, articles, and unrelated services were removed from the visible experience; copy is insurance-specific.
 - Interactions and accessibility: filter toggle, labelled company search, verified checkbox, catalog navigation, company detail navigation, alt text, and semantic headings/links were checked.
 

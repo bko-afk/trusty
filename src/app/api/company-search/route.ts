@@ -3,6 +3,7 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 import { toCatalogCompany } from '@/lib/catalogCompany'
 import { sortCompaniesByRanking } from '@/lib/companyRanking'
 import { publicNoStoreHeaders, rateLimit, rejectLargeRequest } from '@/lib/apiSecurity'
+import { boundedPage } from '@/lib/pagination'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json()) as FilterBody
     const locale = body.locale === 'ru' || body.locale === 'es' ? body.locale : 'en'
-    const page = optionalNumber(body.page, 1, 10_000) || 1
+    const page = boundedPage(body.page)
     const query = typeof body.query === 'string' ? body.query.trim().slice(0, 120) : ''
     const selectedCountries = stringArray(body.countries, 20)
     const insuranceTypeIds = numberArray(body.insuranceTypeIds, 20)
@@ -84,23 +85,32 @@ export async function POST(request: Request) {
     if (reviewsTo !== undefined) and.push({ reviewCount: { less_than_equal: reviewsTo } })
 
     const payload = await getPayloadClient()
+    const pageSize = 25
+    const needsCategoryRanking = insuranceTypeIds.length > 0
     const result = await payload.find({
       collection: 'companies',
       where: { and },
-      pagination: false,
+      sort: needsCategoryRanking ? undefined : ['ranking.globalPosition', '-overallRating', 'name'],
+      pagination: !needsCategoryRanking,
+      limit: needsCategoryRanking ? undefined : pageSize,
+      page: needsCategoryRanking ? undefined : page,
       depth: 1,
       locale,
     })
-    const pageSize = 25
-    const rankedCompanies = sortCompaniesByRanking(result.docs, insuranceTypeIds)
-    const offset = (page - 1) * pageSize
+    const rankedCompanies = needsCategoryRanking
+      ? sortCompaniesByRanking(result.docs, insuranceTypeIds)
+      : result.docs
+    const offset = needsCategoryRanking ? (page - 1) * pageSize : 0
+    const total = needsCategoryRanking ? rankedCompanies.length : result.totalDocs
 
     return NextResponse.json(
       {
         companies: rankedCompanies.slice(offset, offset + pageSize).map(toCatalogCompany),
-        total: rankedCompanies.length,
+        total,
         page,
-        totalPages: Math.max(1, Math.ceil(rankedCompanies.length / pageSize)),
+        totalPages: needsCategoryRanking
+          ? Math.max(1, Math.ceil(total / pageSize))
+          : result.totalPages,
       },
       { headers: publicNoStoreHeaders },
     )

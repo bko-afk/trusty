@@ -34,6 +34,19 @@ const configuredImagePatterns = [computedServerURL, process.env.S3_ENDPOINT]
   .map(remotePattern)
   .filter(Boolean)
 
+function sourceOrigin(value) {
+  if (!value) return null
+  try {
+    return new URL(value).origin
+  } catch {
+    return null
+  }
+}
+
+const externalAssetOrigins = [process.env.S3_ENDPOINT]
+  .map(sourceOrigin)
+  .filter(Boolean)
+
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
@@ -42,10 +55,10 @@ const contentSecurityPolicy = [
   "form-action 'self'",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
+  `img-src 'self' data: blob:${externalAssetOrigins.length ? ` ${externalAssetOrigins.join(' ')}` : ''}`,
   "font-src 'self' data:",
-  "connect-src 'self' https: wss:",
-  "media-src 'self' blob: https:",
+  "connect-src 'self'",
+  `media-src 'self' blob:${externalAssetOrigins.length ? ` ${externalAssetOrigins.join(' ')}` : ''}`,
   "worker-src 'self' blob:",
 ].join('; ')
 

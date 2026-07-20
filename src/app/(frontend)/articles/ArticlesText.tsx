@@ -7,7 +7,7 @@ import { useLanguage } from '@/i18n/LanguageContext'
 
 type Article = { id: string; slug: string; title: string; excerpt?: string; coverUrl?: string; publishedAt?: string }
 
-export function ArticlesText({ articles }: { articles: Article[] }) {
+export function ArticlesText({ articles, pagination }: { articles: Article[]; pagination: { page: number; totalPages: number } }) {
   const { t, locale } = useLanguage()
   const dateLocale = locale === 'ru' ? 'ru-RU' : locale === 'es' ? 'es-ES' : 'en-US'
 
@@ -45,6 +45,14 @@ export function ArticlesText({ articles }: { articles: Article[] }) {
           })}
           {articles.length === 0 && <p className="text-gray-500">{t.articlesPage.noArticles}</p>}
         </div>
+
+        {pagination.totalPages > 1 && (
+          <nav className="mt-10 flex items-center justify-between border-t border-gray-200 pt-6" aria-label={locale === 'ru' ? 'Страницы статей' : locale === 'es' ? 'Páginas de artículos' : 'Article pages'}>
+            {pagination.page > 1 ? <Link href={`/articles?page=${pagination.page - 1}`} className="btn-secondary">{locale === 'ru' ? 'Предыдущая' : locale === 'es' ? 'Anterior' : 'Previous'}</Link> : <span />}
+            <span className="text-sm font-semibold text-gray-500">{pagination.page} / {pagination.totalPages}</span>
+            {pagination.page < pagination.totalPages ? <Link href={`/articles?page=${pagination.page + 1}`} className="btn-secondary">{locale === 'ru' ? 'Следующая' : locale === 'es' ? 'Siguiente' : 'Next'}</Link> : <span />}
+          </nav>
+        )}
       </div>
     </div>
   )

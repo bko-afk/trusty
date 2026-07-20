@@ -1,7 +1,6 @@
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { toCatalogCompany } from '@/lib/catalogCompany'
 import { CompaniesCatalogText } from './CompaniesCatalogText'
-import { sortCompaniesByRanking } from '@/lib/companyRanking'
 import { unstable_cache } from 'next/cache'
 import { getRequestLocale, localizedPageMetadata } from '@/i18n/seo'
 import type { Locale } from '@/i18n/dictionary'
@@ -15,7 +14,9 @@ const getCatalogData = unstable_cache(async (locale: Locale) => {
     payload.find({
       collection: 'companies',
       where: { status: { equals: 'published' } },
-      pagination: false,
+      sort: ['ranking.globalPosition', '-overallRating', 'name'],
+      limit: 25,
+      page: 1,
       depth: 1,
       locale,
     }),
@@ -28,9 +29,6 @@ export default async function CompaniesCatalogPage() {
   const locale = await getRequestLocale()
   const [insuranceTypes, companies] = await getCatalogData(locale)
 
-  const rankedCompanies = sortCompaniesByRanking(companies.docs)
-  const pageSize = 25
-
   return (
     <CompaniesCatalogText
       insuranceTypes={insuranceTypes.docs.map((type) => ({
@@ -38,9 +36,9 @@ export default async function CompaniesCatalogPage() {
         slug: type.slug,
         title: type.title,
       }))}
-      companies={rankedCompanies.slice(0, pageSize).map(toCatalogCompany)}
-      total={rankedCompanies.length}
-      totalPages={Math.max(1, Math.ceil(rankedCompanies.length / pageSize))}
+      companies={companies.docs.map(toCatalogCompany)}
+      total={companies.totalDocs}
+      totalPages={companies.totalPages}
       updatedAt={new Date().toISOString()}
     />
   )

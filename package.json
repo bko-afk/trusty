@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=20.9.0"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev",
@@ -12,6 +12,9 @@
     "start": "next start",
     "lint": "npm run generate:types && tsc --noEmit --incremental false",
     "test": "tsx --test src/**/*.test.ts",
+    "check": "npm run lint && npm test",
+    "verify": "npm run check && npm run build",
+    "smoke": "node scripts/smoke.mjs",
     "payload": "payload",
     "generate:types": "PAYLOAD_CONFIG_BUILD=1 payload generate:types",
     "migrate:create": "payload migrate:create",

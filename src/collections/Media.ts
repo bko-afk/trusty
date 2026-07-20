@@ -21,7 +21,7 @@ export const Media: CollectionConfig = {
       { name: 'card', width: 600, height: 400, position: 'centre' },
       { name: 'og', width: 1200, height: 630, position: 'centre' },
     ],
-    mimeTypes: ['image/*'],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
   },
   fields: [
     {

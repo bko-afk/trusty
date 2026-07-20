@@ -5,27 +5,33 @@ import { articleCoverUrl } from '@/lib/articleCover'
 import { unstable_cache } from 'next/cache'
 import { getRequestLocale, localizedPageMetadata } from '@/i18n/seo'
 import type { Locale } from '@/i18n/dictionary'
+import { boundedPage } from '@/lib/pagination'
 
 export const revalidate = 300
 
-const getArticles = unstable_cache(async (locale: Locale) => {
+const getArticles = unstable_cache(async (locale: Locale, page: number) => {
   const payload = await getPayloadClient()
   return payload.find({
     collection: 'articles',
     where: { status: { equals: 'published' } },
     sort: '-publishedAt',
-    limit: 50,
+    limit: 12,
+    page,
     depth: 1,
     locale,
     fallbackLocale: false,
   })
 }, ['articles-list'], { revalidate: 300 })
 
-export const generateMetadata = () => localizedPageMetadata('articles', '/articles')
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const page = boundedPage((await searchParams).page)
+  return localizedPageMetadata('articles', page > 1 ? `/articles?page=${page}` : '/articles')
+}
 
-export default async function ArticlesPage() {
+export default async function ArticlesPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const locale = await getRequestLocale()
-  const articles = await getArticles(locale)
+  const page = boundedPage((await searchParams).page)
+  const articles = await getArticles(locale, page)
 
   return (
     <ArticlesText
@@ -37,6 +43,7 @@ export default async function ArticlesPage() {
         coverUrl: mediaUrl(a.cover) || articleCoverUrl(a.slug),
         publishedAt: a.publishedAt || a.createdAt,
       }))}
+      pagination={{ page: articles.page || page, totalPages: articles.totalPages }}
     />
   )
 }

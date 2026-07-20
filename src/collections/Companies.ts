@@ -70,6 +70,13 @@ export const Companies: CollectionConfig = {
           delete data.description
         }
 
+        const nextStatus = data.status ?? originalDoc?.status ?? 'draft'
+        const nextLogo = Object.prototype.hasOwnProperty.call(data, 'logo') ? data.logo : originalDoc?.logo
+        const nextLogoFile = Object.prototype.hasOwnProperty.call(data, 'logoFile') ? data.logoFile : originalDoc?.logoFile
+        if (nextStatus === 'published' && !nextLogo && !nextLogoFile) {
+          throw new Error('Перед публикацией добавьте логотип компании.')
+        }
+
         // Ограничение: максимум 3 компании с отметкой "популярная" —
         // они выводятся отдельным блоком на главной странице.
         if (data.popular) {
@@ -201,7 +208,7 @@ export const Companies: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       admin: {
-        description: 'Загрузите оригинальный PNG, WebP или SVG. Рекомендуется прозрачный фон и ширина от 400 px.',
+        description: 'Загрузите PNG, JPEG, WebP или AVIF. Рекомендуется прозрачный фон и ширина от 400 px.',
       },
     },
     {
