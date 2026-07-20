@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { ArticlesText } from './ArticlesText'
+import { mediaUrl } from '@/lib/seo'
 
 export const revalidate = 300
 
@@ -23,6 +24,7 @@ export default async function ArticlesPage() {
     where: { status: { equals: 'published' } },
     sort: '-publishedAt',
     limit: 50,
+    depth: 1,
   })
 
   return (
@@ -32,6 +34,8 @@ export default async function ArticlesPage() {
         slug: a.slug,
         title: a.title,
         excerpt: a.excerpt,
+        coverUrl: mediaUrl(a.cover),
+        publishedAt: a.publishedAt || a.createdAt,
       }))}
     />
   )

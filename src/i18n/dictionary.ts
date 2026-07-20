@@ -43,6 +43,10 @@ export type Dictionary = {
     addCompanyBtn: string
     writeReviewBtn: string
     articlesTitle: string
+    articlesKicker: string
+    articlesDescription: string
+    allArticles: string
+    readArticle: string
     aboutTitle: string
     aboutText: string
     aboutTextExtra: string
@@ -401,6 +405,10 @@ export const dictionary: Record<Locale, Dictionary> = {
       addCompanyBtn: 'Добавить компанию',
       writeReviewBtn: 'Написать отзыв',
       articlesTitle: 'Статьи и обзоры',
+      articlesKicker: 'Полезно знать',
+      articlesDescription: 'Разбираем условия полисов, страховые случаи и важные детали, которые стоит проверить до поездки.',
+      allArticles: 'Все статьи',
+      readArticle: 'Читать статью',
       aboutTitle: 'О Trusty',
       aboutText:
         'Trusty — независимый каталог отзывов и рейтингов туристических страховых компаний. Мы помогаем путешественникам сравнивать условия полисов, читать реальные отзывы клиентов и выбирать страховку осознанно, до поездки, а не после проблем в ней.',
@@ -766,6 +774,10 @@ export const dictionary: Record<Locale, Dictionary> = {
       addCompanyBtn: 'Add a company',
       writeReviewBtn: 'Write a review',
       articlesTitle: 'Articles & Guides',
+      articlesKicker: 'Good to know',
+      articlesDescription: 'Clear guides to policy terms, claims, and the details worth checking before your trip.',
+      allArticles: 'View all articles',
+      readArticle: 'Read article',
       aboutTitle: 'About Trusty',
       aboutText:
         'Trusty is an independent catalog of reviews and ratings for travel insurance companies. We help travelers compare policy terms, read real customer reviews, and choose coverage with confidence — before the trip, not after something goes wrong.',
@@ -1132,6 +1144,10 @@ export const dictionary: Record<Locale, Dictionary> = {
       addCompanyBtn: 'Añadir empresa',
       writeReviewBtn: 'Escribir una reseña',
       articlesTitle: 'Artículos y guías',
+      articlesKicker: 'Información útil',
+      articlesDescription: 'Explicamos las condiciones, los siniestros y los detalles que conviene revisar antes del viaje.',
+      allArticles: 'Ver todos los artículos',
+      readArticle: 'Leer artículo',
       aboutTitle: 'Sobre Trusty',
       aboutText:
         'Trusty es un catálogo independiente de reseñas y clasificaciones de empresas de seguros de viaje. Ayudamos a los viajeros a comparar condiciones de las pólizas, leer reseñas reales de clientes y elegir su cobertura con confianza, antes del viaje.',

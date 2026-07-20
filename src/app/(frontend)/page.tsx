@@ -2,6 +2,7 @@ import { getPayloadClient } from '@/lib/getPayloadClient'
 import { HomeText } from './HomeText'
 import { sortCompaniesByRanking } from '@/lib/companyRanking'
 import { getSiteSettings } from '@/lib/getSiteSettings'
+import { mediaUrl } from '@/lib/seo'
 
 // Главную не обязательно перегенерировать на каждый запрос — модерация
 // отзывов/компаний не мгновенная, поэтому кэшируем страницу на 60 секунд
@@ -17,7 +18,7 @@ function publishedRelations(value: unknown) {
 
 export default async function HomePage() {
   const payload = await getPayloadClient()
-  const [siteSettings, companies, popularCompanies, newestCompanies, latestReviews] = await Promise.all([
+  const [siteSettings, companies, popularCompanies, newestCompanies, latestReviews, latestArticles] = await Promise.all([
     getSiteSettings(),
     payload.find({
       collection: 'companies',
@@ -47,6 +48,13 @@ export default async function HomePage() {
       limit: 12,
       depth: 1,
     }),
+    payload.find({
+      collection: 'articles',
+      where: { status: { equals: 'published' } },
+      sort: '-publishedAt',
+      limit: 4,
+      depth: 1,
+    }),
   ])
 
   const homepage = siteSettings.homepage || {}
@@ -63,6 +71,14 @@ export default async function HomePage() {
       popularCompanies={(configuredPopular.length > 0 ? configuredPopular : popularCompanies.docs).slice(0, 3)}
       newestCompanies={(configuredNewest.length > 0 ? configuredNewest : newestCompanies.docs).slice(0, newCompaniesLimit)}
       latestReviews={latestReviews.docs.slice(0, latestReviewsLimit)}
+      latestArticles={latestArticles.docs.map((article) => ({
+        id: String(article.id),
+        slug: article.slug,
+        title: article.title,
+        excerpt: article.excerpt || undefined,
+        coverUrl: mediaUrl(article.cover),
+        publishedAt: article.publishedAt || article.createdAt,
+      }))}
       visibility={{
         services: homepage.showServices !== false,
         complaintCTA: homepage.showComplaintCTA !== false,

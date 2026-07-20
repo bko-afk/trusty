@@ -15,6 +15,7 @@ type Props = {
   popularCompanies: any[]
   newestCompanies: any[]
   latestReviews: any[]
+  latestArticles: HomeArticle[]
   visibility: {
     services: boolean
     complaintCTA: boolean
@@ -25,12 +26,29 @@ type Props = {
   }
 }
 
+type HomeArticle = {
+  id: string
+  slug: string
+  title: string
+  excerpt?: string
+  coverUrl?: string
+  publishedAt?: string
+}
+
 const INITIAL_VISIBLE = 6
 
-export function HomeText({ companies, popularCompanies, newestCompanies, latestReviews, visibility }: Props) {
-  const { t } = useLanguage()
+export function HomeText({ companies, popularCompanies, newestCompanies, latestReviews, latestArticles, visibility }: Props) {
+  const { t, locale } = useLanguage()
   const [showAll, setShowAll] = useState(false)
   const visibleCompanies = showAll ? companies : companies.slice(0, INITIAL_VISIBLE)
+  const featuredArticle = latestArticles[0]
+  const secondaryArticles = latestArticles.slice(1)
+  const dateLocale = locale === 'ru' ? 'ru-RU' : locale === 'es' ? 'es-ES' : 'en-US'
+  const articleDate = (value?: string) => {
+    if (!value) return ''
+    const date = new Date(value)
+    return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat(dateLocale, { dateStyle: 'medium' }).format(date)
+  }
 
   return (
     <div>
@@ -191,6 +209,48 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
         </section>
       )}
 
+      {featuredArticle && (
+        <section className="bg-[#f6f8fb] py-14 md:py-20">
+          <div className="container-page">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="section-kicker">{t.home.articlesKicker}</p>
+                <h2 className="section-title mt-2">{t.home.articlesTitle}</h2>
+                <p className="mt-3 max-w-2xl leading-7 text-gray-500">{t.home.articlesDescription}</p>
+              </div>
+              <Link href="/articles" className="dotted-link shrink-0 self-start text-sm font-semibold sm:self-auto">{t.home.allArticles}</Link>
+            </div>
+
+            <div className="mt-9 grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
+              <Link href={`/articles/${featuredArticle.slug}`} className="group overflow-hidden border border-gray-200 bg-white transition-transform hover:-translate-y-1 hover:shadow-[0_18px_50px_rgba(7,27,69,0.08)]">
+                <ArticleCover article={featuredArticle} featured />
+                <div className="p-6 sm:p-8">
+                  {articleDate(featuredArticle.publishedAt) && <time className="text-xs font-bold uppercase tracking-[0.12em] text-[#579c9e]">{articleDate(featuredArticle.publishedAt)}</time>}
+                  <h3 className="mt-3 text-2xl font-extrabold leading-tight tracking-[-0.025em] sm:text-3xl">{featuredArticle.title}</h3>
+                  {featuredArticle.excerpt && <p className="mt-4 line-clamp-3 leading-7 text-gray-500">{featuredArticle.excerpt}</p>}
+                  <span className="dotted-link mt-6 inline-block text-sm font-semibold">{t.home.readArticle}</span>
+                </div>
+              </Link>
+
+              {secondaryArticles.length > 0 && (
+                <div className="grid gap-4">
+                  {secondaryArticles.map((article) => (
+                    <Link key={article.id} href={`/articles/${article.slug}`} className="group grid min-h-40 grid-cols-[120px_1fr] overflow-hidden border border-gray-200 bg-white transition-colors hover:border-brand sm:grid-cols-[170px_1fr]">
+                      <ArticleCover article={article} />
+                      <div className="flex min-w-0 flex-col justify-center p-5">
+                        {articleDate(article.publishedAt) && <time className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#579c9e]">{articleDate(article.publishedAt)}</time>}
+                        <h3 className="mt-2 line-clamp-3 text-lg font-extrabold leading-snug transition-colors group-hover:text-brand">{article.title}</h3>
+                        <span className="mt-3 text-xs font-bold text-brand">{t.home.readArticle} →</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {visibility.methodology && <section id="methodology" className="container-page py-14 md:py-20">
         <div className="grid overflow-hidden border border-gray-200 lg:grid-cols-[1fr_1.05fr]">
           <div className="relative min-h-[340px] bg-[#faf7f2] lg:min-h-[520px]">
@@ -230,6 +290,30 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
             }}
           />
         </section>
+      )}
+    </div>
+  )
+}
+
+function ArticleCover({ article, featured = false }: { article: HomeArticle; featured?: boolean }) {
+  return (
+    <div className={`relative overflow-hidden bg-[#e9eef6] ${featured ? 'aspect-[16/9]' : 'h-full min-h-40'}`}>
+      {article.coverUrl ? (
+        <Image
+          src={article.coverUrl}
+          alt={article.title}
+          fill
+          sizes={featured ? '(max-width: 1024px) 100vw, 58vw' : '(max-width: 640px) 120px, 170px'}
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        />
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(145deg,#f1ebff_0%,#e5f2f1_55%,#e7edf7_100%)] text-brand">
+          <svg viewBox="0 0 64 64" className={featured ? 'h-20 w-20' : 'h-12 w-12'} fill="none" aria-hidden="true">
+            <path d="M13 15.5h25a8 8 0 0 1 8 8V49H21a8 8 0 0 1-8-8V15.5Z" stroke="currentColor" strokeWidth="3"/>
+            <path d="M21 15.5V49M28 25h11M28 32h11M28 39h7" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+            <path d="M46 23.5h5v30H25a4 4 0 0 1-4-4V49" stroke="currentColor" strokeWidth="3" strokeLinejoin="round"/>
+          </svg>
+        </div>
       )}
     </div>
   )

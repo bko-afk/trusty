@@ -65,7 +65,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           publisher: { '@type': 'Organization', name: 'Trusty', url: absoluteUrl('/') },
         }}
       />
-      <ArticleText title={article.title} excerpt={article.excerpt} body={body} />
+      <ArticleText
+        title={article.title}
+        excerpt={article.excerpt}
+        body={body}
+        coverUrl={image}
+        publishedAt={article.publishedAt || article.createdAt}
+      />
     </>
   )
 }

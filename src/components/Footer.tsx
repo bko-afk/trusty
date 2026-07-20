@@ -46,6 +46,11 @@ export function Footer() {
                 {t.portal.footer.findInsurer}
               </Link>
             </li>
+            <li>
+              <Link href="/articles" className="hover:text-white">
+                {t.nav.articles}
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
