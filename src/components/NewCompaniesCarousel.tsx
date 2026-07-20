@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from './LocalizedLink'
 import { useEffect, useRef, useState } from 'react'
 import { RatingStars } from '@/components/RatingStars'
 import { companyLogoUrl } from '@/lib/companyLogo'
@@ -97,13 +97,11 @@ export function NewCompaniesCarousel({ companies, labels }: Props) {
 
     const gap = Number.parseFloat(window.getComputedStyle(track).columnGap) || 16
     const step = firstCard.offsetWidth + gap
-    const target = Math.min(
+    // Direct assignment is more reliable than scrollBy in Safari and embedded browsers.
+    track.scrollLeft = Math.min(
       track.scrollWidth - track.clientWidth,
       Math.max(0, track.scrollLeft + direction * step),
     )
-
-    // Direct assignment is more reliable than scrollBy in Safari and embedded browsers.
-    track.scrollLeft = target
   }
 
   const lastVisible = Math.min(companies.length, carousel.activeIndex + carousel.visibleCount)

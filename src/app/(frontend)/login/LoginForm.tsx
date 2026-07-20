@@ -1,13 +1,14 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/LocalizedLink'
 import Image from 'next/image'
 import { useState } from 'react'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { localizePath } from '@/i18n/routing'
 
 export function LoginForm() {
-  const { t } = useLanguage()
+  const { locale, t } = useLanguage()
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -26,7 +27,7 @@ export function LoginForm() {
         }),
       })
       if (res.ok) {
-        window.location.href = '/account'
+        window.location.href = localizePath('/account', locale)
       } else {
         setStatus('error')
       }

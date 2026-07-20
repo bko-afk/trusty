@@ -1,5 +1,5 @@
-import type { CollectionConfig } from 'payload'
-import { isStaff } from '../lib/access'
+import { type CollectionConfig } from 'payload'
+import { isStaff } from '@/lib/access'
 
 export const ReviewReplies: CollectionConfig = {
   slug: 'review-replies',

@@ -8,6 +8,8 @@ import { getPublishedCompany } from '@/lib/getPublishedContent'
 import { absoluteUrl, mediaUrl, plainDescription } from '@/lib/seo'
 import { richTextToPlainText } from '@/lib/richText'
 import { JsonLd } from '@/components/JsonLd'
+import { getRequestLocale, localizedAlternates, localizedOpenGraph } from '@/i18n/seo'
+import { localizePath } from '@/i18n/routing'
 
 export const revalidate = 60
 
@@ -17,24 +19,35 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const company: any = await getPublishedCompany(slug)
-  if (!company) return { title: 'Компания не найдена', robots: { index: false, follow: false } }
+  const locale = await getRequestLocale()
+  const company: any = await getPublishedCompany(slug, locale)
+  if (!company) return { title: 'Company not found', robots: { index: false, follow: false } }
 
   const description = plainDescription(
     company.seo?.description || company.shortDescription,
-    `Отзывы клиентов, рейтинг, виды страхования и информация о компании ${company.name}.`,
+    locale === 'ru'
+      ? `Отзывы клиентов, рейтинг, страховые продукты и информация о компании ${company.name}.`
+      : locale === 'es'
+        ? `Reseñas, calificación, productos de seguros e información sobre ${company.name}.`
+        : `Customer reviews, ratings, insurance products, and company information for ${company.name}.`,
   )
   const image = mediaUrl(company.seo?.ogImage) || companyLogoUrl(company.logo, company.logoFile)
   const canonical = `/companies/${slug}`
+  const generatedTitle = locale === 'ru'
+    ? `${company.name}: отзывы и рейтинг`
+    : locale === 'es'
+      ? `${company.name}: reseñas y calificación`
+      : `${company.name}: Reviews and Rating`
 
   return {
-    title: company.seo?.title || `${company.name}: отзывы и рейтинг`,
+    title: company.seo?.title || generatedTitle,
     description,
-    alternates: { canonical },
+    alternates: localizedAlternates(canonical, locale),
     openGraph: {
+      ...localizedOpenGraph(locale),
       type: 'website',
-      url: canonical,
-      title: company.seo?.title || `${company.name}: отзывы и рейтинг`,
+      url: localizePath(canonical, locale),
+      title: company.seo?.title || generatedTitle,
       description,
       images: image ? [{ url: image, alt: company.name }] : undefined,
     },
@@ -44,7 +57,8 @@ export async function generateMetadata({
 
 export default async function CompanyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const company: any = await getPublishedCompany(slug)
+  const locale = await getRequestLocale()
+  const company: any = await getPublishedCompany(slug, locale)
   if (!company) notFound()
 
   const payload = await getPayloadClient()
@@ -58,6 +72,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       sort: '-overallRating',
       depth: 1,
       limit: 100,
+      locale,
     }),
     payload.find({
       collection: 'reviews',
@@ -83,6 +98,7 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       sort: '-publishedAt',
       depth: 0,
       limit: 3,
+      locale,
     }),
   ])
 
@@ -125,8 +141,8 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     '@context': 'https://schema.org',
     '@type': 'InsuranceAgency',
     name: company.name,
-    url: absoluteUrl(`/companies/${slug}`),
-    description: plainDescription(company.shortDescription || description, `Страховая компания ${company.name}.`),
+    url: absoluteUrl(localizePath(`/companies/${slug}`, locale)),
+    description: plainDescription(company.shortDescription || description, `Insurance company ${company.name}.`),
     image: logoUrl ? absoluteUrl(logoUrl) : undefined,
     telephone: company.contacts?.phone || undefined,
     email: company.contacts?.email || undefined,

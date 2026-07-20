@@ -5,6 +5,9 @@ import { getPublishedArticle } from '@/lib/getPublishedContent'
 import { absoluteUrl, mediaUrl, plainDescription } from '@/lib/seo'
 import { richTextToPlainText } from '@/lib/richText'
 import { JsonLd } from '@/components/JsonLd'
+import { articleCoverUrl } from '@/lib/articleCover'
+import { getRequestLocale, localizedAlternates, localizedOpenGraph } from '@/i18n/seo'
+import { localizePath } from '@/i18n/routing'
 
 export const revalidate = 300
 
@@ -14,24 +17,30 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const article: any = await getPublishedArticle(slug)
-  if (!article) return { title: 'Статья не найдена', robots: { index: false, follow: false } }
+  const locale = await getRequestLocale()
+  const article: any = await getPublishedArticle(slug, locale)
+  if (!article) return { title: 'Article not found', robots: { index: false, follow: false } }
 
   const title = article.seo?.title || article.title
   const description = plainDescription(
     article.seo?.description || article.excerpt,
-    `Статья «${article.title}» о страховании путешественников.`,
+    locale === 'ru'
+      ? `Практический материал Trusty о страховании: ${article.title}.`
+      : locale === 'es'
+        ? `Guía práctica de Trusty sobre seguros: ${article.title}.`
+        : `A practical Trusty guide to travel insurance: ${article.title}.`,
   )
-  const image = mediaUrl(article.cover)
+  const image = mediaUrl(article.cover) || articleCoverUrl(slug)
   const canonical = `/articles/${slug}`
 
   return {
     title,
     description,
-    alternates: { canonical },
+    alternates: localizedAlternates(canonical, locale),
     openGraph: {
+      ...localizedOpenGraph(locale),
       type: 'article',
-      url: canonical,
+      url: localizePath(canonical, locale),
       title,
       description,
       publishedTime: article.publishedAt || undefined,
@@ -44,11 +53,12 @@ export async function generateMetadata({
 
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const article: any = await getPublishedArticle(slug)
+  const locale = await getRequestLocale()
+  const article: any = await getPublishedArticle(slug, locale)
   if (!article) notFound()
 
   const body = article.body ? richTextToPlainText(article.body) : ''
-  const image = mediaUrl(article.cover)
+  const image = mediaUrl(article.cover) || articleCoverUrl(slug)
 
   return (
     <>
@@ -57,8 +67,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           '@context': 'https://schema.org',
           '@type': 'Article',
           headline: article.title,
-          description: plainDescription(article.excerpt, `Статья «${article.title}».`),
-          url: absoluteUrl(`/articles/${slug}`),
+          description: plainDescription(article.excerpt, `Trusty insurance guide: ${article.title}.`),
+          url: absoluteUrl(localizePath(`/articles/${slug}`, locale)),
           image: image ? absoluteUrl(image) : undefined,
           datePublished: article.publishedAt || undefined,
           dateModified: article.updatedAt || undefined,

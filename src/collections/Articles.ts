@@ -1,5 +1,5 @@
-import type { CollectionConfig } from 'payload'
-import { isStaff } from '../lib/access'
+import { type CollectionConfig } from 'payload'
+import { isStaff } from '@/lib/access'
 
 export const Articles: CollectionConfig = {
   slug: 'articles',
@@ -22,11 +22,11 @@ export const Articles: CollectionConfig = {
     delete: ({ req }) => isStaff(req),
   },
   fields: [
-    { name: 'title', type: 'text', required: true },
+    { name: 'title', type: 'text', required: true, localized: true },
     { name: 'slug', type: 'text', required: true, unique: true },
     { name: 'cover', type: 'upload', relationTo: 'media' },
-    { name: 'excerpt', type: 'textarea' },
-    { name: 'body', type: 'richText' },
+    { name: 'excerpt', type: 'textarea', localized: true },
+    { name: 'body', type: 'richText', localized: true },
     {
       name: 'relatedInsuranceTypes',
       label: 'Связанные виды страхования',
@@ -50,8 +50,8 @@ export const Articles: CollectionConfig = {
       name: 'seo',
       type: 'group',
       fields: [
-        { name: 'title', type: 'text' },
-        { name: 'description', type: 'textarea' },
+        { name: 'title', type: 'text', localized: true },
+        { name: 'description', type: 'textarea', localized: true },
       ],
     },
   ],

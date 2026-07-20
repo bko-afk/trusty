@@ -69,7 +69,7 @@ export function AddReviewForm({
     const consText = String(form.get('cons') || '')
 
     try {
-      const res = await fetch('/api/reviews', {
+      const res = await fetch('/api/submissions/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -103,6 +103,7 @@ export function AddReviewForm({
             .map((t) => t.trim())
             .filter(Boolean)
             .map((text) => ({ text })),
+          contactWebsite: form.get('contactWebsite'),
         }),
       })
       setStatus(res.ok ? 'success' : 'error')
@@ -138,6 +139,7 @@ export function AddReviewForm({
               </div>
             ) : (
               <form onSubmit={onSubmit} className="space-y-6" aria-busy={status === 'loading'}>
+                <input name="contactWebsite" type="text" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
                 <SubmissionFormSection number="1" title={t.addReviewPage.step1Title} description={t.addReviewPage.step1Text}>
                   <div>
                     <label htmlFor="review-company" className="form-label">{t.addReviewPage.companyLabel}</label>

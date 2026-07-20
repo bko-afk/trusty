@@ -1,6 +1,6 @@
-import type { CollectionConfig, Where } from 'payload'
-import { isCustomer, isStaff, isTrustedWrite } from '../lib/access'
-import { recalculateCompanyComplaints } from '../lib/recalculateCompanyComplaints'
+import { type CollectionConfig, type Where } from 'payload'
+import { isCustomer, isStaff, isTrustedWrite } from '@/lib/access'
+import { recalculateCompanyComplaints } from '@/lib/recalculateCompanyComplaints'
 
 export const Complaints: CollectionConfig = {
   slug: 'complaints',
@@ -24,7 +24,7 @@ export const Complaints: CollectionConfig = {
       }
       return { status: { equals: 'published' } }
     },
-    create: () => true,
+    create: ({ req }) => isTrustedWrite(req),
     update: ({ req }) => isStaff(req),
     delete: ({ req }) => isStaff(req),
   },

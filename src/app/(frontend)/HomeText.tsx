@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/LocalizedLink'
 import { useState } from 'react'
 import { SearchBox } from '@/components/SearchBox'
 import { RatingStars } from '@/components/RatingStars'
@@ -235,7 +235,7 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
               {secondaryArticles.length > 0 && (
                 <div className="grid gap-4">
                   {secondaryArticles.map((article) => (
-                    <Link key={article.id} href={`/articles/${article.slug}`} className="group grid min-h-40 grid-cols-[120px_1fr] overflow-hidden border border-gray-200 bg-white transition-colors hover:border-brand sm:grid-cols-[170px_1fr]">
+                    <Link key={article.id} href={`/articles/${article.slug}`} className={`group min-h-40 overflow-hidden border border-gray-200 bg-white transition-colors hover:border-brand ${article.coverUrl ? 'grid grid-cols-[120px_1fr] sm:grid-cols-[170px_1fr]' : 'flex'}`}>
                       <ArticleCover article={article} />
                       <div className="flex min-w-0 flex-col justify-center p-5">
                         {articleDate(article.publishedAt) && <time className="text-[11px] font-bold uppercase tracking-[0.1em] text-[#579c9e]">{articleDate(article.publishedAt)}</time>}
@@ -296,25 +296,17 @@ export function HomeText({ companies, popularCompanies, newestCompanies, latestR
 }
 
 function ArticleCover({ article, featured = false }: { article: HomeArticle; featured?: boolean }) {
+  if (!article.coverUrl) return null
+
   return (
     <div className={`relative overflow-hidden bg-[#e9eef6] ${featured ? 'aspect-[16/9]' : 'h-full min-h-40'}`}>
-      {article.coverUrl ? (
-        <Image
-          src={article.coverUrl}
-          alt={article.title}
-          fill
-          sizes={featured ? '(max-width: 1024px) 100vw, 58vw' : '(max-width: 640px) 120px, 170px'}
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-        />
-      ) : (
-        <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(145deg,#f1ebff_0%,#e5f2f1_55%,#e7edf7_100%)] text-brand">
-          <svg viewBox="0 0 64 64" className={featured ? 'h-20 w-20' : 'h-12 w-12'} fill="none" aria-hidden="true">
-            <path d="M13 15.5h25a8 8 0 0 1 8 8V49H21a8 8 0 0 1-8-8V15.5Z" stroke="currentColor" strokeWidth="3"/>
-            <path d="M21 15.5V49M28 25h11M28 32h11M28 39h7" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-            <path d="M46 23.5h5v30H25a4 4 0 0 1-4-4V49" stroke="currentColor" strokeWidth="3" strokeLinejoin="round"/>
-          </svg>
-        </div>
-      )}
+      <Image
+        src={article.coverUrl}
+        alt={article.title}
+        fill
+        sizes={featured ? '(max-width: 1024px) 100vw, 58vw' : '(max-width: 640px) 120px, 170px'}
+        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+      />
     </div>
   )
 }

@@ -37,7 +37,7 @@ export function AddCompanyForm({
     const selectedTypes = form.getAll('insuranceTypes').map((id) => Number(id))
 
     try {
-      const res = await fetch('/api/companies', {
+      const res = await fetch('/api/submissions/company', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -48,6 +48,7 @@ export function AddCompanyForm({
           country: form.get('country') || undefined,
           shortDescription: form.get('shortDescription'),
           insuranceTypes: selectedTypes,
+          contactWebsite: form.get('contactWebsite'),
         }),
       })
       setStatus(res.ok ? 'success' : 'error')
@@ -89,6 +90,7 @@ export function AddCompanyForm({
         <div className="card p-6">{t.addCompanyPage.successMsg}</div>
       ) : (
         <form onSubmit={onSubmit} className="card p-6 space-y-4" aria-busy={status === 'loading'}>
+          <input name="contactWebsite" type="text" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
           <div>
             <label className="block text-sm font-medium mb-1">{t.addCompanyPage.nameLabel}</label>
             <input name="name" required minLength={2} maxLength={120} autoComplete="organization" className="w-full rounded-lg border border-gray-300 px-3 py-2" />

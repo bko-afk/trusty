@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from './LocalizedLink'
 import { useLanguage } from '@/i18n/LanguageContext'
 
 export function Footer() {

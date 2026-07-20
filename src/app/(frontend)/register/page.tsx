@@ -1,14 +1,9 @@
-import type { Metadata } from 'next'
 import { RegisterForm } from './RegisterForm'
-import { noIndexMetadata } from '@/lib/seo'
+import { localizedPageMetadata } from '@/i18n/seo'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  ...noIndexMetadata,
-  title: 'Регистрация',
-  alternates: { canonical: '/register' },
-}
+export const generateMetadata = () => localizedPageMetadata('register', '/register', { noIndex: true })
 
 export default function RegisterPage() {
   return <RegisterForm />

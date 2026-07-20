@@ -1,16 +1,10 @@
-import type { Metadata } from 'next'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { AddComplaintForm } from './AddComplaintForm'
-import { noIndexMetadata } from '@/lib/seo'
+import { getRequestLocale, localizedPageMetadata } from '@/i18n/seo'
 
 export const revalidate = 120
 
-export const metadata: Metadata = {
-  ...noIndexMetadata,
-  title: 'Оставить жалобу на страховую компанию',
-  description: 'Опишите проблему со страховой компанией и отправьте жалобу на модерацию Trusty.',
-  alternates: { canonical: '/add-complaint' },
-}
+export const generateMetadata = () => localizedPageMetadata('addComplaint', '/add-complaint', { noIndex: true })
 
 export default async function AddComplaintPage({
   searchParams,
@@ -18,6 +12,7 @@ export default async function AddComplaintPage({
   searchParams: Promise<{ company?: string }>
 }) {
   const { company } = await searchParams
+  const locale = await getRequestLocale()
   const payload = await getPayloadClient()
 
   const companies = await payload.find({
@@ -25,6 +20,7 @@ export default async function AddComplaintPage({
     where: { status: { equals: 'published' } },
     sort: 'name',
     limit: 100,
+    locale,
   })
 
   return (

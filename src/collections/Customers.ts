@@ -1,5 +1,5 @@
-import type { CollectionConfig } from 'payload'
-import { isCustomer, isStaff } from '../lib/access'
+import { type CollectionConfig } from 'payload'
+import { isCustomer, isStaff } from '@/lib/access'
 
 // Публичная коллекция аккаунтов посетителей сайта (не путать с Users —
 // это админы/модераторы). Нужна для входа под своим именем при написании
@@ -30,7 +30,7 @@ export const Customers: CollectionConfig = {
     defaultColumns: ['email', 'name', 'createdAt'],
   },
   access: {
-    create: () => true,
+    create: ({ req }) => isStaff(req),
     read: ({ req }) => {
       if (isStaff(req)) return true
       if (isCustomer(req) && req.user) return { id: { equals: req.user.id } }

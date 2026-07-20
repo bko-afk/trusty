@@ -1,10 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from './LocalizedLink'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { localizePath } from '@/i18n/routing'
 
 type Result = { id: string; slug: string; name: string; logoUrl?: string; overallRating?: number }
 type PopularCompany = { id: string; slug: string; name: string; logoUrl?: string }
@@ -24,7 +25,7 @@ export function SearchBox({
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const { t } = useLanguage()
+  const { locale, t } = useLanguage()
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -84,7 +85,7 @@ export function SearchBox({
 
   function goToFullSearch() {
     setOpen(false)
-    router.push(`/search?q=${encodeURIComponent(query)}`)
+    router.push(localizePath(`/search?q=${encodeURIComponent(query)}`, locale))
   }
 
   const clearBtn = (

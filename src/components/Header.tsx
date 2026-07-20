@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from './LocalizedLink'
 import Image from 'next/image'
 import { SearchBox } from './SearchBox'
 import { LanguageSwitcher } from './LanguageSwitcher'

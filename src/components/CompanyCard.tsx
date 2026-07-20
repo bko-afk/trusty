@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from './LocalizedLink'
 import { RatingStars } from './RatingStars'
 import { RatingCircle } from './RatingCircle'
 import { useLanguage } from '@/i18n/LanguageContext'

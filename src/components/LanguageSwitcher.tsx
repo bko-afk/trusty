@@ -1,11 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { locales, localeFlags, localeNames, localeLabels } from '@/i18n/dictionary'
+import { localizePath } from '@/i18n/routing'
 
 export function LanguageSwitcher() {
   const { locale, setLocale } = useLanguage()
+  const pathname = usePathname()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -45,6 +49,8 @@ export function LanguageSwitcher() {
                 onClick={() => {
                   setLocale(l)
                   setOpen(false)
+                  const suffix = `${window.location.search}${window.location.hash}`
+                  router.replace(`${localizePath(pathname, l)}${suffix}`)
                 }}
                 className={`flex w-full items-center gap-2 px-3 py-2 text-sm hover:bg-brand-light/50 ${
                   l === locale ? 'font-semibold text-brand-dark' : 'text-gray-700'

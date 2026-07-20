@@ -1,18 +1,17 @@
 import type { Metadata } from 'next'
+import { serverUrlString } from './runtimeConfig'
 
 type MediaValue = {
   url?: string | null
   sizes?: Record<string, { url?: string | null } | null> | null
 }
 
-const fallbackUrl = 'http://localhost:3000'
-
 export function siteUrl() {
-  const value = process.env.NEXT_PUBLIC_SERVER_URL || fallbackUrl
+  const value = serverUrlString()
   try {
     return new URL(value)
   } catch {
-    return new URL(fallbackUrl)
+    return new URL('http://localhost:3000')
   }
 }
 

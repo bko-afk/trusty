@@ -1,13 +1,15 @@
 'use client'
 
-import Link from 'next/link'
+import Link from './LocalizedLink'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { splitLocalePath } from '@/i18n/routing'
 
 export type NavMenuItem = { label: string; href: string }
 
 export function NavMenu({ items }: { items: NavMenuItem[] }) {
   const pathname = usePathname()
+  const publicPathname = splitLocalePath(pathname).pathname
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -19,7 +21,8 @@ export function NavMenu({ items }: { items: NavMenuItem[] }) {
     return () => document.removeEventListener('mousedown', onClickOutside)
   }, [])
 
-  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname?.startsWith(href))
+  const isActive = (href: string) =>
+    href === '/' ? publicPathname === '/' : publicPathname.startsWith(href)
   const active = items.find((item) => isActive(item.href)) || items[0]
 
   return (

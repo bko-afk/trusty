@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { dictionary, locales, type Locale, type Dictionary } from './dictionary'
+import { dictionary, LOCALE_COOKIE, type Locale, type Dictionary } from './dictionary'
 
 type LanguageContextValue = {
   locale: Locale
@@ -11,23 +11,18 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null)
 
-const STORAGE_KEY = 'trusty-locale'
-
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>('ru')
+export function LanguageProvider({
+  children,
+  initialLocale,
+}: {
+  children: React.ReactNode
+  initialLocale: Locale
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale)
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY) as Locale | null
-    if (stored && locales.includes(stored)) {
-      setLocaleState(stored)
-      return
-    }
-    // Если ранее язык не выбирался — пробуем определить по языку браузера
-    const browserLang = window.navigator.language?.slice(0, 2)
-    if (browserLang === 'en' || browserLang === 'es') {
-      setLocaleState(browserLang)
-    }
-  }, [])
+    setLocaleState(initialLocale)
+  }, [initialLocale])
 
   useEffect(() => {
     document.documentElement.lang = locale
@@ -35,7 +30,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   function setLocale(next: Locale) {
     setLocaleState(next)
-    window.localStorage.setItem(STORAGE_KEY, next)
+    const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+    document.cookie = `${LOCALE_COOKIE}=${next}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`
   }
 
   return (

@@ -41,6 +41,9 @@ const securityHeaders = [
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
   { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+  { key: 'Cross-Origin-Resource-Policy', value: 'same-site' },
+  { key: 'X-DNS-Prefetch-Control', value: 'off' },
 ]
 
 /** @type {import('next').NextConfig} */
@@ -66,6 +69,16 @@ const nextConfig = {
       {
         source: '/ratings',
         destination: '/companies',
+        permanent: true,
+      },
+      {
+        source: '/ru/ratings',
+        destination: '/ru/companies',
+        permanent: true,
+      },
+      {
+        source: '/es/ratings',
+        destination: '/es/companies',
         permanent: true,
       },
     ]

@@ -1,20 +1,15 @@
-import type { Metadata } from 'next'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { AddCompanyForm } from './AddCompanyForm'
-import { noIndexMetadata } from '@/lib/seo'
+import { getRequestLocale, localizedPageMetadata } from '@/i18n/seo'
 
 export const revalidate = 120
 
-export const metadata: Metadata = {
-  ...noIndexMetadata,
-  title: 'Добавить страховую компанию',
-  description: 'Предложите страховую компанию для проверки и добавления в каталог Trusty.',
-  alternates: { canonical: '/add-company' },
-}
+export const generateMetadata = () => localizedPageMetadata('addCompany', '/add-company', { noIndex: true })
 
 export default async function AddCompanyPage() {
+  const locale = await getRequestLocale()
   const payload = await getPayloadClient()
-  const insuranceTypes = await payload.find({ collection: 'insurance-types', sort: 'order' })
+  const insuranceTypes = await payload.find({ collection: 'insurance-types', sort: 'order', locale })
 
   return (
     <AddCompanyForm

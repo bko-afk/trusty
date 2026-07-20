@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/LocalizedLink'
 import { startTransition, useEffect, useRef, useState } from 'react'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RatingStars } from '@/components/RatingStars'
@@ -239,24 +239,29 @@ export function CompaniesCatalogText({
 
       <section id="company-results" ref={resultsRef} className="container-page scroll-mt-6 py-8 md:py-12">
         <div className="border-y border-gray-200" aria-busy={isLoading} aria-live="polite">
-          <div className="hidden grid-cols-[80px_1.55fr_0.7fr_0.7fr_1fr] gap-5 border-b border-gray-200 bg-[#fafafa] px-5 py-4 text-xs font-extrabold uppercase tracking-wider text-gray-500 lg:grid">
-            <span>{t.portal.ranking.place}</span><span>{t.portal.ranking.company}</span><span>{t.portal.ranking.reviews}</span><span>{t.portal.ranking.rating}</span><span>{t.portal.ranking.programs}</span>
+          <div className="hidden grid-cols-[70px_minmax(280px,1.45fr)_110px_220px_minmax(190px,1fr)_130px] items-center gap-4 border-b border-gray-200 bg-[#fafafa] px-5 py-4 text-xs font-extrabold uppercase tracking-wider text-gray-500 xl:grid">
+            <span>{t.portal.ranking.place}</span>
+            <span>{t.portal.ranking.company}</span>
+            <span>{t.portal.ranking.reviews}</span>
+            <span>{t.portal.ranking.rating}</span>
+            <span>{t.portal.ranking.programs}</span>
+            <span className="text-center">{comparisonText.add}</span>
           </div>
           <div className={`transition-opacity ${isLoading ? 'opacity-40' : 'opacity-100'}`}>
             {results.map((company, index) => {
               const isCompared = comparisonIds.includes(String(company.id))
-              return <div key={company.id} className="content-auto relative border-b border-gray-100 last:border-0 hover:bg-gray-50">
-              <Link href={`/companies/${company.slug}`} className="grid gap-4 px-4 py-5 pr-28 lg:grid-cols-[80px_1.55fr_0.7fr_0.7fr_1fr] lg:items-center lg:gap-5 lg:px-5 lg:pr-32">
-                <div className="text-sm font-extrabold text-brand lg:text-base"><span className="lg:hidden">{t.portal.ranking.mobilePlace} </span>№ {index + 1}</div>
+              return <div key={company.id} className="content-auto relative grid gap-4 border-b border-gray-100 px-4 py-5 pr-28 last:border-0 hover:bg-gray-50 xl:grid-cols-[70px_minmax(280px,1.45fr)_110px_220px_minmax(190px,1fr)_130px] xl:items-center xl:gap-4 xl:px-5 xl:pr-5">
+              <Link href={`/companies/${company.slug}`} className="contents">
+                <div className="text-sm font-extrabold text-brand xl:text-base"><span className="xl:hidden">{t.portal.ranking.mobilePlace} </span>№ {index + 1}</div>
                 <div className="flex min-w-0 items-center gap-4">
                   <div className="relative h-14 w-28 shrink-0 overflow-hidden border border-gray-100 bg-white"><Image src={company.logoUrl || '/placeholders/logo-placeholder.svg'} alt={company.name} fill sizes="112px" className="object-contain p-2" /></div>
                   <div className="min-w-0"><h2 className="truncate text-lg font-extrabold">{company.name}</h2>{company.verified && <span className="mt-1 inline-block bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-700">{t.portal.ranking.verifiedProfile}</span>}<span className="dotted-link mt-2 block w-fit text-xs">{t.portal.ranking.details}</span></div>
                 </div>
-                <div className="text-sm"><div className="flex items-baseline gap-2"><span className="text-gray-400 lg:hidden">{t.portal.ranking.reviews}</span><strong className="text-lg">{company.reviewCount}</strong></div><div className="mt-1 text-xs"><span className="text-emerald-700">+{company.positiveReviewCount}</span> <span className="ml-2 text-rose-700">-{company.negativeReviewCount}</span></div></div>
-                <div className="flex items-center gap-3"><strong className="text-2xl">{company.rating.toFixed(1)}</strong><RatingStars value={company.rating} size="sm" /></div>
-                <div className="flex flex-wrap gap-2 text-xs text-[#579c9e]">{company.insuranceTypes.map((type) => <span key={type.slug} className="border-b border-dotted border-current">{insuranceTypeLabel(t, type)}</span>)}</div>
+                <div className="text-sm"><div className="flex items-baseline gap-2"><span className="text-gray-400 xl:hidden">{t.portal.ranking.reviews}</span><strong className="text-lg">{company.reviewCount}</strong></div><div className="mt-1 text-xs"><span className="text-emerald-700">+{company.positiveReviewCount}</span> <span className="ml-2 text-rose-700">-{company.negativeReviewCount}</span></div></div>
+                <div className="flex min-w-0 items-center gap-3"><strong className="shrink-0 text-2xl">{company.rating.toFixed(1)}</strong><RatingStars value={company.rating} size="sm" /></div>
+                <div className="flex min-w-0 flex-wrap gap-2 text-xs text-[#579c9e]">{company.insuranceTypes.map((type) => <span key={type.slug} className="border-b border-dotted border-current">{insuranceTypeLabel(t, type)}</span>)}</div>
               </Link>
-              <button type="button" onClick={() => toggleComparison(company.id)} disabled={!isCompared && comparisonIds.length >= 4} className={`absolute right-3 top-5 border px-3 py-2 text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40 ${isCompared ? 'border-brand bg-brand text-white' : 'border-gray-300 bg-white text-brand-dark'}`}>{isCompared ? comparisonText.added : comparisonText.add}</button>
+              <button type="button" onClick={() => toggleComparison(company.id)} disabled={!isCompared && comparisonIds.length >= 4} className={`absolute right-3 top-5 min-h-11 border px-3 py-2 text-center text-xs font-bold disabled:cursor-not-allowed disabled:opacity-40 xl:static xl:w-full ${isCompared ? 'border-brand bg-brand text-white' : 'border-gray-300 bg-white text-brand-dark'}`}>{isCompared ? comparisonText.added : comparisonText.add}</button>
               </div>
             })}
             {results.length === 0 && <div className="p-10 text-center text-gray-500">{t.portal.ranking.noResults}</div>}

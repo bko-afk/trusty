@@ -1,31 +1,30 @@
-import type { Metadata } from 'next'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { ArticlesText } from './ArticlesText'
 import { mediaUrl } from '@/lib/seo'
+import { articleCoverUrl } from '@/lib/articleCover'
+import { unstable_cache } from 'next/cache'
+import { getRequestLocale, localizedPageMetadata } from '@/i18n/seo'
+import type { Locale } from '@/i18n/dictionary'
 
 export const revalidate = 300
 
-export const metadata: Metadata = {
-  title: 'Статьи о страховании',
-  description:
-    'Практические материалы о туристическом и медицинском страховании, выборе полиса и действиях при страховом случае.',
-  alternates: { canonical: '/articles' },
-  openGraph: {
-    url: '/articles',
-    title: 'Статьи о страховании',
-    description: 'Гайды и разборы Trusty о страховании путешественников.',
-  },
-}
-
-export default async function ArticlesPage() {
+const getArticles = unstable_cache(async (locale: Locale) => {
   const payload = await getPayloadClient()
-  const articles = await payload.find({
+  return payload.find({
     collection: 'articles',
     where: { status: { equals: 'published' } },
     sort: '-publishedAt',
     limit: 50,
     depth: 1,
+    locale,
   })
+}, ['articles-list'], { revalidate: 300 })
+
+export const generateMetadata = () => localizedPageMetadata('articles', '/articles')
+
+export default async function ArticlesPage() {
+  const locale = await getRequestLocale()
+  const articles = await getArticles(locale)
 
   return (
     <ArticlesText
@@ -34,7 +33,7 @@ export default async function ArticlesPage() {
         slug: a.slug,
         title: a.title,
         excerpt: a.excerpt,
-        coverUrl: mediaUrl(a.cover),
+        coverUrl: mediaUrl(a.cover) || articleCoverUrl(a.slug),
         publishedAt: a.publishedAt || a.createdAt,
       }))}
     />

@@ -36,7 +36,7 @@ export function AddComplaintForm({
     const form = new FormData(formEl)
 
     try {
-      const res = await fetch('/api/complaints', {
+      const res = await fetch('/api/submissions/complaint', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -46,6 +46,7 @@ export function AddComplaintForm({
           authorEmail: form.get('authorEmail'),
           title: form.get('title'),
           body: form.get('body'),
+          contactWebsite: form.get('contactWebsite'),
         }),
       })
       setStatus(res.ok ? 'success' : 'error')
@@ -82,6 +83,7 @@ export function AddComplaintForm({
               </div>
             ) : (
               <form onSubmit={onSubmit} className="space-y-6" aria-busy={status === 'loading'}>
+                <input name="contactWebsite" type="text" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
                 <SubmissionFormSection number="1" title={t.addComplaintPage.step1Title} description={t.addComplaintPage.step1Text}>
                   <div>
                     <label htmlFor="complaint-company" className="form-label">{t.addComplaintPage.companyLabel}</label>

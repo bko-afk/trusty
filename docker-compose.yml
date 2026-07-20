@@ -4,7 +4,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: insurance
     ports:
       - "5432:5432"
@@ -15,14 +15,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
+      secrets:
+        - DATABASE_URI
+        - PAYLOAD_SECRET
     restart: unless-stopped
     depends_on:
       - db
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URI: postgres://postgres:postgres@db:5432/insurance
-      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-change-me-to-a-long-random-string}
+      DATABASE_URI: ${DATABASE_URI:?Set DATABASE_URI in .env}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Set PAYLOAD_SECRET in .env}
       NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL:-http://localhost:3000}
     volumes:
       - media_data:/app/public/media
@@ -30,3 +35,9 @@ services:
 volumes:
   db_data:
   media_data:
+
+secrets:
+  DATABASE_URI:
+    environment: DATABASE_URI
+  PAYLOAD_SECRET:
+    environment: PAYLOAD_SECRET

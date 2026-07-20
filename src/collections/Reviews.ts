@@ -1,7 +1,7 @@
-import type { CollectionConfig, Where } from 'payload'
-import { recalculateCompanyRating } from '../lib/recalculateCompanyRating'
-import { isCustomer, isStaff, isTrustedWrite } from '../lib/access'
-import { countries } from '../lib/countries'
+import { type CollectionConfig, type Where } from 'payload'
+import { recalculateCompanyRating } from '@/lib/recalculateCompanyRating'
+import { isCustomer, isStaff, isTrustedWrite } from '@/lib/access'
+import { countries } from '@/lib/countries'
 
 export const Reviews: CollectionConfig = {
   slug: 'reviews',
@@ -25,7 +25,7 @@ export const Reviews: CollectionConfig = {
       }
       return { status: { equals: 'published' } }
     },
-    create: () => true,
+    create: ({ req }) => isTrustedWrite(req),
     update: ({ req }) => isStaff(req),
     delete: ({ req }) => isStaff(req),
   },

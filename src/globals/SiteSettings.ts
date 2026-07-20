@@ -1,5 +1,5 @@
-import type { GlobalConfig } from 'payload'
-import { isStaff } from '../lib/access'
+import { type GlobalConfig } from 'payload'
+import { isStaff } from '@/lib/access'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
@@ -158,17 +158,16 @@ export const SiteSettings: GlobalConfig = {
                   name: 'defaultTitle',
                   label: 'Заголовок главной страницы',
                   type: 'text',
-                  defaultValue: 'Trusty — отзывы и рейтинги туристических страховых компаний',
                   maxLength: 70,
+                  localized: true,
                   admin: { description: 'Рекомендуемая длина — до 60–70 символов.' },
                 },
                 {
                   name: 'defaultDescription',
                   label: 'Описание сайта',
                   type: 'textarea',
-                  defaultValue:
-                    'Каталог туристических страховых компаний, рейтинги, реальные отзывы клиентов и статьи о страховании путешественников.',
                   maxLength: 180,
+                  localized: true,
                   admin: { description: 'Используется на главной и как запасное описание страниц.' },
                 },
                 {

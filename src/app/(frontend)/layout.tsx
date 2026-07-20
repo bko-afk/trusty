@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
+import { unstable_cache } from 'next/cache'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { LanguageProvider } from '@/i18n/LanguageContext'
@@ -10,20 +11,38 @@ import { absoluteUrl, mediaUrl, siteUrl } from '@/lib/seo'
 import { JsonLd } from '@/components/JsonLd'
 import { CustomerProvider } from '@/lib/useCustomer'
 import { toCustomerSession } from '@/lib/customerSession'
+import { DEFAULT_LOCALE, isLocale } from '@/i18n/dictionary'
+import {
+  DEFAULT_SITE_DESCRIPTION,
+  DEFAULT_SITE_TITLE,
+  LEGACY_SITE_DESCRIPTION,
+  LEGACY_SITE_TITLE,
+  primarySeoValue,
+} from '@/lib/siteDefaults'
+import {
+  getRequestLocale,
+  getRequestPathname,
+  localizedAlternates,
+  localizedOpenGraph,
+  rootSeoCopy,
+} from '@/i18n/seo'
+import { localizePath } from '@/i18n/routing'
 import './globals.css'
 
 export const revalidate = 60
 
-const fallbackTitle = 'Trusty — отзывы и рейтинги туристических страховых компаний'
-const fallbackDescription =
-  'Каталог туристических страховых компаний, рейтинги, реальные отзывы клиентов и статьи о страховании путешественников.'
-
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSiteSettings()
+  const [locale, pathname] = await Promise.all([getRequestLocale(), getRequestPathname()])
+  const settings = await getSiteSettings(locale)
   const seo = settings.seo
   const siteName = seo?.siteName || 'Trusty'
-  const title = seo?.defaultTitle || fallbackTitle
-  const description = seo?.defaultDescription || fallbackDescription
+  const copy = rootSeoCopy[locale]
+  const title = locale === DEFAULT_LOCALE
+    ? primarySeoValue(seo?.defaultTitle, LEGACY_SITE_TITLE, DEFAULT_SITE_TITLE)
+    : copy.title
+  const description = locale === DEFAULT_LOCALE
+    ? primarySeoValue(seo?.defaultDescription, LEGACY_SITE_DESCRIPTION, DEFAULT_SITE_DESCRIPTION)
+    : copy.description
   const socialImage = mediaUrl(seo?.socialImage)
 
   return {
@@ -31,18 +50,12 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: siteName,
     title: { default: title, template: `%s | ${siteName}` },
     description,
-    keywords: [
-      'страховые компании',
-      'туристическая страховка',
-      'медицинская страховка',
-      'отзывы о страховках',
-      'рейтинг страховых компаний',
-    ],
-    alternates: { canonical: '/' },
+    keywords: [...copy.keywords],
+    alternates: localizedAlternates(pathname, locale),
     openGraph: {
+      ...localizedOpenGraph(locale),
       type: 'website',
-      locale: 'ru_RU',
-      url: '/',
+      url: localizePath(pathname, locale),
       siteName,
       title,
       description,
@@ -70,7 +83,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // Список "популярных" компаний нужен в поисковой строке в хедере на
 // каждой странице — подгружаем его один раз в layout (лёгкий запрос,
 // limit 3) и прокидываем вниз, а не дёргаем с клиента отдельным fetch.
-async function getPopularCompanies() {
+const getPopularCompanies = unstable_cache(async () => {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'companies',
@@ -85,23 +98,26 @@ async function getPopularCompanies() {
     name: c.name,
     logoUrl: companyLogoUrl(c.logo, c.logoFile),
   }))
-}
+}, ['layout-popular-companies'], { revalidate: 60 })
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const requestHeaders = new Headers(await headers())
+  const headerStore = await headers()
+  const requestHeaders = new Headers(headerStore)
+  const requestedLocale = headerStore.get('x-trusty-locale')
+  const initialLocale = isLocale(requestedLocale) ? requestedLocale : DEFAULT_LOCALE
   const [popularCompanies, settings, currentCustomer] = await Promise.all([
     getPopularCompanies(),
-    getSiteSettings(),
+    getSiteSettings(initialLocale),
     getPayloadClient()
       .then((payload) => payload.auth({ headers: requestHeaders }))
       .then(({ user }) => toCustomerSession(user))
       .catch(() => null),
   ])
   const siteName = settings.seo?.siteName || 'Trusty'
-  const rootUrl = absoluteUrl('/')
+  const rootUrl = absoluteUrl(localizePath('/', initialLocale))
 
   return (
-    <html lang="ru">
+    <html lang={initialLocale}>
       <body className="min-h-screen flex flex-col">
         <JsonLd
           data={{
@@ -122,14 +138,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 publisher: { '@id': `${rootUrl}#organization` },
                 potentialAction: {
                   '@type': 'SearchAction',
-                  target: `${absoluteUrl('/search')}?q={search_term_string}`,
+                  target: `${absoluteUrl(localizePath('/search', initialLocale))}?q={search_term_string}`,
                   'query-input': 'required name=search_term_string',
                 },
               },
             ],
           }}
         />
-        <LanguageProvider>
+        <LanguageProvider initialLocale={initialLocale}>
           <CustomerProvider initialCustomer={currentCustomer}>
             <Header popularCompanies={popularCompanies} />
             <main className="flex-1">{children}</main>

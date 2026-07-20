@@ -1,10 +1,11 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/LocalizedLink'
 import { useEffect, useState } from 'react'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { useLanguage } from '@/i18n/LanguageContext'
 import { useCustomer } from '@/lib/useCustomer'
+import { localizePath } from '@/i18n/routing'
 
 type ActivityItem = {
   id: string
@@ -73,7 +74,7 @@ export default function AccountPage() {
 
   async function onLogout() {
     await logout()
-    window.location.href = '/'
+    window.location.href = localizePath('/', locale)
   }
 
   return (

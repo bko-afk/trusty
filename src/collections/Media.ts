@@ -1,6 +1,6 @@
 import path from 'path'
-import type { CollectionConfig } from 'payload'
-import { isStaff } from '../lib/access'
+import { type CollectionConfig } from 'payload'
+import { isStaff } from '@/lib/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',

@@ -6,6 +6,8 @@ import * as migration_20260717_132252_add_company_logo from './20260717_132252_a
 import * as migration_20260717_145031 from './20260717_145031';
 import * as migration_20260717_161346 from './20260717_161346';
 import * as migration_20260717_163805 from './20260717_163805';
+import * as migration_20260720_093912_multilingual_localization from './20260720_093912_multilingual_localization';
+import * as migration_20260720_095800_legacy_locale_compatibility from './20260720_095800_legacy_locale_compatibility';
 
 export const migrations = [
   {
@@ -46,6 +48,16 @@ export const migrations = [
   {
     up: migration_20260717_163805.up,
     down: migration_20260717_163805.down,
-    name: '20260717_163805'
+    name: '20260717_163805',
+  },
+  {
+    up: migration_20260720_093912_multilingual_localization.up,
+    down: migration_20260720_093912_multilingual_localization.down,
+    name: '20260720_093912_multilingual_localization'
+  },
+  {
+    up: migration_20260720_095800_legacy_locale_compatibility.up,
+    down: migration_20260720_095800_legacy_locale_compatibility.down,
+    name: '20260720_095800_legacy_locale_compatibility',
   },
 ];

@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'Trusty — отзывы и рейтинги страховых компаний'
+export const alt = 'Trusty - travel insurance reviews and ratings'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -53,10 +53,10 @@ export default function OpenGraphImage() {
             <div style={{ fontSize: 42, fontWeight: 800, letterSpacing: 2 }}>TRUSTY</div>
           </div>
           <div style={{ fontSize: 68, fontWeight: 800, letterSpacing: -3, lineHeight: 1.05, marginTop: 54 }}>
-            Страхование без неприятных сюрпризов
+            Insurance without unpleasant surprises
           </div>
           <div style={{ color: '#526077', fontSize: 28, lineHeight: 1.4, marginTop: 28 }}>
-            Рейтинги, реальные отзывы и жалобы клиентов
+            Ratings, real customer reviews, and complaints
           </div>
         </div>
         <div

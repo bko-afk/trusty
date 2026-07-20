@@ -1,6 +1,12 @@
 export type Locale = 'ru' | 'en' | 'es'
 
-export const locales: Locale[] = ['ru', 'en', 'es']
+export const DEFAULT_LOCALE: Locale = 'en'
+export const LOCALE_COOKIE = 'trusty-locale'
+export const locales: Locale[] = ['en', 'es', 'ru']
+
+export function isLocale(value: unknown): value is Locale {
+  return typeof value === 'string' && locales.includes(value as Locale)
+}
 
 export const localeLabels: Record<Locale, string> = {
   ru: 'RU',

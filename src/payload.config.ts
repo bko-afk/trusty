@@ -17,6 +17,7 @@ import { Complaints } from './collections/Complaints'
 import { Articles } from './collections/Articles'
 import { Customers } from './collections/Customers'
 import { SiteSettings } from './globals/SiteSettings'
+import { databaseUri, payloadSecret, serverUrlString, trustedOrigins } from './lib/runtimeConfig'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -31,11 +32,23 @@ const dirname = path.dirname(filename)
 const hasS3Config = Boolean(
   process.env.S3_BUCKET && process.env.S3_ACCESS_KEY_ID && process.env.S3_SECRET_ACCESS_KEY,
 )
-const trustedOrigin = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 const hasEmailConfig = Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM_ADDRESS)
+const serverURL = serverUrlString()
+const allowedOrigins = trustedOrigins()
 
 export default buildConfig({
-  serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  serverURL,
+  // Existing editorial content was created in Russian, so Russian remains the
+  // CMS storage default. Public routing has its own English default locale.
+  localization: {
+    defaultLocale: 'ru',
+    fallback: true,
+    locales: [
+      { code: 'ru', label: 'Русский', fallbackLocale: 'en' },
+      { code: 'en', label: 'English', fallbackLocale: 'ru' },
+      { code: 'es', label: 'Español', fallbackLocale: ['en', 'ru'] },
+    ],
+  },
   admin: {
     user: Users.slug,
     importMap: {
@@ -68,13 +81,13 @@ export default buildConfig({
     Customers,
   ],
   globals: [SiteSettings],
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: payloadSecret(),
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI,
+      connectionString: databaseUri(),
     },
     // Отключаем автоматический "push" схемы в дев-режиме: при сложных
     // изменениях (новые relationship-таблицы, auth-коллекции и т.п.)
@@ -84,8 +97,8 @@ export default buildConfig({
     push: false,
   }),
   sharp,
-  cors: [trustedOrigin],
-  csrf: [trustedOrigin],
+  cors: allowedOrigins,
+  csrf: allowedOrigins,
   graphQL: { disable: true },
   plugins: hasS3Config
     ? [

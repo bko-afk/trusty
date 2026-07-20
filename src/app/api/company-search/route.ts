@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { toCatalogCompany } from '@/lib/catalogCompany'
 import { sortCompaniesByRanking } from '@/lib/companyRanking'
+import { publicNoStoreHeaders, rateLimit, rejectLargeRequest } from '@/lib/apiSecurity'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -43,6 +44,11 @@ function numberArray(value: unknown, maxItems: number) {
 }
 
 export async function POST(request: Request) {
+  const oversized = rejectLargeRequest(request, 16_000)
+  if (oversized) return oversized
+  const limited = rateLimit(request, 'company-search', 120, 60 * 1000)
+  if (limited) return limited
+
   try {
     const body = (await request.json()) as FilterBody
     const query = typeof body.query === 'string' ? body.query.trim().slice(0, 120) : ''
@@ -82,12 +88,18 @@ export async function POST(request: Request) {
       depth: 1,
     })
 
-    return NextResponse.json({
-      companies: sortCompaniesByRanking(result.docs, insuranceTypeIds).map(toCatalogCompany),
-      total: result.totalDocs,
-    })
+    return NextResponse.json(
+      {
+        companies: sortCompaniesByRanking(result.docs, insuranceTypeIds).map(toCatalogCompany),
+        total: result.totalDocs,
+      },
+      { headers: publicNoStoreHeaders },
+    )
   } catch (error) {
     console.error('Company filter request failed', error)
-    return NextResponse.json({ error: 'Unable to filter companies' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Unable to filter companies' },
+      { status: 500, headers: publicNoStoreHeaders },
+    )
   }
 }

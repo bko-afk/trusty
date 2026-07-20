@@ -1,6 +1,6 @@
-import type { CollectionConfig } from 'payload'
-import { countries } from '../lib/countries'
-import { isStaff, isTrustedWrite } from '../lib/access'
+import { type CollectionConfig } from 'payload'
+import { countries } from '@/lib/countries'
+import { isStaff, isTrustedWrite } from '@/lib/access'
 
 function slugify(value: string) {
   return value
@@ -27,7 +27,7 @@ export const Companies: CollectionConfig = {
       if (isStaff(req)) return true
       return { status: { equals: 'published' } }
     },
-    create: () => true,
+    create: ({ req }) => isTrustedWrite(req),
     update: ({ req }) => isStaff(req),
     delete: ({ req }) => isStaff(req),
   },
@@ -280,7 +280,7 @@ export const Companies: CollectionConfig = {
       type: 'date',
       admin: { position: 'sidebar', description: 'Дата последней редакционной проверки данных компании' },
     },
-    { name: 'uniqueFeature', label: 'Ключевая особенность', type: 'text', maxLength: 240 },
+    { name: 'uniqueFeature', label: 'Ключевая особенность', type: 'text', maxLength: 240, localized: true },
     {
       name: 'insuranceProfile',
       label: 'Параметры страхования',
@@ -303,8 +303,8 @@ export const Companies: CollectionConfig = {
             { label: 'iOS и Android', value: 'both' },
           ],
         },
-        { name: 'supportedLanguages', label: 'Языки поддержки', type: 'text', maxLength: 240 },
-        { name: 'claimChannels', label: 'Каналы обращения', type: 'text', maxLength: 240 },
+        { name: 'supportedLanguages', label: 'Языки поддержки', type: 'text', maxLength: 240, localized: true },
+        { name: 'claimChannels', label: 'Каналы обращения', type: 'text', maxLength: 240, localized: true },
         {
           name: 'coverageFeatures',
           label: 'Дополнительное покрытие',
@@ -326,18 +326,20 @@ export const Companies: CollectionConfig = {
       options: countries.map((c) => ({ label: `${c.ru} (${c.code})`, value: c.code })),
     },
     { name: 'city', label: 'Город', type: 'text', maxLength: 120 },
-    { name: 'shortDescription', label: 'Краткое описание', type: 'textarea', maxLength: 800 },
-    { name: 'description', label: 'Полное описание', type: 'richText' },
+    { name: 'shortDescription', label: 'Краткое описание', type: 'textarea', maxLength: 800, localized: true },
+    { name: 'description', label: 'Полное описание', type: 'richText', localized: true },
     {
       name: 'pros',
       label: 'Преимущества',
       type: 'array',
+      localized: true,
       fields: [{ name: 'text', type: 'text', required: true }],
     },
     {
       name: 'cons',
       label: 'Недостатки',
       type: 'array',
+      localized: true,
       fields: [{ name: 'text', type: 'text', required: true }],
     },
     {
@@ -347,7 +349,7 @@ export const Companies: CollectionConfig = {
       fields: [
         { name: 'phone', type: 'text' },
         { name: 'email', type: 'text' },
-        { name: 'address', type: 'text' },
+        { name: 'address', type: 'text', localized: true },
       ],
     },
     {
@@ -401,8 +403,8 @@ export const Companies: CollectionConfig = {
       label: 'SEO',
       type: 'group',
       fields: [
-        { name: 'title', type: 'text' },
-        { name: 'description', type: 'textarea' },
+        { name: 'title', type: 'text', localized: true },
+        { name: 'description', type: 'textarea', localized: true },
         { name: 'ogImage', type: 'upload', relationTo: 'media' },
       ],
     },

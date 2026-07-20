@@ -1,14 +1,15 @@
 'use client'
 
-import Link from 'next/link'
+import Link from '@/components/LocalizedLink'
 import Image from 'next/image'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { useLanguage } from '@/i18n/LanguageContext'
+import { localizePath } from '@/i18n/routing'
 
 export function RegisterForm() {
-  const { t } = useLanguage()
+  const { locale, t } = useLanguage()
   const router = useRouter()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
@@ -32,13 +33,14 @@ export function RegisterForm() {
     confirmInput.setCustomValidity('')
 
     try {
-      const res = await fetch('/api/customers', {
+      const res = await fetch('/api/customer-registration', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: form.get('name'),
           email,
           password,
+          contactWebsite: form.get('contactWebsite'),
         }),
       })
       if (res.ok) {
@@ -51,13 +53,13 @@ export function RegisterForm() {
             body: JSON.stringify({ email, password }),
           })
           if (loginRes.ok) {
-            window.location.href = '/account'
+            window.location.href = localizePath('/account', locale)
             return
           }
         } catch {
           // fall through to login page if auto-login fails
         }
-        setTimeout(() => router.push('/login'), 1200)
+        setTimeout(() => router.push(localizePath('/login', locale)), 1200)
       } else {
         setStatus('error')
       }
@@ -98,6 +100,7 @@ export function RegisterForm() {
             <p>{t.auth.registerSuccess}</p>
           ) : (
             <form onSubmit={onSubmit} className="space-y-4" aria-busy={status === 'loading'}>
+              <input name="contactWebsite" type="text" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
               <div>
                 <label className="block text-sm font-medium mb-1">{t.auth.name}</label>
                 <input name="name" required minLength={2} maxLength={80} autoComplete="name" className="w-full rounded-lg border border-gray-300 px-3 py-2" />

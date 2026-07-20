@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/LocalizedLink'
 import { useState } from 'react'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RatingStars } from '@/components/RatingStars'
@@ -9,6 +9,7 @@ import { useLanguage } from '@/i18n/LanguageContext'
 import { countryName } from '@/lib/countries'
 import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 import { useCustomer } from '@/lib/useCustomer'
+import { localizePath } from '@/i18n/routing'
 
 const detailCopy = {
   ru: {
@@ -126,7 +127,7 @@ export function CompanyDetailText({
 
   async function toggleSubscription() {
     if (!customer) {
-      window.location.href = '/login'
+      window.location.href = localizePath('/login', locale)
       return
     }
     setSubscriptionLoading(true)

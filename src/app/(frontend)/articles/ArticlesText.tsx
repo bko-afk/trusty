@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import Link from '@/components/LocalizedLink'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { useLanguage } from '@/i18n/LanguageContext'
 
@@ -29,19 +29,11 @@ export function ArticlesText({ articles }: { articles: Article[] }) {
               : ''
             return (
               <Link key={article.id} href={`/articles/${article.slug}`} className="group flex min-h-[390px] flex-col overflow-hidden border border-gray-200 bg-white transition-transform hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(7,27,69,0.08)]">
-                <div className="relative aspect-[16/9] overflow-hidden bg-[#e9eef6]">
-                  {article.coverUrl ? (
+                {article.coverUrl && (
+                  <div className="relative aspect-[16/9] overflow-hidden bg-[#e9eef6]">
                     <Image src={article.coverUrl} alt={article.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-[linear-gradient(145deg,#f1ebff_0%,#e5f2f1_55%,#e7edf7_100%)] text-brand">
-                      <svg viewBox="0 0 64 64" className="h-14 w-14" fill="none" aria-hidden="true">
-                        <path d="M13 15.5h25a8 8 0 0 1 8 8V49H21a8 8 0 0 1-8-8V15.5Z" stroke="currentColor" strokeWidth="3"/>
-                        <path d="M21 15.5V49M28 25h11M28 32h11M28 39h7" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
-                        <path d="M46 23.5h5v30H25a4 4 0 0 1-4-4V49" stroke="currentColor" strokeWidth="3" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
                 <div className="flex flex-1 flex-col p-6">
                   {dateLabel && <time className="text-xs font-bold uppercase tracking-[0.1em] text-[#579c9e]">{dateLabel}</time>}
                   <h2 className="mt-3 text-xl font-extrabold leading-snug transition-colors group-hover:text-brand">{article.title}</h2>

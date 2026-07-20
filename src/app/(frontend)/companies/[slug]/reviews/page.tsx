@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { getPayloadClient } from '@/lib/getPayloadClient'
 import { CompanyReviewsText } from './CompanyReviewsText'
 import { getPublishedCompany } from '@/lib/getPublishedContent'
+import { getRequestLocale, localizedAlternates, localizedOpenGraph } from '@/i18n/seo'
+import { localizePath } from '@/i18n/routing'
 
 export const revalidate = 60
 
@@ -14,17 +16,22 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const company = await getPublishedCompany(slug)
-  if (!company) return { title: 'Компания не найдена', robots: { index: false, follow: false } }
+  const locale = await getRequestLocale()
+  const company = await getPublishedCompany(slug, locale)
+  if (!company) return { title: 'Company not found', robots: { index: false, follow: false } }
 
-  const title = `Отзывы о ${company.name}`
-  const description = `Отзывы клиентов о страховой компании ${company.name}, оценки качества полиса, выплат и поддержки.`
+  const title = locale === 'ru' ? `Отзывы о ${company.name}` : locale === 'es' ? `Reseñas de ${company.name}` : `${company.name} Reviews`
+  const description = locale === 'ru'
+    ? `Отзывы клиентов о ${company.name}: качество полиса, урегулирование случаев, выплаты и работа поддержки.`
+    : locale === 'es'
+      ? `Reseñas de clientes de ${company.name}: pólizas, gestión de siniestros, pagos y atención.`
+      : `Customer reviews of ${company.name}, including policy quality, claims handling, payouts, and support ratings.`
   const canonical = `/companies/${slug}/reviews`
   return {
     title,
     description,
-    alternates: { canonical },
-    openGraph: { url: canonical, title, description },
+    alternates: localizedAlternates(canonical, locale),
+    openGraph: { ...localizedOpenGraph(locale), url: localizePath(canonical, locale), title, description },
   }
 }
 
@@ -34,8 +41,9 @@ export default async function CompanyReviewsPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  const locale = await getRequestLocale()
   const payload = await getPayloadClient()
-  const company: any = await getPublishedCompany(slug)
+  const company: any = await getPublishedCompany(slug, locale)
   if (!company) notFound()
 
   const reviewsResult = await payload.find({
@@ -44,6 +52,7 @@ export default async function CompanyReviewsPage({
     sort: '-createdAt',
     limit: 50,
     depth: 1,
+    locale,
   })
 
   const repliesResult = reviewsResult.docs.length
