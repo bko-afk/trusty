@@ -359,7 +359,7 @@ export const Companies: CollectionConfig = {
       admin: {
         readOnly: true,
         position: 'sidebar',
-        description: 'Считается автоматически по отзывам',
+        description: 'Средняя общая оценка по всем опубликованным отзывам.',
       },
       defaultValue: 0,
     },
@@ -367,7 +367,7 @@ export const Companies: CollectionConfig = {
       name: 'reviewCount',
       label: 'Количество отзывов',
       type: 'number',
-      admin: { readOnly: true, position: 'sidebar' },
+      admin: { readOnly: true, position: 'sidebar', description: 'Все опубликованные отзывы, которые автоматически участвуют в рейтинге.' },
       defaultValue: 0,
     },
     {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { HowToSteps } from '@/components/HowToSteps'
@@ -21,7 +21,14 @@ export function AddComplaintForm({
   const { t } = useLanguage()
   const { customer } = useCustomer()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const resultRef = useRef<HTMLDivElement>(null)
   const preselected = companies.find((c) => c.slug === preselectedSlug)
+
+  useEffect(() => {
+    if (status !== 'success') return
+    resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    resultRef.current?.focus({ preventScroll: true })
+  }, [status])
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -68,7 +75,7 @@ export function AddComplaintForm({
             <h1 className="mt-3 text-4xl font-extrabold tracking-[-0.04em] sm:text-5xl">{t.addComplaintPage.title}</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/70">{t.addComplaintPage.introText}</p>
           </div>
-          <div className="absolute -right-3 bottom-0 hidden h-40 w-40 opacity-90 sm:block lg:right-12">
+          <div className="absolute -right-2 bottom-6 hidden h-36 w-36 opacity-90 sm:block lg:right-14">
             <Image src="/images/pages/complaint.svg" alt="" fill className="object-contain" />
           </div>
         </header>
@@ -76,7 +83,7 @@ export function AddComplaintForm({
         <div className="mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <main>
             {status === 'success' ? (
-              <div className="border border-emerald-200 bg-white p-8 shadow-[0_18px_55px_rgba(7,27,69,0.05)]">
+              <div ref={resultRef} tabIndex={-1} className="border border-emerald-200 bg-white p-8 shadow-[0_18px_55px_rgba(7,27,69,0.05)] outline-none">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-2xl font-bold text-emerald-700">✓</span>
                 <h2 className="mt-5 text-2xl font-extrabold text-brand-dark">{t.addComplaintPage.successMsg}</h2>
                 <p className="mt-3 text-gray-500">{t.addComplaintPage.subtitle}</p>

@@ -8,14 +8,15 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "npm run generate:types && next build",
+    "build": "npm run generate:types && next build --webpack",
     "start": "next start",
     "lint": "npm run generate:types && tsc --noEmit --incremental false",
     "payload": "payload",
     "generate:types": "PAYLOAD_CONFIG_BUILD=1 payload generate:types",
     "migrate:create": "payload migrate:create",
     "migrate": "payload migrate",
-    "seed": "tsx --env-file=.env src/seed/seed.ts"
+    "seed": "tsx --env-file=.env src/seed/seed.ts",
+    "stats:recalculate": "tsx --env-file=.env src/scripts/recalculateCompanyStats.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.86.0",

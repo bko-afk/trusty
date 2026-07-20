@@ -10,6 +10,7 @@ import { richTextToPlainText } from '@/lib/richText'
 import { JsonLd } from '@/components/JsonLd'
 import { getRequestLocale, localizedAlternates, localizedOpenGraph } from '@/i18n/seo'
 import { localizePath } from '@/i18n/routing'
+import { calculateReviewStats } from '@/lib/companyReviewStats'
 
 export const revalidate = 60
 
@@ -80,7 +81,6 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         and: [
           { company: { equals: company.id } },
           { status: { equals: 'published' } },
-          { includeInRating: { equals: true } },
         ],
       },
       depth: 0,
@@ -102,8 +102,26 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
     }),
   ])
 
-  const positiveReviewCount = reviewsResult.docs.filter((review: any) => review.rating >= 4).length
-  const negativeReviewCount = reviewsResult.docs.filter((review: any) => review.rating <= 2).length
+  const repliesResult = reviewsResult.docs.length
+    ? await payload.find({
+        collection: 'review-replies',
+        where: {
+          review: { in: reviewsResult.docs.map((review) => review.id) },
+          status: { equals: 'published' },
+        },
+        limit: 500,
+      })
+    : { docs: [] }
+  const repliesByReview = new Map<string, any[]>()
+  for (const reply of repliesResult.docs as any[]) {
+    const reviewId = String(typeof reply.review === 'object' ? reply.review.id : reply.review)
+    const replies = repliesByReview.get(reviewId) || []
+    replies.push(reply)
+    repliesByReview.set(reviewId, replies)
+  }
+
+  const reviewStats = calculateReviewStats(reviewsResult.docs)
+
   const resolvedComplaintCount = complaintsResult.docs.filter(
     (complaint: any) => complaint.workflowStatus === 'resolved' || complaint.resolved,
   ).length
@@ -157,13 +175,13 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         }
       : undefined,
     aggregateRating:
-      company.reviewCount > 0
+      reviewStats.ratingReviewCount > 0
         ? {
             '@type': 'AggregateRating',
-            ratingValue: company.overallRating || 0,
+            ratingValue: reviewStats.overallRating,
             bestRating: 5,
             worstRating: 1,
-            ratingCount: company.reviewCount,
+            ratingCount: reviewStats.ratingReviewCount,
           }
         : undefined,
   }
@@ -176,15 +194,15 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
       slug={slug}
       name={company.name}
       logoUrl={logoUrl}
-      overallRating={company.overallRating || 0}
-      reviewCount={company.reviewCount || 0}
+      overallRating={reviewStats.overallRating}
+      reviewCount={reviewStats.reviewCount}
       verified={company.verified}
       verification={company.verification}
       dataUpdatedAt={company.dataUpdatedAt || company.updatedAt}
       uniqueFeature={company.uniqueFeature}
       insuranceProfile={company.insuranceProfile}
-      positiveReviewCount={positiveReviewCount}
-      negativeReviewCount={negativeReviewCount}
+      positiveReviewCount={reviewStats.positiveReviewCount}
+      negativeReviewCount={reviewStats.negativeReviewCount}
       complaintCount={complaintsResult.totalDocs}
       resolvedComplaintCount={resolvedComplaintCount}
       website={company.website}
@@ -210,6 +228,48 @@ export default async function CompanyPage({ params }: { params: Promise<{ slug: 
         slug: article.slug,
         title: article.title,
         excerpt: article.excerpt,
+      }))}
+      criteriaAverages={reviewStats.criteriaAverages}
+      reviews={reviewsResult.docs.map((review: any) => ({
+        id: String(review.id),
+        authorName: review.authorName,
+        title: review.title,
+        body: review.body,
+        rating: review.rating,
+        experienceType: review.experienceType || 'purchase',
+        policyType: typeof review.policyType === 'object' ? { slug: review.policyType.slug, title: review.policyType.title } : undefined,
+        tripCountry: review.tripCountry,
+        claimOutcome: review.claimOutcome,
+        claimAmount: review.claimAmount,
+        responseTime: review.responseTime,
+        verifiedExperience: review.verifiedExperience,
+        criteria: review.criteria || undefined,
+        pros: (review.pros || []).map((item: any) => item.text),
+        cons: (review.cons || []).map((item: any) => item.text),
+        recommend: review.recommend,
+        createdAt: review.createdAt,
+        helpfulUp: review.helpfulUp,
+        helpfulDown: review.helpfulDown,
+        replies: (repliesByReview.get(String(review.id)) || []).map((reply: any) => ({
+          id: String(reply.id),
+          authorName: reply.authorName,
+          authorType: reply.authorType,
+          body: reply.body,
+          createdAt: reply.createdAt,
+        })),
+      }))}
+      complaints={complaintsResult.docs.map((complaint: any) => ({
+        id: String(complaint.id),
+        authorName: complaint.authorName,
+        title: complaint.title,
+        body: complaint.body,
+        workflowStatus: complaint.workflowStatus || (complaint.resolved ? 'resolved' : 'submitted'),
+        createdAt: complaint.createdAt,
+        response: complaint.companyResponse?.body ? {
+          authorName: complaint.companyResponse.authorName || company.name,
+          body: complaint.companyResponse.body,
+          respondedAt: complaint.companyResponse.respondedAt || undefined,
+        } : undefined,
       }))}
       />
     </>

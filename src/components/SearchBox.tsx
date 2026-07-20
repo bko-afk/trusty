@@ -180,10 +180,7 @@ export function SearchBox({
   if (isLarge) {
     return (
       <div ref={wrapperRef} className="relative w-full">
-        <div className="grid gap-2 bg-brand p-3 sm:grid-cols-[240px_1fr] sm:gap-0 sm:p-5">
-          <div className="flex min-h-16 items-center bg-white px-6 text-left font-bold text-brand-dark sm:border-r sm:border-gray-200">
-            {t.portal.insuranceCompanies}
-          </div>
+        <div className="bg-brand p-3 sm:p-5">
           <div className="relative min-h-16 bg-white">
             <input
               type="text"
@@ -196,7 +193,7 @@ export function SearchBox({
                 if (results.length > 0 || showPopular) setOpen(true)
               }}
               placeholder={t.search.placeholder}
-              className="h-16 w-full bg-transparent pl-6 pr-24 text-base text-gray-900 focus:outline-none sm:text-lg"
+              className="h-16 w-full bg-transparent pl-6 pr-28 text-base text-gray-900 focus:outline-none sm:text-lg"
             />
             {query.length > 0 && clearBtn}
             <button

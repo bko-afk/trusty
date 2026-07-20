@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { HowToSteps } from '@/components/HowToSteps'
@@ -23,6 +23,7 @@ const extraCopy = {
     responseTime: 'Скорость ответа компании', amountPlaceholder: 'Например, 1 200 USD',
     outcomes: ['Выплачено полностью', 'Выплачено частично', 'Отказано', 'Рассматривается'],
     times: ['В тот же день', '1-3 дня', '4-7 дней', '8-30 дней', 'Более 30 дней', 'Ответа не было'],
+    ratingHelp: 'После публикации отзыва общая оценка автоматически участвует в рейтинге компании. Оценки по критериям формируют подробную разбивку и не прибавляются к общей оценке повторно.',
   },
   en: {
     experience: 'What was your experience?', purchase: 'Buying and using a policy', claim: 'Claim and reimbursement',
@@ -30,6 +31,7 @@ const extraCopy = {
     claimOutcome: 'Claim outcome', claimAmount: 'Claim or payout amount', responseTime: 'Company response time',
     amountPlaceholder: 'For example, USD 1,200', outcomes: ['Paid in full', 'Partially paid', 'Denied', 'Pending'],
     times: ['Same day', '1-3 days', '4-7 days', '8-30 days', 'More than 30 days', 'No response'],
+    ratingHelp: 'Once the review is published, its overall score automatically affects the company rating. Criterion scores build the detailed breakdown and are not added a second time.',
   },
   es: {
     experience: '¿Cuál fue tu experiencia?', purchase: 'Compra y uso de la póliza', claim: 'Siniestro y reembolso',
@@ -38,6 +40,7 @@ const extraCopy = {
     responseTime: 'Tiempo de respuesta', amountPlaceholder: 'Por ejemplo, 1.200 USD',
     outcomes: ['Pagado por completo', 'Pagado parcialmente', 'Rechazado', 'En revisión'],
     times: ['El mismo día', '1-3 días', '4-7 días', '8-30 días', 'Más de 30 días', 'Sin respuesta'],
+    ratingHelp: 'Cuando se publica la reseña, su nota general afecta automáticamente al ranking. Las notas por criterio forman el desglose y no se suman de nuevo.',
   },
 } as const
 
@@ -54,8 +57,15 @@ export function AddReviewForm({
   const { customer } = useCustomer()
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [experienceType, setExperienceType] = useState<'purchase' | 'claim'>('purchase')
+  const resultRef = useRef<HTMLDivElement>(null)
   const preselected = companies.find((c) => c.slug === preselectedSlug)
   const copy = extraCopy[locale]
+
+  useEffect(() => {
+    if (status !== 'success') return
+    resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    resultRef.current?.focus({ preventScroll: true })
+  }, [status])
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -124,7 +134,7 @@ export function AddReviewForm({
             <h1 className="mt-3 text-4xl font-extrabold tracking-[-0.04em] text-brand-dark sm:text-5xl">{t.addReviewPage.title}</h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-gray-600">{t.addReviewPage.introText}</p>
           </div>
-          <div className="absolute -right-6 bottom-0 hidden h-40 w-40 opacity-90 sm:block lg:right-10">
+          <div className="absolute -right-2 bottom-6 hidden h-36 w-36 opacity-90 sm:block lg:right-12">
             <Image src="/images/pages/write-review.svg" alt="" fill className="object-contain" />
           </div>
         </header>
@@ -132,7 +142,7 @@ export function AddReviewForm({
         <div className="mt-8 grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <main>
             {status === 'success' ? (
-              <div className="border border-emerald-200 bg-white p-8 shadow-[0_18px_55px_rgba(7,27,69,0.05)]">
+              <div ref={resultRef} tabIndex={-1} className="border border-emerald-200 bg-white p-8 shadow-[0_18px_55px_rgba(7,27,69,0.05)] outline-none">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-2xl font-bold text-emerald-700">✓</span>
                 <h2 className="mt-5 text-2xl font-extrabold text-brand-dark">{t.addReviewPage.successMsg}</h2>
                 <p className="mt-3 text-gray-500">{t.addReviewPage.subtitle}</p>
@@ -186,6 +196,7 @@ export function AddReviewForm({
 
                 <SubmissionFormSection number="2" title={t.addReviewPage.ratingLabel} description={t.addReviewPage.criteriaLabel}>
                   <FormRatingInput name="rating" label={t.addReviewPage.ratingLabel} />
+                  <p className="border-l-4 border-[#80c5c7] bg-[#f4fbfa] px-4 py-3 text-sm leading-6 text-gray-600">{copy.ratingHelp}</p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {Object.entries(t.companyReviewsPage.criteria).map(([key, label]) => (
                       <div key={key} className="border border-gray-200 p-4"><FormRatingInput name={key} label={label} compact /></div>

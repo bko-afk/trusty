@@ -1,4 +1,5 @@
 import type { Payload, PayloadRequest } from 'payload'
+import { calculateReviewStats } from '@/lib/companyReviewStats'
 
 /**
  * Пересчитывает средний рейтинг и количество отзывов компании
@@ -19,13 +20,12 @@ export async function recalculateCompanyRating(
   const companyId = typeof company === 'object' ? company.id : company
   if (!companyId) return
 
-  const { docs, totalDocs } = await payload.find({
+  const { docs } = await payload.find({
     collection: 'reviews',
     where: {
       and: [
         { company: { equals: companyId } },
         { status: { equals: 'published' } },
-        { includeInRating: { equals: true } },
       ],
     },
     limit: 10000,
@@ -33,19 +33,16 @@ export async function recalculateCompanyRating(
     req,
   })
 
-  const average =
-    totalDocs > 0 ? docs.reduce((sum, review) => sum + (review.rating || 0), 0) / totalDocs : 0
-  const positiveReviewCount = docs.filter((review) => (review.rating || 0) >= 4).length
-  const negativeReviewCount = docs.filter((review) => (review.rating || 0) <= 2).length
+  const stats = calculateReviewStats(docs)
 
   await payload.update({
     collection: 'companies',
     id: companyId,
     data: {
-      overallRating: Math.round(average * 10) / 10,
-      reviewCount: totalDocs,
-      positiveReviewCount,
-      negativeReviewCount,
+      overallRating: stats.overallRating,
+      reviewCount: stats.reviewCount,
+      positiveReviewCount: stats.positiveReviewCount,
+      negativeReviewCount: stats.negativeReviewCount,
     },
     req,
   })

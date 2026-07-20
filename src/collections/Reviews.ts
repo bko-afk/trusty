@@ -31,7 +31,7 @@ export const Reviews: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      async ({ data, req, operation }) => {
+      async ({ data, req, operation, originalDoc }) => {
         // Если отзыв отправляет залогиненный посетитель (коллекция
         // `customers`, а не админ `users`) — привязываем отзыв к его
         // аккаунту и подставляем имя/email по умолчанию, если не заданы.
@@ -49,14 +49,23 @@ export const Reviews: CollectionConfig = {
           if (!data.authorName) data.authorName = user.name || user.email
           if (!data.authorEmail) data.authorEmail = user.email
         }
+        const moderationStatus = data.status ?? originalDoc?.status ?? 'pending'
+        data.includeInRating = moderationStatus === 'published'
         return data
       },
     ],
     afterChange: [
       async ({ doc, previousDoc, req }) => {
-        await recalculateCompanyRating(req.payload, doc.company, req)
         const currentCompanyId = typeof doc.company === 'object' ? doc.company.id : doc.company
         const previousCompanyId = typeof previousDoc?.company === 'object' ? previousDoc.company.id : previousDoc?.company
+        const affectsRating =
+          !previousDoc ||
+          String(previousCompanyId) !== String(currentCompanyId) ||
+          previousDoc.status !== doc.status ||
+          previousDoc.includeInRating !== doc.includeInRating ||
+          previousDoc.rating !== doc.rating
+        if (!affectsRating) return
+        await recalculateCompanyRating(req.payload, doc.company, req)
         if (previousCompanyId && String(previousCompanyId) !== String(currentCompanyId)) {
           await recalculateCompanyRating(req.payload, previousCompanyId, req)
         }
@@ -206,7 +215,8 @@ export const Reviews: CollectionConfig = {
       defaultValue: true,
       admin: {
         position: 'sidebar',
-        description: 'Включите после проверки отзыва. Опубликованный отзыв можно показывать без влияния на средний балл.',
+        readOnly: true,
+        description: 'Устанавливается автоматически: опубликованный отзыв учитывается в рейтинге, любой другой статус исключает его из расчёта.',
       },
     },
     {

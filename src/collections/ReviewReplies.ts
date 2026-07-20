@@ -10,7 +10,7 @@ export const ReviewReplies: CollectionConfig = {
   admin: {
     group: 'Модерация',
     useAsTitle: 'authorName',
-    defaultColumns: ['review', 'authorName', 'status', 'createdAt'],
+    defaultColumns: ['review', 'authorName', 'authorType', 'status', 'createdAt'],
   },
   access: {
     read: ({ req }) => {
@@ -36,6 +36,7 @@ export const ReviewReplies: CollectionConfig = {
       options: [
         { label: 'Администрация сайта', value: 'admin' },
         { label: 'Представитель компании', value: 'company' },
+        { label: 'Пользователь сайта', value: 'customer' },
       ],
     },
     { name: 'authorName', type: 'text', required: true },
@@ -46,8 +47,10 @@ export const ReviewReplies: CollectionConfig = {
       required: true,
       defaultValue: 'published',
       options: [
+        { label: 'На модерации', value: 'pending' },
         { label: 'Опубликован', value: 'published' },
         { label: 'Скрыт', value: 'hidden' },
+        { label: 'Отклонён', value: 'rejected' },
       ],
       admin: { position: 'sidebar' },
     },

@@ -5,6 +5,7 @@ import { CompanyReviewsText } from './CompanyReviewsText'
 import { getPublishedCompany } from '@/lib/getPublishedContent'
 import { getRequestLocale, localizedAlternates, localizedOpenGraph } from '@/i18n/seo'
 import { localizePath } from '@/i18n/routing'
+import { calculateReviewStats } from '@/lib/companyReviewStats'
 
 export const revalidate = 60
 
@@ -75,6 +76,7 @@ export default async function CompanyReviewsPage({
 
   const criteriaAverages: Record<string, number> = {}
   const ratingReviews = reviewsResult.docs.filter((review: any) => review.includeInRating === true)
+  const reviewStats = calculateReviewStats(reviewsResult.docs)
   for (const key of CRITERIA_KEYS) {
     const values = ratingReviews
       .map((r: any) => r.criteria?.[key])
@@ -88,11 +90,11 @@ export default async function CompanyReviewsPage({
     <CompanyReviewsText
       slug={slug}
       companyName={company.name}
-      overallRating={company.overallRating || 0}
-      reviewCount={company.reviewCount || 0}
+      overallRating={reviewStats.overallRating}
+      reviewCount={reviewStats.reviewCount}
       criteriaAverages={criteriaAverages}
       reviews={reviewsResult.docs.map((review: any) => ({
-        id: review.id,
+        id: String(review.id),
         authorName: review.authorName,
         title: review.title,
         body: review.body,
@@ -104,6 +106,7 @@ export default async function CompanyReviewsPage({
         claimAmount: review.claimAmount,
         responseTime: review.responseTime,
         verifiedExperience: review.verifiedExperience,
+        criteria: review.criteria || undefined,
         pros: (review.pros || []).map((p: any) => p.text),
         cons: (review.cons || []).map((c: any) => c.text),
         recommend: review.recommend,

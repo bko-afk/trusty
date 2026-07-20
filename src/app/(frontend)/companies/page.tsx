@@ -5,6 +5,7 @@ import { sortCompaniesByRanking } from '@/lib/companyRanking'
 import { unstable_cache } from 'next/cache'
 import { getRequestLocale, localizedPageMetadata } from '@/i18n/seo'
 import type { Locale } from '@/i18n/dictionary'
+import { applyCompanyReviewStats, reviewStatsByCompany } from '@/lib/companyReviewStats'
 
 export const revalidate = 60
 
@@ -20,6 +21,12 @@ const getCatalogData = unstable_cache(async (locale: Locale) => {
       depth: 1,
       locale,
     }),
+    payload.find({
+      collection: 'reviews',
+      where: { status: { equals: 'published' } },
+      limit: 10000,
+      depth: 0,
+    }),
   ])
 }, ['companies-catalog'], { revalidate: 60 })
 
@@ -27,9 +34,11 @@ export const generateMetadata = () => localizedPageMetadata('companies', '/compa
 
 export default async function CompaniesCatalogPage() {
   const locale = await getRequestLocale()
-  const [insuranceTypes, companies] = await getCatalogData(locale)
+  const [insuranceTypes, companies, reviews] = await getCatalogData(locale)
 
-  const rankedCompanies = sortCompaniesByRanking(companies.docs)
+  const rankedCompanies = sortCompaniesByRanking(
+    applyCompanyReviewStats(companies.docs, reviewStatsByCompany(reviews.docs)),
+  )
   const availableCountries = Array.from(
     new Set(rankedCompanies.map((company) => company.country).filter(Boolean)),
   ) as string[]

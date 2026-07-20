@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from '@/components/LocalizedLink'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { RatingStars } from '@/components/RatingStars'
 import { useLanguage } from '@/i18n/LanguageContext'
@@ -10,6 +10,8 @@ import { countryName } from '@/lib/countries'
 import { insuranceTypeLabel } from '@/lib/insuranceTypeLabel'
 import { useCustomer } from '@/lib/useCustomer'
 import { localizePath } from '@/i18n/routing'
+import { CompanyReviewsPanel, type CompanyReviewItem } from './reviews/CompanyReviewsText'
+import { CompanyComplaintsPanel, type CompanyComplaintItem } from './complaints/CompanyComplaintsText'
 
 const detailCopy = {
   ru: {
@@ -17,21 +19,21 @@ const detailCopy = {
     trustTitle: 'Проверка компании', legalName: 'Юридическое название', regulator: 'Регулятор', license: 'Лицензия', checkedAt: 'Данные актуализированы', registry: 'Проверить в реестре',
     insuranceTitle: 'Страховые характеристики', coverage: 'Максимальное покрытие', deductible: 'Франшиза', support: 'Поддержка 24/7', directBilling: 'Прямая оплата клинике', online: 'Покупка онлайн', apps: 'Приложения', extraCoverage: 'Дополнительное покрытие', yes: 'Да', no: 'Нет', notSpecified: 'Не указано',
     covid: 'COVID-19', sports: 'Активный спорт', baggage: 'Багаж', tripCancellation: 'Отмена поездки',
-    subscribe: 'Следить за компанией', unsubscribe: 'Вы подписаны', loginToSubscribe: 'Войдите, чтобы подписаться', compare: 'Сравнить с другими', rankings: 'Компания в рейтингах', place: 'место из', similar: 'Похожие компании', guides: 'Полезные материалы', complaintsTab: 'Жалобы', methodology: 'Как считается рейтинг', methodologyText: 'Оценка формируется только из опубликованных отзывов. Профиль, реклама и партнерские ссылки не повышают позицию. Положительными считаются оценки 4-5, отрицательными — 1-2.',
+    subscribe: 'Следить за компанией', unsubscribe: 'Вы подписаны', loginToSubscribe: 'Войдите, чтобы подписаться', compare: 'Сравнить с другими', rankings: 'Компания в рейтингах', place: 'место из', similar: 'Похожие компании', guides: 'Полезные материалы', complaintsTab: 'Жалобы', methodology: 'Как считается рейтинг', methodologyText: 'Оценка формируется из всех опубликованных отзывов. После публикации отзыв автоматически участвует в расчёте. Профиль, реклама и партнерские ссылки не повышают позицию. Положительными считаются оценки 4-5, отрицательными — 1-2.',
   },
   en: {
     verified: 'Verified profile', unverified: 'Unverified profile', positive: 'Positive', negative: 'Negative', complaints: 'Complaints', resolved: 'resolved',
     trustTitle: 'Company verification', legalName: 'Legal name', regulator: 'Regulator', license: 'License', checkedAt: 'Data updated', registry: 'Check registry',
     insuranceTitle: 'Insurance details', coverage: 'Maximum coverage', deductible: 'Deductible', support: '24/7 support', directBilling: 'Direct clinic billing', online: 'Buy online', apps: 'Mobile apps', extraCoverage: 'Additional coverage', yes: 'Yes', no: 'No', notSpecified: 'Not specified',
     covid: 'COVID-19', sports: 'Adventure sports', baggage: 'Baggage', tripCancellation: 'Trip cancellation',
-    subscribe: 'Follow company', unsubscribe: 'Following', loginToSubscribe: 'Sign in to follow', compare: 'Compare with others', rankings: 'Company rankings', place: 'place of', similar: 'Similar companies', guides: 'Useful guides', complaintsTab: 'Complaints', methodology: 'How the rating works', methodologyText: 'The score is based only on published customer reviews. Profiles, ads, and partner links do not improve rank. Scores 4-5 are positive and 1-2 are negative.',
+    subscribe: 'Follow company', unsubscribe: 'Following', loginToSubscribe: 'Sign in to follow', compare: 'Compare with others', rankings: 'Company rankings', place: 'place of', similar: 'Similar companies', guides: 'Useful guides', complaintsTab: 'Complaints', methodology: 'How the rating works', methodologyText: 'The score is based on every published customer review. A review affects the calculation automatically when it is published. Profiles, ads, and partner links do not improve rank. Scores 4-5 are positive and 1-2 are negative.',
   },
   es: {
     verified: 'Perfil verificado', unverified: 'Perfil no verificado', positive: 'Positivas', negative: 'Negativas', complaints: 'Quejas', resolved: 'resueltas',
     trustTitle: 'Verificación de la empresa', legalName: 'Nombre legal', regulator: 'Regulador', license: 'Licencia', checkedAt: 'Datos actualizados', registry: 'Consultar registro',
     insuranceTitle: 'Características del seguro', coverage: 'Cobertura máxima', deductible: 'Franquicia', support: 'Atención 24/7', directBilling: 'Pago directo a la clínica', online: 'Compra en línea', apps: 'Aplicaciones', extraCoverage: 'Cobertura adicional', yes: 'Sí', no: 'No', notSpecified: 'No especificado',
     covid: 'COVID-19', sports: 'Deportes de aventura', baggage: 'Equipaje', tripCancellation: 'Cancelación de viaje',
-    subscribe: 'Seguir empresa', unsubscribe: 'Siguiendo', loginToSubscribe: 'Inicia sesión para seguir', compare: 'Comparar con otras', rankings: 'Empresa en rankings', place: 'puesto de', similar: 'Empresas similares', guides: 'Guías útiles', complaintsTab: 'Quejas', methodology: 'Cómo funciona el ranking', methodologyText: 'La puntuación se basa únicamente en reseñas publicadas. El perfil, la publicidad y los enlaces de socios no mejoran la posición. Las notas 4-5 son positivas y 1-2 negativas.',
+    subscribe: 'Seguir empresa', unsubscribe: 'Siguiendo', loginToSubscribe: 'Inicia sesión para seguir', compare: 'Comparar con otras', rankings: 'Empresa en rankings', place: 'puesto de', similar: 'Empresas similares', guides: 'Guías útiles', complaintsTab: 'Quejas', methodology: 'Cómo funciona el ranking', methodologyText: 'La puntuación se basa en todas las reseñas publicadas. Una reseña afecta al cálculo automáticamente al publicarse. El perfil, la publicidad y los enlaces de socios no mejoran la posición. Las notas 4-5 son positivas y 1-2 negativas.',
   },
 } as const
 
@@ -66,6 +68,9 @@ export function CompanyDetailText({
   categoryPositions,
   relatedCompanies,
   articles,
+  criteriaAverages,
+  reviews,
+  complaints,
 }: {
   companyId: string
   slug: string
@@ -97,11 +102,16 @@ export function CompanyDetailText({
   categoryPositions: { slug: string; title: string; position: number; total: number }[]
   relatedCompanies: { slug: string; name: string; logoUrl?: string; rating: number }[]
   articles: { slug: string; title: string; excerpt?: string }[]
+  criteriaAverages: Record<string, number>
+  reviews: CompanyReviewItem[]
+  complaints: CompanyComplaintItem[]
 }) {
   const { t, locale } = useLanguage()
   const { customer } = useCustomer()
   const [subscriptionOverride, setSubscriptionOverride] = useState<boolean | null>(null)
   const [subscriptionLoading, setSubscriptionLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState<'overview' | 'reviews' | 'complaints'>('overview')
+  const tabsRef = useRef<HTMLDivElement>(null)
   const text = detailCopy[locale]
   const isSubscribed = subscriptionOverride ?? customer?.subscriptions?.includes(companyId) ?? false
   const dateLocale = locale === 'ru' ? 'ru-RU' : locale === 'es' ? 'es-ES' : 'en-US'
@@ -124,6 +134,11 @@ export function CompanyDetailText({
   )
   const booleanDetail = (value?: boolean) =>
     hasInsuranceProfileData ? (value ? text.yes : text.no) : text.notSpecified
+
+  function activateTab(tab: 'overview' | 'reviews' | 'complaints') {
+    setActiveTab(tab)
+    requestAnimationFrame(() => tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+  }
 
   async function toggleSubscription() {
     if (!customer) {
@@ -173,23 +188,21 @@ export function CompanyDetailText({
             <div className="border border-gray-200 p-5">
               <div className="flex items-end justify-between"><span className="text-sm text-gray-500">{t.portal.detail.companyRating}</span><strong className="text-4xl">{overallRating.toFixed(1)}</strong></div>
               <div className="mt-3"><RatingStars value={overallRating} size="md" /></div>
-              <Link href={`/companies/${slug}/reviews`} className="dotted-link mt-4 inline-block text-sm font-semibold">{reviewCount} {t.portal.detail.customerReviews}</Link>
+              <button type="button" onClick={() => activateTab('reviews')} className="dotted-link mt-4 inline-block text-left text-sm font-semibold">{reviewCount} {t.portal.detail.customerReviews}</button>
               <div className="mt-4 grid grid-cols-3 gap-2 border-t border-gray-100 pt-4 text-center text-[11px] leading-tight"><div><strong className="block text-base text-emerald-700">+{positiveReviewCount}</strong>{text.positive}</div><div><strong className="block text-base text-rose-700">-{negativeReviewCount}</strong>{text.negative}</div><div><strong className="block text-base">{complaintCount}</strong>{text.complaints}</div></div>
             </div>
           </div>
 
-          <div className="mt-9 flex flex-wrap gap-px bg-gray-200">
-            <Link href={{ pathname: `/companies/${slug}`, hash: 'overview' }} className="bg-brand px-5 py-3 text-sm font-bold text-white">{t.portal.detail.overview}</Link>
-            <Link href={`/companies/${slug}/reviews`} className="bg-[#f6f7f9] px-5 py-3 text-sm font-bold hover:bg-white">{t.portal.detail.reviews}</Link>
-            <Link href={`/companies/${slug}/complaints`} className="bg-[#f6f7f9] px-5 py-3 text-sm font-bold hover:bg-white">{text.complaintsTab}</Link>
-            <Link href={{ pathname: `/companies/${slug}`, hash: 'details' }} className="bg-[#f6f7f9] px-5 py-3 text-sm font-bold hover:bg-white">{t.portal.detail.specifications}</Link>
+          <div ref={tabsRef} className="mt-9 flex scroll-mt-24 flex-wrap gap-px bg-gray-200" role="tablist" aria-label={name}>
+            {([['overview', t.portal.detail.overview, ''], ['reviews', t.portal.detail.reviews, reviewCount], ['complaints', text.complaintsTab, complaintCount]] as const).map(([tab, label, count]) => <button key={tab} type="button" role="tab" aria-selected={activeTab === tab} aria-controls={`company-${tab}-panel`} onClick={() => activateTab(tab)} className={`px-5 py-3 text-sm font-bold transition-colors ${activeTab === tab ? 'bg-brand text-white' : 'bg-[#f6f7f9] text-brand-dark hover:bg-white'}`}>{label}{count !== '' ? ` (${count})` : ''}</button>)}
           </div>
         </div>
       </section>
 
       <section className="container-page py-10">
         <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
-          <div className="space-y-8">
+          <div id={`company-${activeTab}-panel`} role="tabpanel" className="space-y-8">
+            {activeTab === 'overview' ? <>
             <section id="overview" className="border border-gray-200 p-6 md:p-8">
               <p className="section-kicker">{t.portal.detail.independentReview}</p>
               <h2 className="mt-2 text-3xl font-extrabold">{t.portal.detail.aboutCompanyPrefix} {name}</h2>
@@ -232,13 +245,14 @@ export function CompanyDetailText({
             {relatedCompanies.length > 0 && <section><h2 className="text-2xl font-extrabold">{text.similar}</h2><div className="mt-5 grid gap-4 sm:grid-cols-3">{relatedCompanies.map((company) => <Link key={company.slug} href={`/companies/${company.slug}`} className="border border-gray-200 bg-white p-4 transition-colors hover:border-brand"><div className="relative h-14 w-full"><Image src={company.logoUrl || '/placeholders/logo-placeholder.svg'} alt={company.name} fill className="object-contain" /></div><h3 className="mt-4 font-extrabold">{company.name}</h3><div className="mt-2 flex items-center gap-2"><strong>{company.rating.toFixed(1)}</strong><RatingStars value={company.rating} size="sm" /></div></Link>)}</div></section>}
 
             {articles.length > 0 && <section><div className="flex items-end justify-between gap-4"><h2 className="text-2xl font-extrabold">{text.guides}</h2><Link href="/articles" className="dotted-link text-sm">{t.nav.articles}</Link></div><div className="mt-5 grid gap-4 sm:grid-cols-3">{articles.map((article) => <Link key={article.slug} href={`/articles/${article.slug}`} className="border border-gray-200 bg-white p-4 hover:border-brand"><h3 className="font-extrabold leading-6">{article.title}</h3>{article.excerpt && <p className="mt-2 line-clamp-3 text-sm text-gray-500">{article.excerpt}</p>}</Link>)}</div></section>}
+            </> : activeTab === 'reviews' ? <CompanyReviewsPanel slug={slug} companyName={name} overallRating={overallRating} reviewCount={reviewCount} criteriaAverages={criteriaAverages} reviews={reviews} compactHeading /> : <CompanyComplaintsPanel slug={slug} companyName={name} complaints={complaints} />}
           </div>
 
           <aside id="details" className="h-fit border border-gray-200 lg:sticky lg:top-5">
             <div className="bg-brand p-5 text-white"><div className="text-xs font-bold uppercase tracking-wider text-white/60">{t.portal.detail.companyCard}</div><h2 className="mt-2 text-xl font-extrabold">{t.portal.detail.keyDetails}</h2></div>
             <dl className="divide-y divide-gray-100 px-5 text-sm">{spec.map(([label, value]) => <div key={label} className="py-4"><dt className="text-xs font-bold uppercase tracking-wider text-gray-400">{label}</dt><dd className="mt-1 break-words font-semibold">{value}</dd></div>)}</dl>
             <div className="border-t border-gray-200 p-5"><h3 className="font-extrabold">{text.trustTitle}</h3><dl className="mt-4 space-y-3 text-sm">{verification?.legalName && <div><dt className="text-gray-400">{text.legalName}</dt><dd className="font-semibold">{verification.legalName}</dd></div>}{verification?.regulator && <div><dt className="text-gray-400">{text.regulator}</dt><dd className="font-semibold">{verification.regulator}</dd></div>}{verification?.licenseNumber && <div><dt className="text-gray-400">{text.license}</dt><dd className="font-semibold">{verification.licenseNumber}</dd></div>}<div><dt className="text-gray-400">{text.checkedAt}</dt><dd className="font-semibold">{updatedLabel}</dd></div></dl>{verification?.licenseUrl && <a href={verification.licenseUrl} target="_blank" rel="noopener noreferrer nofollow" className="dotted-link mt-4 inline-block text-sm">{text.registry}</a>}</div>
-            <div className="space-y-3 border-t border-gray-200 p-5">{website && <a href={website} target="_blank" rel="noopener noreferrer nofollow" className="btn-primary w-full">{t.company.visitSite}</a>}<Link href={`/companies/${slug}/reviews`} className="btn-secondary w-full">{t.company.readReviews}</Link><Link href={`/companies/${slug}/complaints`} className="btn-secondary w-full">{text.complaints}: {complaintCount} ({resolvedComplaintCount} {text.resolved})</Link><button type="button" onClick={toggleSubscription} disabled={subscriptionLoading} className="btn-secondary w-full disabled:opacity-60">{customer ? isSubscribed ? text.unsubscribe : text.subscribe : text.loginToSubscribe}</button><Link href={{ pathname: '/companies', hash: 'comparison' }} className="btn-secondary w-full">{text.compare}</Link></div>
+            <div className="space-y-3 border-t border-gray-200 p-5">{website && <a href={website} target="_blank" rel="noopener noreferrer nofollow" className="btn-primary w-full">{t.company.visitSite}</a>}<button type="button" onClick={() => activateTab('reviews')} className="btn-secondary w-full">{t.company.readReviews}</button><button type="button" onClick={() => activateTab('complaints')} className="btn-secondary w-full">{text.complaints}: {complaintCount} ({resolvedComplaintCount} {text.resolved})</button><button type="button" onClick={toggleSubscription} disabled={subscriptionLoading} className="btn-secondary w-full disabled:opacity-60">{customer ? isSubscribed ? text.unsubscribe : text.subscribe : text.loginToSubscribe}</button><Link href={{ pathname: '/companies', hash: 'comparison' }} className="btn-secondary w-full">{text.compare}</Link></div>
           </aside>
         </div>
       </section>
